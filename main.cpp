@@ -1,12 +1,11 @@
-// This assignment may cost you some efferts, so I give you some important HINTS, hope that may help you.
-// Enjoy the coding and thinking, do pay more attention to the library functions used in OPENGL, such as how they are used? what are the parameters used? and why?
-
-// 实验报告里面多写点感想，即对函数的理解，以及调用的顺序，步骤等。思考为什么是这样子调用的，为什么参数是这样子设置的？。。。等等你觉得值得研究的问题。
 #include <stdlib.h>
 #include <math.h>
-#include "glut.h"
 #include <map>
 #include <array>
+#include <ctime>
+#include <cassert>
+#include "glut.h"
+#include "entity.cpp"
 using namespace std;
 
 float fTranslate;
@@ -20,82 +19,48 @@ bool bWire = false;
 int wHeight = 500;
 int wWidth = 500;
 
-//todo
-//hint: some additional parameters may needed here when you operate the teapot
-
-void Draw_Leg()
-{
-	glScalef(1, 1, 3);
-	glutSolidCube(1.0);
-}
-
-float pot_x=0, pot_y=0, ang=0;
+float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
 bool pot_rotate=0;
 
 typedef array<int, 3> Pt3;
 map<Pt3, int> block;
+float pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
+entity::Entity observer(pp, vv, r, h, 1.0);
 void init(){
-	for (int i = -16; i <= 16; ++i)
-		for (int j = -16; j <= 16; ++j)
-			for (int k = 0; k <= 2; ++k){
+	srand(time(0));
+	for (int i = -32; i <= 32; ++i)
+		for (int j = -32; j <= 32; ++j)
+			for (int k = 0; k <= 3; ++k){
 				int t = (1 << (k + 2)) - 1;
-				if (k == 0 || (rand()&t)==t) block[Pt3({ i, k, j })] = 1;
+				if (k == 0 || (rand()&t) == t) block[Pt3({ i, k, j })] = 1;
 				else break;
 			}
+}
+bool enableObserver = 0;
+void DrawObserver(){
+	if (!enableObserver) return;
+	GLUquadricObj *objCylinder = gluNewQuadric();
+	glPushMatrix();
+	glTranslatef(observer[0], observer[1]+h, observer[2]);
+	glRotatef(90, 1, 0, 0);
+	gluCylinder(objCylinder, r, r, 1, 30, 10);
+	//glutWireCube(1.0);
+	glPopMatrix();
 }
 void Draw_Scene()
 {
 	glPushMatrix();
-	glTranslatef(pot_x, pot_y, 4+1);
-	glRotatef(90, 1, 0, 0); //notice the rotation here, you may have a TRY removing this line to see what it looks like.
-	if(pot_rotate)glRotatef(ang, 0, 1, 0);
-	//todo; hint: when operate the teapot, you may need to change some parameters
+	glScalef(1.0, 1.0, 1.0);
 	for (auto x : block){
 		glPushMatrix();
-			const Pt3 &p = x.first;
-			glScalef(3.0, 3.0, 3.0);
-			glTranslatef(p[0], p[1]-4.0, p[2]);
-			glutSolidCube(1.0);
-			glColor3f(0.0, 0.0, 0.0);
-			glutWireCube(1.0001);
+		const Pt3 &p = x.first;
+		glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
+		glutSolidCube(1.0);
+		glutWireCube(1.01);
 		glPopMatrix();
 	}
-
-	glutSolidTeapot(1);
+	DrawObserver();
 	glPopMatrix();
-	/*
-	glPushMatrix();
-	glTranslatef(0, 0, -2);
-	glScalef(100, 100, 0.2);
-	glutSolidCube(1.0);
-	glPopMatrix();
-	*/
-	glPushMatrix();
-	glTranslatef(0, 0, 3.5);
-	glScalef(5, 4, 1);
-	glutSolidCube(1.0);
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(1.5, 1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.5, 1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-	
-	glPushMatrix();
-	glTranslatef(1.5, -1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-	
-	glPushMatrix();
-	glTranslatef(-1.5, -1, 1.5);
-	Draw_Leg();
-	glPopMatrix();
-
 }
 
 float kk = 0;
@@ -116,7 +81,7 @@ void updateView(int width, int height)
 
 void reshape(int width, int height)
 {
-	if (height==0)height=1;
+	if (height==0) height=1;
 
 	wHeight = height;
 	wWidth = width;
@@ -124,27 +89,32 @@ void reshape(int width, int height)
 	updateView(wWidth, wHeight);
 }
 
-void idle()
-{
-	glutPostRedisplay();
-}
-
-float center[] = {0, 0, 0};
-float eye[] = {0, 0, 8};
+float center[] = {0, 4, 0};
+float eye[] = {0, 4, 8};
 float PI = acos(-1.0), deg2rad = PI / 180.0;
 int horizontal_angle = 0, verticle_angle = 0;
 float face[] = { 1, 0, 0 };
+float face_xz[] = { 1, 0, 0 };
 void update_dir(){
 	float ha = horizontal_angle * deg2rad,
 		  va = verticle_angle * deg2rad;
-	face[0] = cos(ha) * cos(va);
-	face[2] = sin(ha) * cos(va);
+	face_xz[0] = cos(ha);
+	face_xz[2] = sin(ha);
+	face_xz[1] = 0;
+	face[0] = face_xz[0] * cos(va);
+	face[2] = face_xz[2] * cos(va);
 	face[1] = sin(va);
 }
+
+float dis = 10.0;
+
 void update_center(){
 	update_dir();
-	for (int i = 0; i < 3; ++i)
-		center[i] = eye[i] + face[i];
+	for (int i = 0; i < 3; ++i){
+		center[i] = observer[i] + (i == 1 ? h*0.8 : 0);
+		eye[i] = center[i] + face[i] * dis;
+		swap(center[i], eye[i]);
+	}
 }
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
@@ -161,10 +131,43 @@ void process_move(int x, int y){
 		if (verticle_angle >= 90) verticle_angle = 89;
 		if (verticle_angle <= -90) verticle_angle = -89;
 		update_center();
+		updateView(wWidth, wHeight);
 	}
 }
 
-float step=0.2, eps=1e-8;
+int idle_count = 0;
+clock_t lst = 0, inter = entity::CLOCK_T * CLOCKS_PER_SEC;
+void idle()
+{
+	++idle_count;
+	static clock_t now;
+	now = clock();
+	if (lst + inter <= now) {
+		observer.fall();
+		static int p[3];
+		for (int i = 0; i < 3; ++i)
+			p[i] = floor(observer[i]);
+		p[2] = floor(observer[2] + 0.5*h);
+		for (int dx = -1; dx <= 1; ++dx){
+			for (int dy = -2; dy <= 2; ++dy){
+				for (int dz = -1; dz <= 1; ++dz){
+					static map<Pt3, int>::iterator it;
+					if ((it = block.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != block.end()){
+						observer.collide_cube_horizontally(&it->first[0]);
+						observer.collide_cube_vertically(&it->first[0]);
+					}
+				}
+			}
+		}
+		observer.update();
+		update_center();
+		updateView(wWidth, wHeight);
+		lst += inter;
+	}
+	glutPostRedisplay();
+}
+
+float step=2.0, eps=1e-8;
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
 }
@@ -174,9 +177,8 @@ void key(unsigned char k, int x, int y)
 	{
 	case 27:
 	case 'q': {exit(0); break; }
-	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight);break; }
+	case 'p': {bPersp = !bPersp; break; }
 
-	case ' ': {bAnim = !bAnim; break;}
 	case 'o': {bWire = !bWire; break;}
 
 	case 'a':
@@ -184,27 +186,33 @@ void key(unsigned char k, int x, int y)
 	case 'w':
 	case 's':{
 		int df = 0;
+		static float ff[3];
 		if (k == 'w' || k == 's'){
 			df = k == 'w' ? 1 : -1;
-			for (int i = 0; i < 3; ++i)
-				eye[i] += face[i] * df * step;
+			for (int i = 0; i < 3; ++i) ff[i] = face_xz[i] * df * step * 2;
+			observer.force(ff);
 		} else {
 			df = k == 'a' ? 1 : -1;
-			float len = sqrt(face[2] * face[2] + face[0] * face[0]);
-			eye[0] += face[2] / len * df * step;
-			eye[2] -= face[0] / len * df * step;
+			ff[0] = face_xz[2] * df * step;
+			ff[1] = 0;
+			ff[2] = -face_xz[0] * df * step;
+			observer.force(ff);
 		}
-		update_center();
 		break;
 	}
-	case 'z': {//todo
+	case ' ':{
+		static float ff[3];
+		for (int i = 0; i < 3; ++i)ff[i] = 0;
+		ff[1] = 15;
+		observer.force(ff);
+		break;
+	}
+	case 'z': {
 		chg(kk, 0.1, 2);
-		updateView(wWidth, wHeight);
 		break;
 			  }
-	case 'c': {//todo
+	case 'c': {
 		chg(kk, -0.1, 2);
-		updateView(wWidth, wHeight);
 		break;
 			  }
 
@@ -231,8 +239,47 @@ void key(unsigned char k, int x, int y)
 			  }
 	}
 	update_center();
+	updateView(wWidth, wHeight);
 }
 
+void getFPS()
+{
+	static int frame = 0, time, timebase = 0;
+	static char buffer[256];
+
+	char mode[64];
+	sprintf_s<64>(mode, " (%.4f,%.4f,%.4f)", observer[0], observer[1], observer[2]);
+
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		sprintf_s<256> (buffer, "FPS:%4.2f %s IPS:%4.2f",
+			frame*1000.0 / (time - timebase), mode, idle_count*1000.0 / (time - timebase));
+		timebase = time;
+		frame = 0;
+		idle_count = 0;
+	}
+
+	//glutSetWindowTitle(buffer);
+	char *c;
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵
+	glOrtho(0, 480, 0, 480, -1, 1);// 位置正投影
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵*/
+	glRasterPos2f(10, 10);
+	for (c = buffer; *c != '\0'; c++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+	}
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPopMatrix();// 重置为原保存矩阵
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPopMatrix();// 重置为原保存矩阵
+	glEnable(GL_DEPTH_TEST);
+}
 
 void redraw()
 {
@@ -250,9 +297,12 @@ void redraw()
 	else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	//glEnable(GL_COLOR_MATERIAL);
+	//glEnable(GL_LINE_SMOOTH);
+
     GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_pos[] = {5,5,5,1};
 	
@@ -260,11 +310,9 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 	
-//	glTranslatef(0.0f, 0.0f,-6.0f);			// Place the triangle at eye
-	glRotatef(fRotate, 0, 1.0f, 0);			// Rotate around Y axis
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.2, 0.2, 0.2);
 	Draw_Scene();						// Draw Scene
+
+	getFPS();
 
 	if (bAnim) fRotate  += 0.5f;
 	if (pot_rotate) ang += 4.0f;
@@ -281,9 +329,8 @@ int main (int argc,  char *argv[])
 	int windowHandle = glutCreateWindow("Simple MC");
 
 	glLineWidth(3.0);
-	glEnable(GL_LINE_SMOOTH);
 	glutDisplayFunc(redraw);
-	glutReshapeFunc(reshape);	
+	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
 	glutIdleFunc(idle);
 	glutMotionFunc(process_move);

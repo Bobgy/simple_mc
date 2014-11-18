@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cassert>
 #include "vec.h"
+#include "world.h"
 #include "glut.h"
 #include "entity.cpp"
 using namespace std;
@@ -24,9 +25,9 @@ float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
 bool pot_rotate=0;
 
 //typedef array<int, 3> Pt3;
-typedef vec::Vec3<int> Pt3;
+typedef Vec3i Pt3;
 map<Pt3, int> block;
-float pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
+flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 entity::Entity observer(pp, vv, r, h, 1.0);
 void init(){
 	srand(time(0));
@@ -58,7 +59,7 @@ void Draw_Scene()
 		const Pt3 &p = x.first;
 		glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
 		glutSolidCube(1.0);
-		glutWireCube(1.01);
+		//glutWireCube(1.01);
 		glPopMatrix();
 	}
 	DrawObserver();
@@ -95,8 +96,8 @@ float center[] = {0, 4, 0};
 float eye[] = {0, 4, 8};
 float PI = acos(-1.0), deg2rad = PI / 180.0;
 int horizontal_angle = 0, verticle_angle = 0;
-float face[] = { 1, 0, 0 };
-float face_xz[] = { 1, 0, 0 };
+flt face[] = { 1, 0, 0 };
+flt face_xz[] = { 1, 0, 0 };
 void update_dir(){
 	float ha = horizontal_angle * deg2rad,
 		  va = verticle_angle * deg2rad;
@@ -169,7 +170,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-float step=0.3, eps=1e-8;
+flt step=0.3, eps=1e-8;
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
 }
@@ -188,7 +189,7 @@ void key(unsigned char k, int x, int y)
 	case 'w':
 	case 's':{
 		int df = 0;
-		static float ff[3];
+		static flt ff[3];
 		if (k == 'w' || k == 's'){
 			df = k == 'w' ? 1 : -1;
 			observer.give_velocity(face_xz, step*df);
@@ -202,7 +203,7 @@ void key(unsigned char k, int x, int y)
 		break;
 	}
 	case ' ':{
-		static float ff[3];
+		static flt ff[3];
 		for (int i = 0; i < 3; ++i)ff[i] = 0;
 		ff[1] = 15;
 		observer.force(ff);
@@ -282,6 +283,22 @@ void getFPS()
 	glEnable(GL_DEPTH_TEST);
 }
 
+GLint tableList;
+
+GLint GenTableList()
+{
+	GLint lid = glGenLists(1);
+	glNewList(lid, GL_COMPILE);
+	Draw_Scene(); //Call Draw_table() to draw the table and bunnies into the list
+	glEndList();
+	return lid;
+}
+
+void Draw_Table_List()
+{
+	glCallList(tableList);
+}
+
 void redraw()
 {
 
@@ -311,7 +328,8 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 	
-	Draw_Scene();						// Draw Scene
+	Draw_Table_List();
+	//Draw_Scene();						// Draw Scene
 
 	getFPS();
 
@@ -324,10 +342,13 @@ void redraw()
 int main (int argc,  char *argv[])
 {
 	init();
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(1024,600);
 	int windowHandle = glutCreateWindow("Simple MC");
+
+	tableList = GenTableList();
 
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);

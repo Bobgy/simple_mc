@@ -6,14 +6,15 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
+#include "vec.h"
+
 namespace entity {
 
 	using namespace std;
 
-	typedef float flt;
 	const flt CLOCK_T = 1.0 / 30;
-	const flt RESISTANCE = 0.9;
-	const flt GRAVITY = 1.0;
+	const flt RESISTANCE = 0.92;
+	const flt GRAVITY = 1.2;
 	const flt EPS_COLLIDE = 1e-2;
 
 	inline bool zero(flt x){ return fabs(x) < EPS_COLLIDE; }

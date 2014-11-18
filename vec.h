@@ -2,6 +2,7 @@
 #define VEC_H
 
 #include <utility>
+#include <iostream>
 
 typedef double flt;
 template <class T> inline T sqr(T x){ return x*x; }
@@ -67,7 +68,9 @@ public:
 	friend T sqr(Vec3<T> x) {
 		return x * x;
 	}
-
+	void print(){
+		cout << x[0] << '\t' << x[1] << '\t' << x[2] << endl;
+	}
 };
 
 typedef Vec3<int> Vec3i;

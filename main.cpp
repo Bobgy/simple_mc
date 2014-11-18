@@ -24,45 +24,62 @@ int wWidth = 500;
 float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
 bool pot_rotate=0;
 
-//typedef array<int, 3> Pt3;
 typedef Vec3i Pt3;
-map<Pt3, int> block;
+World world(time(NULL));
+block_and_face seen_block = make_pair(Vec3i(), -1);
+
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 entity::Entity observer(pp, vv, r, h, 1.0);
-void init(){
-	srand(time(0));
-	for (int i = -32; i <= 32; ++i)
-		for (int j = -32; j <= 32; ++j)
-			for (int k = 0; k <= 3; ++k){
-				int t = (1 << (k + 2)) - 1;
-				if (k == 0 || (rand()&t) == t) block[Pt3({ i, k, j })] = 1;
-				else break;
-			}
-}
+float center[] = { 0, 4, 0 };
+float eye[] = { 0, 4, 8 };
+float PI = acos(-1.0), deg2rad = PI / 180.0;
+int horizontal_angle = 0, verticle_angle = 0;
+flt face[] = { 1, 0, 0 };
+flt face_xz[] = { 1, 0, 0 };
+
 bool enableObserver = 0;
 void DrawObserver(){
 	if (!enableObserver) return;
 	GLUquadricObj *objCylinder = gluNewQuadric();
 	glPushMatrix();
-	glTranslatef(observer[0], observer[1]+h, observer[2]);
-	glRotatef(90, 1, 0, 0);
-	gluCylinder(objCylinder, r, r, 1, 30, 10);
-	//glutWireCube(1.0);
+	glTranslatef(observer[0], observer[1], observer[2]);
+	//glRotatef(90, 1, 0, 0);
+	glutSolidSphere(0.5, 20, 20);
+	//gluCylinder(objCylinder, r, r, 1, 30, 10);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(center[0], center[1], center[2]);
+	glutSolidSphere(0.5, 20, 20);
+	//gluCylinder(objCylinder, r, r, 1, 30, 10);
 	glPopMatrix();
 }
+void DrawSeenBlock(){
+	if (seen_block.second == -1) return;
+	static flt p[3];
+	for (int i = 0; i < 3; ++i)
+		p[i] = seen_block.first[i] + 0.5;
+	glPushMatrix();
+	glTranslatef(p[0], p[1], p[2]);
+	glutWireCube(1.1);
+	glPopMatrix();
+}
+
+void Draw_Scene_Dynamic(){
+	DrawObserver();
+	DrawSeenBlock();
+}
+
 void Draw_Scene()
 {
 	glPushMatrix();
 	glScalef(1.0, 1.0, 1.0);
-	for (auto x : block){
+	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
-		const Pt3 &p = x.first;
+		const Pt3 &p = it->first;
 		glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
 		glutSolidCube(1.0);
-		//glutWireCube(1.01);
 		glPopMatrix();
 	}
-	DrawObserver();
 	glPopMatrix();
 }
 
@@ -92,12 +109,6 @@ void reshape(int width, int height)
 	updateView(wWidth, wHeight);
 }
 
-float center[] = {0, 4, 0};
-float eye[] = {0, 4, 8};
-float PI = acos(-1.0), deg2rad = PI / 180.0;
-int horizontal_angle = 0, verticle_angle = 0;
-flt face[] = { 1, 0, 0 };
-flt face_xz[] = { 1, 0, 0 };
 void update_dir(){
 	float ha = horizontal_angle * deg2rad,
 		  va = verticle_angle * deg2rad;
@@ -114,10 +125,10 @@ float dis = 10.0;
 void update_center(){
 	update_dir();
 	for (int i = 0; i < 3; ++i){
-		center[i] = observer[i] + (i == 1 ? h*0.8 : 0);
-		eye[i] = center[i] + face[i] * dis;
-		swap(center[i], eye[i]);
+		eye[i] = observer[i] + (i == 1 ? h*0.8 : 0);
+		center[i] = eye[i] + face[i] * dis;
 	}
+	seen_block = world.look_at_block(Vec3f(eye[0],eye[1],eye[2]), Vec3f(face[0],face[1],face[2]), 10.0);
 }
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
@@ -154,8 +165,8 @@ void idle()
 		for (int dx = -1; dx <= 1; ++dx){
 			for (int dy = -2; dy <= 2; ++dy){
 				for (int dz = -1; dz <= 1; ++dz){
-					static map<Pt3, int>::iterator it;
-					if ((it = block.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != block.end()){
+					static map<Pt3, Block*>::const_iterator it;
+					if ((it = world.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != world.end()){
 						observer.collide_cube_horizontally(&it->first);
 						observer.collide_cube_vertically(&it->first);
 					}
@@ -215,28 +226,6 @@ void key(unsigned char k, int x, int y)
 			  }
 	case 'c': {
 		chg(kk, -0.1, 2);
-		break;
-			  }
-
-  //茶壶相关操作
-	case 'l': {//todo, hint:use the ARRAY that you defined, and notice the teapot can NOT be moved out the range of the table.
-		chg(pot_x,-0.1,1);
-		break;
-			  }
-	case 'j': {//todo
-		chg(pot_x,0.1,1);
-		break;
-			  }
-	case 'i': {//todo
-		chg(pot_y,0.1,1);
-		break;
-			  }
-	case 'k': {//todo
-		chg(pot_y,-0.1,1);
-		break;
-			  }
-	case 'e': {//todo
-		pot_rotate^=1;
 		break;
 			  }
 	}
@@ -299,6 +288,32 @@ void Draw_Table_List()
 	glCallList(tableList);
 }
 
+void DrawCross(){
+	static char buffer[16];
+	sprintf_s<16>(buffer, "+");
+	char *c;
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵
+	glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵*/
+	glRasterPos2d(wWidth/2, wHeight/2);
+	for (c = buffer; *c != '\0'; c++)
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Draw_GUI(){
+	DrawCross();
+}
+
 void redraw()
 {
 
@@ -318,8 +333,6 @@ void redraw()
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-	//glEnable(GL_COLOR_MATERIAL);
-	//glEnable(GL_LINE_SMOOTH);
 
     GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_pos[] = {5,5,5,1};
@@ -327,22 +340,18 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
-	
+
+	Draw_Scene_Dynamic();
 	Draw_Table_List();
-	//Draw_Scene();						// Draw Scene
 
 	getFPS();
-
-	if (bAnim) fRotate  += 0.5f;
-	if (pot_rotate) ang += 4.0f;
+	Draw_GUI();
 	//todo; hint: when you want to rotate the teapot, you may like to add another line here =)
 	glutSwapBuffers();
 }
 
 int main (int argc,  char *argv[])
 {
-	init();
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(1024,600);

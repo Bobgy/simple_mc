@@ -4,6 +4,7 @@
 #include <array>
 #include <ctime>
 #include <cassert>
+#include "vec.h"
 #include "glut.h"
 #include "entity.cpp"
 using namespace std;
@@ -22,7 +23,8 @@ int wWidth = 500;
 float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
 bool pot_rotate=0;
 
-typedef array<int, 3> Pt3;
+//typedef array<int, 3> Pt3;
+typedef vec::Vec3<int> Pt3;
 map<Pt3, int> block;
 float pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 entity::Entity observer(pp, vv, r, h, 1.0);
@@ -147,14 +149,14 @@ void idle()
 		static int p[3];
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(observer[i]);
-		p[2] = floor(observer[2] + 0.5*h);
+		p[1] = floor(observer[1] - 0.5*h);
 		for (int dx = -1; dx <= 1; ++dx){
 			for (int dy = -2; dy <= 2; ++dy){
 				for (int dz = -1; dz <= 1; ++dz){
 					static map<Pt3, int>::iterator it;
 					if ((it = block.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != block.end()){
-						observer.collide_cube_horizontally(&it->first[0]);
-						observer.collide_cube_vertically(&it->first[0]);
+						observer.collide_cube_horizontally(&it->first);
+						observer.collide_cube_vertically(&it->first);
 					}
 				}
 			}
@@ -167,7 +169,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-float step=2.0, eps=1e-8;
+float step=0.3, eps=1e-8;
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
 }
@@ -189,14 +191,13 @@ void key(unsigned char k, int x, int y)
 		static float ff[3];
 		if (k == 'w' || k == 's'){
 			df = k == 'w' ? 1 : -1;
-			for (int i = 0; i < 3; ++i) ff[i] = face_xz[i] * df * step * 2;
-			observer.force(ff);
+			observer.give_velocity(face_xz, step*df);
 		} else {
 			df = k == 'a' ? 1 : -1;
-			ff[0] = face_xz[2] * df * step;
+			ff[0] = face_xz[2];
 			ff[1] = 0;
-			ff[2] = -face_xz[0] * df * step;
-			observer.force(ff);
+			ff[2] = -face_xz[0];
+			observer.give_velocity(ff, step*df);
 		}
 		break;
 	}

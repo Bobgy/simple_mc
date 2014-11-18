@@ -11,9 +11,9 @@ namespace entity {
 	using namespace std;
 
 	typedef float flt;
-	const flt CLOCK_T = 0.04;
+	const flt CLOCK_T = 1.0 / 30;
 	const flt RESISTANCE = 0.9;
-	const flt GRAVITY = 1;
+	const flt GRAVITY = 1.0;
 	const flt EPS_COLLIDE = 1e-2;
 
 	inline bool zero(flt x){ return fabs(x) < EPS_COLLIDE; }
@@ -88,6 +88,12 @@ namespace entity {
 		//move to (p[0],p[1],p[2]) directly
 		void move(flt _p[3]){
 			if (M) memcpy(p, _p, sizeof(flt) * 3);
+		}
+
+		void give_velocity(flt _p[3], flt len){
+			for (int i = 0; i < 3; ++i) if (!zero(_p[i])) {
+				v[i] = (v[i] + _p[i] * len * 3) / 4;
+			}
 		}
 
 		//be given an force of _F

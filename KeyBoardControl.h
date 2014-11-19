@@ -18,5 +18,5 @@ public:
 	void KeyUp(unsigned char key, int x, int y);
 	bool get_state(unsigned char key);
 };
-
+ 
 #endif

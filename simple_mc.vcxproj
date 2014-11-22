@@ -65,6 +65,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="entity.cpp" />
+    <ClCompile Include="KeyBoardControl.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="world.cpp" />
@@ -72,6 +73,7 @@
   <ItemGroup>
     <ClInclude Include="block.h" />
     <ClInclude Include="glut.h" />
+    <ClInclude Include="KeyBoardControl.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="world.h" />

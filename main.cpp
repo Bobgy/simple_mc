@@ -11,6 +11,7 @@
 #include "glut.h"
 #include "entity.cpp"
 #include "render.h"
+#include "KeyBoardControl.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ typedef Vec3i Pt3;
 World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
 Render render;
+extern KB_control keyboard;
 
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 entity::Entity observer(pp, vv, r, h, 1.0);
@@ -160,6 +162,7 @@ void process_move(int x, int y){
 	}
 }
 
+flt step = 0.3, eps = 1e-8;
 int idle_count = 0;
 clock_t lst = 0, inter = entity::CLOCK_T * CLOCKS_PER_SEC;
 void idle()
@@ -169,6 +172,27 @@ void idle()
 	now = clock();
 	if (lst + inter <= now) {
 		observer.fall();
+		{
+			int df = 0;
+			static flt ff[3];
+			if (keyboard.get_state('w') ^ keyboard.get_state('s')){
+				df = keyboard.get_state('w') ? 1 : -1;
+				observer.give_velocity(face_xz, step*df);
+			}
+			if (keyboard.get_state('a') ^ keyboard.get_state('d')){
+				df = keyboard.get_state('a') ? 1 : -1;
+				ff[0] = face_xz[2];
+				ff[1] = 0;
+				ff[2] = -face_xz[0];
+				observer.give_velocity(ff, step*df);
+			}
+			if (keyboard.get_state(' ')){
+				static flt ff[3];
+				for (int i = 0; i < 3; ++i)ff[i] = 0;
+				ff[1] = 15;
+				observer.force(ff);
+			}
+		}
 		static int p[3];
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(observer[i]);
@@ -202,62 +226,8 @@ GLint GenTableList()
 	return lid;
 }
 
-flt step=0.3, eps=1e-8;
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
-}
-void key(unsigned char k, int x, int y)
-{
-	switch(k)
-	{
-	case 27:
-	case 'q': {exit(0); break; }
-	case 'p': {bPersp = !bPersp; break; }
-
-	case 'o': {bWire = !bWire; break;}
-
-	case 'a':
-	case 'd':
-	case 'w':
-	case 's':{
-		int df = 0;
-		static flt ff[3];
-		if (k == 'w' || k == 's'){
-			df = k == 'w' ? 1 : -1;
-			observer.give_velocity(face_xz, step*df);
-		} else {
-			df = k == 'a' ? 1 : -1;
-			ff[0] = face_xz[2];
-			ff[1] = 0;
-			ff[2] = -face_xz[0];
-			observer.give_velocity(ff, step*df);
-		}
-		break;
-	}
-	case ' ':{
-		static flt ff[3];
-		for (int i = 0; i < 3; ++i)ff[i] = 0;
-		ff[1] = 15;
-		observer.force(ff);
-		break;
-	}
-	case 'z': {
-		chg(kk, 0.1, 2);
-		break;
-			  }
-	case 'c': {
-		chg(kk, -0.1, 2);
-		break;
-			  }
-	case 't': {
-		tex = (tex + 1) % 9;
-		tableList = GenTableList();
-		break;
-	}
-	}
-	
-	update_center();
-	updateView(wWidth, wHeight);
 }
 
 void getFPS()
@@ -371,12 +341,13 @@ int main (int argc,  char *argv[])
 
 	render.init();
 	tableList = GenTableList();
+	keyboard.init();
 
 	glEnable(GL_CULL_FACE);
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
-	glutKeyboardFunc(key);
+	//glutKeyboardFunc(key);
 	glutIdleFunc(idle);
 	glutMotionFunc(process_move);
 	glutPassiveMotionFunc(process_move);

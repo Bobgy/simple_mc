@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <math.h>
 #include <map>
@@ -8,6 +10,8 @@
 #include "world.h"
 #include "glut.h"
 #include "entity.cpp"
+#include "render.h"
+
 using namespace std;
 
 float fTranslate;
@@ -20,6 +24,7 @@ bool bWire = false;
 
 int wHeight = 500;
 int wWidth = 500;
+int tex = 0;
 
 float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
 bool pot_rotate=0;
@@ -27,6 +32,7 @@ bool pot_rotate=0;
 typedef Vec3i Pt3;
 World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
+Render render;
 
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 entity::Entity observer(pp, vv, r, h, 1.0);
@@ -60,7 +66,7 @@ void DrawSeenBlock(){
 		p[i] = seen_block.first[i] + 0.5;
 	glPushMatrix();
 	glTranslatef(p[0], p[1], p[2]);
-	glutWireCube(1.1);
+	glutWireCube(1.01);
 	glPopMatrix();
 }
 
@@ -72,12 +78,17 @@ void Draw_Scene_Dynamic(){
 void Draw_Scene()
 {
 	glPushMatrix();
-	glScalef(1.0, 1.0, 1.0);
+	//glScalef(1.0, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
 		const Pt3 &p = it->first;
-		glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
-		glutSolidCube(1.0);
+		//glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
+		glTranslatef(p[0], p[1], p[2]);
+		for (int i = 0; i < 6; ++i)
+			if (world.find(p + FACE[i]) == world.end())
+				render.draw_Cube(tex, 1 << i);
+		//render.draw_Cube(tex, 0x3f);
+		//glutSolidCube(1.0);
 		glPopMatrix();
 	}
 	glPopMatrix();
@@ -181,6 +192,16 @@ void idle()
 	glutPostRedisplay();
 }
 
+GLint tableList;
+GLint GenTableList()
+{
+	GLint lid = glGenLists(1);
+	glNewList(lid, GL_COMPILE);
+	Draw_Scene(); //Call Draw_table() to draw the table and bunnies into the list
+	glEndList();
+	return lid;
+}
+
 flt step=0.3, eps=1e-8;
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
@@ -228,7 +249,13 @@ void key(unsigned char k, int x, int y)
 		chg(kk, -0.1, 2);
 		break;
 			  }
+	case 't': {
+		tex = (tex + 1) % 9;
+		tableList = GenTableList();
+		break;
 	}
+	}
+	
 	update_center();
 	updateView(wWidth, wHeight);
 }
@@ -272,40 +299,25 @@ void getFPS()
 	glEnable(GL_DEPTH_TEST);
 }
 
-GLint tableList;
-
-GLint GenTableList()
-{
-	GLint lid = glGenLists(1);
-	glNewList(lid, GL_COMPILE);
-	Draw_Scene(); //Call Draw_table() to draw the table and bunnies into the list
-	glEndList();
-	return lid;
-}
-
 void Draw_Table_List()
 {
 	glCallList(tableList);
 }
 
 void DrawCross(){
-	static char buffer[16];
-	sprintf_s<16>(buffer, "+");
-	char *c;
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
 	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵
-	glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵*/
-	glRasterPos2d(wWidth/2, wHeight/2);
-	for (c = buffer; *c != '\0'; c++)
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();// 装入单位矩阵
+		glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
+		glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+		glPushMatrix();// 保存原矩阵
+			glLoadIdentity();// 装入单位矩阵*/
+			glRasterPos2d(wWidth/2, wHeight/2);
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
+			glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
@@ -316,8 +328,8 @@ void Draw_GUI(){
 
 void redraw()
 {
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 
 	gluLookAt(eye[0], eye[1], eye[2],
@@ -346,7 +358,7 @@ void redraw()
 
 	getFPS();
 	Draw_GUI();
-	//todo; hint: when you want to rotate the teapot, you may like to add another line here =)
+	
 	glutSwapBuffers();
 }
 
@@ -357,8 +369,10 @@ int main (int argc,  char *argv[])
 	glutInitWindowSize(1024,600);
 	int windowHandle = glutCreateWindow("Simple MC");
 
+	render.init();
 	tableList = GenTableList();
 
+	glEnable(GL_CULL_FACE);
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);

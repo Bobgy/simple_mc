@@ -18,6 +18,9 @@ private:
 
 public:
 
+	//indicates whether this world is changed (requires regenerating tablelist)
+	bool changed;
+
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
 	//get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -30,6 +33,12 @@ public:
 	
 	//generate a world by random seed: seed
 	World(int seed);
+
+	//place a block at p of type tp
+	bool place_block(block_and_face p, block_type tp);
+
+	//destroy a block at p
+	bool World::destroy_block(Vec3i p);
 
 	map<Vec3i, Block*>::const_iterator begin() const {
 		return blocks.begin();

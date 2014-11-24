@@ -1,5 +1,8 @@
 #include "cursor.h"
+#include "world.h"
 
+extern World world;
+extern block_and_face seen_block;
 Cursor cursor;
 
 void process_move(int x, int y){
@@ -21,4 +24,24 @@ void process_move(int x, int y){
 		update_center();
 		updateView();
 	}
+}
+
+void process_click(int button, int state, int x, int y){
+	if (seen_block.second == -1)return;
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN){
+			world.destroy_block(seen_block.first);
+		}
+	}
+	if (button == GLUT_RIGHT_BUTTON) {
+		if (state == GLUT_DOWN){
+			world.place_block(seen_block, DIRT);
+		}
+	}
+}
+
+void init_cursor(){
+	glutMotionFunc(process_move);
+	glutPassiveMotionFunc(process_move);
+	glutMouseFunc(process_click);
 }

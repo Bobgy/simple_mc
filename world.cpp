@@ -10,7 +10,7 @@ Block* World::get_block(Vec3i p) const {
 	if (it != blocks.end()) return it->second;
 	return NULL;
 }
-	
+
 //returns the first block within radius r that is seen by an eye
 //at p looking at the direction vector dir
 //returns -1 in face to indicate no block is found
@@ -50,7 +50,7 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 }
 
 //generate a world by random seed: seed
-World::World(int seed){
+World::World(int seed):changed(false){
 	srand(seed);
 	block_list.push_back(Block(AIR));
 	block_list.push_back(Block(DIRT));
@@ -61,4 +61,24 @@ World::World(int seed){
 				if (k == 0 || (rand()&t) == t) blocks[Vec3i(i, k, j)] = &block_list[DIRT];
 				else break;
 			}
+}
+
+//place a block at p of type tp
+bool World::place_block(block_and_face p, block_type tp){
+	Vec3i pos = p.first + FACE[p.second];
+	if (get_block(pos) == NULL){
+		blocks[pos] = &block_list[tp];
+		changed = true;
+		return true;
+	}
+	return false;
+}
+
+bool World::destroy_block(Vec3i p){
+	if (get_block(p) != NULL) {
+		blocks.erase(p);
+		changed = true;
+		return true;
+	}
+	return false;
 }

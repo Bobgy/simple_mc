@@ -206,6 +206,11 @@ GLint GenTableList()
 	glEndList();
 	return lid;
 }
+void RegenTableList(GLint lid){
+	glNewList(lid, GL_COMPILE);
+	Draw_Scene();
+	glEndList();
+}
 
 void chg(float &x, float delta, float max){
 	if(fabs(x+delta)<max+eps)x+=delta;
@@ -305,6 +310,10 @@ void redraw()
 	glEnable(GL_LIGHT0);
 
 	Draw_Scene_Dynamic();
+	if (world.changed) {
+		RegenTableList(tableList);
+		world.changed = false;
+	}
 	Draw_Table_List();
 
 	getFPS();
@@ -325,13 +334,12 @@ int main (int argc,  char *argv[])
 	keyboard.init();
 
 	glEnable(GL_CULL_FACE);
+	init_cursor();
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	//glutKeyboardFunc(key);
 	glutIdleFunc(idle);
-	glutMotionFunc(process_move);
-	glutPassiveMotionFunc(process_move);
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glutMainLoop();

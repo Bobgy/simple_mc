@@ -5,7 +5,7 @@
 #include "entity.h"
 
 KeyboardControl keyboard;
-extern int GenTableList();
+extern void RegenTableList(GLint);
 extern bool bPersp, bWire;
 extern int tableList, tex, wWidth, wHeight;
 extern void update_center();
@@ -24,7 +24,7 @@ void KeyDown(unsigned char key, int x, int y)
 		case 'o': { bWire = !bWire; break; }
 		case 't': {
 			tex = (tex + 1) % 7;
-			tableList = GenTableList();
+			RegenTableList(tableList);
 			break;
 		}
 	}

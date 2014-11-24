@@ -1,11 +1,14 @@
+#ifndef _CURSOR_H
+#define _CURSOR_H
+
 #include "vec.h"
 #include "glut.h"
 
-#ifndef _CURSOR_H
 extern void update_center();
 extern void updateView();
 
 const flt DEG2RAD = acos(-1.0) / 180.0;
+void init_cursor();
 
 class Cursor{
 

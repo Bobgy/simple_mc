@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="entity.h" />
     <ClInclude Include="glut.h" />
     <ClInclude Include="KeyBoardControl.h" />
     <ClInclude Include="Render.h" />

@@ -1,10 +1,10 @@
-#ifndef RENDER_H
-#define RENDER_H
+#ifndef _RENDER_H
+#define _RENDER_H
 
 #include <stdlib.h>
 #include "glut.h"
-#include<windows.h>
-#include<cstdio>
+#include <windows.h>
+#include <cstdio>
 #define BITMAP_ID 0x4D42
 
 class Render{

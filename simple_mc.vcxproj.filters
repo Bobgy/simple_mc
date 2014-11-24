@@ -50,5 +50,8 @@
     <ClInclude Include="KeyBoardControl.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

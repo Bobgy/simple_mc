@@ -9,7 +9,7 @@
 #include "vec.h"
 #include "world.h"
 #include "glut.h"
-#include "entity.cpp"
+#include "entity.h"
 #include "render.h"
 #include "KeyBoardControl.h"
 
@@ -27,17 +27,17 @@ int wHeight = 500;
 int wWidth = 500;
 int tex = 0;
 
-float pot_x = 0, pot_y = 0, ang = 0, r = 0.45, h = 1.6;
+float r = 0.45, h = 1.6;
 bool pot_rotate=0;
 
 typedef Vec3i Pt3;
 World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
 Render render;
-extern KB_control keyboard;
+extern KeyboardControl keyboard;
 
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
-entity::Entity observer(pp, vv, r, h, 1.0);
+Entity observer(pp, vv, r, h, 1.0);
 float center[] = { 0, 4, 0 };
 float eye[] = { 0, 4, 8 };
 float PI = acos(-1.0), deg2rad = PI / 180.0;
@@ -61,6 +61,7 @@ void DrawObserver(){
 	//gluCylinder(objCylinder, r, r, 1, 30, 10);
 	glPopMatrix();
 }
+
 void DrawSeenBlock(){
 	if (seen_block.second == -1) return;
 	static flt p[3];
@@ -143,6 +144,7 @@ void update_center(){
 	}
 	seen_block = world.look_at_block(Vec3f(eye[0],eye[1],eye[2]), Vec3f(face[0],face[1],face[2]), 10.0);
 }
+
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
 	cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
@@ -162,9 +164,9 @@ void process_move(int x, int y){
 	}
 }
 
-flt step = 0.3, eps = 1e-8;
+flt step = 0.225, eps = 1e-8;
 int idle_count = 0;
-clock_t lst = 0, inter = entity::CLOCK_T * CLOCKS_PER_SEC;
+clock_t lst = 0, inter = CLOCK_T * CLOCKS_PER_SEC;
 void idle()
 {
 	++idle_count;
@@ -172,42 +174,39 @@ void idle()
 	now = clock();
 	if (lst + inter <= now) {
 		observer.fall();
-		{
-			int df = 0;
-			static flt ff[3];
-			if (keyboard.get_state('w') ^ keyboard.get_state('s')){
-				df = keyboard.get_state('w') ? 1 : -1;
-				observer.give_velocity(face_xz, step*df);
-			}
-			if (keyboard.get_state('a') ^ keyboard.get_state('d')){
-				df = keyboard.get_state('a') ? 1 : -1;
-				ff[0] = face_xz[2];
-				ff[1] = 0;
-				ff[2] = -face_xz[0];
-				observer.give_velocity(ff, step*df);
-			}
-			if (keyboard.get_state(' ')){
-				static flt ff[3];
-				for (int i = 0; i < 3; ++i)ff[i] = 0;
-				ff[1] = 15;
-				observer.force(ff);
-			}
+		int df = 0;
+		static flt ff[3];
+		if (keyboard.get_state('w') ^ keyboard.get_state('s')){
+			df = keyboard.get_state('w') ? 1 : -1;
+			observer.give_velocity(face_xz, step*df);
+		}
+		if (keyboard.get_state('a') ^ keyboard.get_state('d')){
+			df = keyboard.get_state('a') ? 1 : -1;
+			ff[0] = face_xz[2];
+			ff[1] = 0;
+			ff[2] = -face_xz[0];
+			observer.give_velocity(ff, step*df);
+		}
+		if (keyboard.get_state(' ') && observer.on_ground){
+			observer.force(Vec3f(0, 13, 0));
 		}
 		static int p[3];
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(observer[i]);
 		p[1] = floor(observer[1] - 0.5*h);
+		observer.on_ground = false;
 		for (int dx = -1; dx <= 1; ++dx){
 			for (int dy = -2; dy <= 2; ++dy){
 				for (int dz = -1; dz <= 1; ++dz){
 					static map<Pt3, Block*>::const_iterator it;
 					if ((it = world.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != world.end()){
-						observer.collide_cube_horizontally(&it->first);
-						observer.collide_cube_vertically(&it->first);
+						observer.collide_cube_horizontally(it->first);
+						observer.on_ground |= observer.collide_cube_vertically(it->first);
 					}
 				}
 			}
 		}
+		if (observer.on_ground) observer.be_slowed(0.90);
 		observer.update();
 		update_center();
 		updateView(wWidth, wHeight);
@@ -221,7 +220,7 @@ GLint GenTableList()
 {
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);
-	Draw_Scene(); //Call Draw_table() to draw the table and bunnies into the list
+	Draw_Scene();
 	glEndList();
 	return lid;
 }

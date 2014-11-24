@@ -1,4 +1,4 @@
-#include "Render.h";
+#include "Render.h"
 #include <cassert>
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
@@ -97,13 +97,13 @@ void Render::set(int k)
 
 void Render::init()
 {
-	glGenTextures(9, texture);
-	texload(1,"texture/Monet.bmp");
-    texload(2,"texture/Crack.bmp");
-	texload(3,"texture/3.bmp");
-	texload(4,"texture/4.bmp");
-	texload(5,"texture/5.bmp");
-	texload(6,"texture/6.bmp");
+	glGenTextures(7, texture);
+	texload(0,"texture/Monet.bmp");
+    texload(1,"texture/Crack.bmp");
+	texload(2,"texture/3.bmp");
+	texload(3,"texture/4.bmp");
+	texload(4,"texture/5.bmp");
+	texload(5,"texture/6.bmp");
 	for(int i=0;i<256;i++)
 	for(int j=0;j<256;j++)
 	{
@@ -112,7 +112,7 @@ void Render::init()
 		if(t & 1) k=0;
 		for(int l=0;l<=2;l++) tex[i][j][l]=k;
 	}
-	set(7);
+	set(6);
 }
 
 
@@ -138,7 +138,6 @@ void Render::draw_Cube(int type,int state)
 	      //  glTexCoord2i(1,1); glVertex3i(x2,y2);
 	      //  glTexCoord2i(1,0); glVertex3i(x3,y3);
 		glEnd();
-
 
 	}
 

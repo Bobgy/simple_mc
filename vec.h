@@ -1,5 +1,5 @@
-#ifndef VEC_H
-#define VEC_H
+#ifndef _VEC_H
+#define _VEC_H
 
 #include <utility>
 #include <iostream>
@@ -47,8 +47,14 @@ public:
 	Vec3<T> operator + (Vec3 r) const {
 		return Vec3(x[0] + r[0], x[1] + r[1], x[2] + r[2]);
 	}
+	Vec3<T> operator + (T r) const {
+		return Vec3(x[0] + r, x[1] + r, x[2] + r);
+	}
 	Vec3<T> operator - (Vec3 r) const {
 		return Vec3(x[0] - r[0], x[1] - r[1], x[2] - r[2]);
+	}
+	Vec3<T> operator - (T r) const {
+		return Vec3(x[0] - r, x[1] - r, x[2] - r);
 	}
 	friend Vec3<T> operator * (Vec3<T> l, T k) {
 		return Vec3(l[0] * k, l[1] * k, l[2] * k);
@@ -107,5 +113,9 @@ inline int next_int(flt x, int dir){
 
 inline Vec3i floor(Vec3f x){
 	return Vec3i(floor(x[0]), floor(x[1]), floor(x[2]));
+}
+
+inline Vec3i round(Vec3f x){
+	return Vec3i(round(x[0]), round(x[1]), round(x[2]));
 }
 #endif

@@ -5,6 +5,7 @@
 #include <vector>
 #include "vec.h"
 #include "block.h"
+#include "entity.h"
 
 using namespace std;
 
@@ -16,6 +17,8 @@ private:
 	vector<Block> block_list;
 
 public:
+
+	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
 	//get the block at (p[0],p[1],p[2]), NULL means AIR block
 	Block* get_block(Vec3i p) const;

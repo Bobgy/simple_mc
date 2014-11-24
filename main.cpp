@@ -82,17 +82,13 @@ void Draw_Scene_Dynamic(){
 void Draw_Scene()
 {
 	glPushMatrix();
-	//glScalef(1.0, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
 		const Pt3 &p = it->first;
-		//glTranslatef(p[0]+0.5, p[1]+0.5, p[2]+0.5);
 		glTranslatef(p[0], p[1], p[2]);
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
 				render.draw_Cube(tex, 1 << i);
-		//render.draw_Cube(tex, 0x3f);
-		//glutSolidCube(1.0);
 		glPopMatrix();
 	}
 	glPopMatrix();
@@ -146,7 +142,7 @@ void update_center(){
 	seen_block = world.look_at_block(Vec3f(eye[0],eye[1],eye[2]), Vec3f(face[0],face[1],face[2]), 10.0);
 }
 
-flt step = 0.225, eps = 1e-8;
+flt step = 0.3, eps = 1e-8;
 int idle_count = 0;
 clock_t lst = 0, inter = CLOCK_T * CLOCKS_PER_SEC;
 void idle()
@@ -167,7 +163,7 @@ void idle()
 			ff[0] = face_xz[2];
 			ff[1] = 0;
 			ff[2] = -face_xz[0];
-			observer.give_velocity(ff, step*df);
+			observer.give_velocity(ff, step*0.5*df);
 		}
 		if (keyboard.get_state(' ') && observer.on_ground){
 			observer.force(Vec3f(0, 13, 0));

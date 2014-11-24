@@ -69,13 +69,17 @@ public:
 		return Vec3<T>(x[1] * r[2] - x[2] * r[1], x[2] * r[0] - x[0] * r[2], x[0] * r[1] - x[1] * r[0]);
 	}
 	T operator !() const {
-		return sqrt(sqr(x[0] + sqr(x[1]) + sqr(x[2])));
+		return sqrt(sqr(x[0]) + sqr(x[1]) + sqr(x[2]));
 	}
 	friend T sqr(Vec3<T> x) {
 		return x * x;
 	}
 	void print(){
 		cout << x[0] << '\t' << x[1] << '\t' << x[2] << endl;
+	}
+	Vec3<T> normalize() const {
+		T len = !*this;
+		return *this * (1/len);
 	}
 };
 

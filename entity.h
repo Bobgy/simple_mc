@@ -88,10 +88,12 @@ public:
 		if (M) p = _p;
 	}
 
-	void give_velocity(flt _p[3], flt len){
+	void give_velocity(Vec3f _p, flt len){
 		if (M) {
-			for (int i = 0; i < 3; ++i) if (!zero(_p[i]))
-				v[i] = (v[i] + _p[i] * len * 3) / 4;
+			Vec3f p_norm, v_p;
+			p_norm = _p.normalize();
+			v_p = (v * p_norm) * p_norm;
+			v = (v - v_p) + ((v_p * 3.0 + _p * len) * 0.25);
 		}
 	}
 

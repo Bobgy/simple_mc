@@ -30,6 +30,9 @@
     <ClCompile Include="KeyBoardControl.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="cursor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glut.h">
@@ -51,6 +54,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="entity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

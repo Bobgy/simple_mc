@@ -12,6 +12,7 @@
 #include "entity.h"
 #include "render.h"
 #include "KeyBoardControl.h"
+#include "cursor.h"
 
 using namespace std;
 
@@ -35,13 +36,13 @@ World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
 Render render;
 extern KeyboardControl keyboard;
+extern Cursor cursor;
 
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 Entity observer(pp, vv, r, h, 1.0);
 float center[] = { 0, 4, 0 };
 float eye[] = { 0, 4, 8 };
 float PI = acos(-1.0), deg2rad = PI / 180.0;
-int horizontal_angle = 0, verticle_angle = 0;
 flt face[] = { 1, 0, 0 };
 flt face_xz[] = { 1, 0, 0 };
 
@@ -99,16 +100,16 @@ void Draw_Scene()
 
 float kk = 0;
 
-void updateView(int width, int height)
+void updateView()
 {
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	float whRatio = (GLfloat)width/(GLfloat)height;
+	float whRatio = (GLfloat)wWidth/(GLfloat)wHeight;
 	
 	if (bPersp) gluPerspective(40*exp(kk), whRatio, 0.1, 300);
 	else glOrtho(-3 ,3, -3, 3,-100,100);
-	glViewport(0, 0, width, height);					// Reset The Current Viewport
+	glViewport(0, 0, wWidth, wHeight);					// Reset The Current Viewport
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 }
@@ -120,12 +121,12 @@ void reshape(int width, int height)
 	wHeight = height;
 	wWidth = width;
 
-	updateView(wWidth, wHeight);
+	updateView();
 }
 
 void update_dir(){
-	float ha = horizontal_angle * deg2rad,
-		  va = verticle_angle * deg2rad;
+	float ha = cursor.get_horizontal_angle(),
+		  va = cursor.get_vertical_angle();
 	face_xz[0] = cos(ha);
 	face_xz[2] = sin(ha);
 	face_xz[1] = 0;
@@ -143,25 +144,6 @@ void update_center(){
 		center[i] = eye[i] + face[i] * dis;
 	}
 	seen_block = world.look_at_block(Vec3f(eye[0],eye[1],eye[2]), Vec3f(face[0],face[1],face[2]), 10.0);
-}
-
-void process_move(int x, int y){
-	static int cX, cY, dx, dy;
-	cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
-	cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
-	dx = x - cX;
-	dy = y - cY;
-	if (dx*dx + dy*dy > 10) {
-		glutWarpPointer(cX, cY);
-		static float len_x = 0.5, len_y = -0.25;
-		horizontal_angle += dx * len_x;
-		horizontal_angle = (horizontal_angle + 360) % 360;
-		verticle_angle = verticle_angle + dy * len_y;
-		if (verticle_angle >= 90) verticle_angle = 89;
-		if (verticle_angle <= -90) verticle_angle = -89;
-		update_center();
-		updateView(wWidth, wHeight);
-	}
 }
 
 flt step = 0.225, eps = 1e-8;
@@ -209,7 +191,7 @@ void idle()
 		if (observer.on_ground) observer.be_slowed(0.90);
 		observer.update();
 		update_center();
-		updateView(wWidth, wHeight);
+		updateView();
 		lst += inter;
 	}
 	glutPostRedisplay();

@@ -4,7 +4,7 @@
 #include <utility>
 #include <iostream>
 
-typedef double flt;
+typedef float flt;
 template <class T> inline T sqr(T x){ return x*x; }
 
 template < class T >
@@ -86,7 +86,7 @@ public:
 typedef Vec3<int> Vec3i;
 typedef Vec3<flt> Vec3f;
 
-const flt EPS = 1e-8;
+const flt EPS = 1e-5;
 
 //test if x is zero under eps
 inline bool zero(flt x){

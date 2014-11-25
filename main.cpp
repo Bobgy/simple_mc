@@ -59,6 +59,7 @@ flt face_xz[] = { 1, 0, 0 };
 float golden[] = { 0.85f, 0.65f, 0.2f, 1.0f };
 float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float black[] = { 0, 0, 0, 1 };
+float grey[] = { 0.5, 0.5, 0.5, 1 };
 
 #define printOpenGLError() printOglError(__FILE__, __LINE__)
 
@@ -193,13 +194,15 @@ void Draw_Scene()
 {
 	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
-	glMaterialfv(GL_FRONT, GL_AMBIENT, golden);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, golden);  //set diffusion parameters
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, golden);  //set diffusion parameters
 	glMaterialfv(GL_FRONT, GL_SPECULAR, white);//set specular parameters
 	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);  //set shiness
 	glTranslatef(0, 4, 0);
 	glutSolidTeapot(1);
 	glPopMatrix();
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);  //set diffusion parameters
+	glMaterialfv(GL_FRONT, GL_SPECULAR, black);//set specular parameters
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);  //set shiness
 	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
 		const Pt3 &p = it->first;
@@ -420,17 +423,17 @@ void redraw()
 	Draw_GUI();
 
 	glEnable(GL_LIGHTING);
-
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, grey);
     GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 4.0, 4.0, 0.0, 1.0 };
+	GLfloat light_pos[] = { 4.5, 4.5, 0.5, 1.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	int state = 1;
+	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?white:black);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, (state&2)?white:black);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?white:black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.001);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.03);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01);
 	glEnable(GL_LIGHT0);
 
 	glutSwapBuffers();

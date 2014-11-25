@@ -7,8 +7,8 @@
 
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
-const static int face[6][4]={{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
-const static int t_point[4][2]={{0,0},{0,1},{1,1},{1,0}};
+const static int face[6][4] = {{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
+const static int t_point[4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
@@ -132,20 +132,20 @@ void Render::draw_Cube(int type,int state)
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 	glBindTexture(GL_TEXTURE_2D, texture[type]);
+	glBegin(GL_QUADS);
 	for(int i=0;i<6;i++)
 	{
 		int t=(state>>i)&1;
 		if(t==0) continue;
-		glBegin(GL_QUADS);
-		glNormal3i(FACE[i][0], FACE[i][1], FACE[i][2]);
+		glNormal3f(FACE[i][0], FACE[i][1], FACE[i][2]);
 		for(int j=0;j<4;j++)
 		{
 			int p=face[i][j];
 			glTexCoord2i(t_point[j][0],t_point[j][1]);
 			glVertex3i(point[p][0],point[p][1],point[p][2]);
 		}
-		glEnd();
 	}
+	glEnd();
 	glDisable(GL_TEXTURE_2D);
 #endif
 }

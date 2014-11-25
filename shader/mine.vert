@@ -1,6 +1,5 @@
 varying vec4 diffuse,ambientGlobal,ambient,ecPos;
 varying vec3 normal,halfVector;
-varying float depth;
 void main()
 {   
     vec3 aux;
@@ -10,12 +9,10 @@ void main()
 	
     /* compute the vertex position  in camera space. */
     ecPos = gl_ModelViewMatrix * gl_Vertex;
-	depth = ecPos.z / ecPos.w;
-	//ecPos = gl_Vertex;
  
     /* Normalize the halfVector to pass it to the fragment shader */
-	//vec4 half = gl_LightSource[0].halfVector;
-    //halfVector = normalize(half.xyz / half.w);
+	vec4 half = gl_LightSource[0].halfVector;
+    halfVector = normalize(half.xyz / half.w);
     
     /* Compute the diffuse, ambient and globalAmbient terms */
     diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;

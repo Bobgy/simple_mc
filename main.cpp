@@ -19,6 +19,7 @@
 #include "KeyBoardControl.h"
 #include "cursor.h"
 #include "textfile.h"
+#include "auxiliary.h"
 
 using namespace std;
 
@@ -194,15 +195,11 @@ void Draw_Scene()
 {
 	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, golden);  //set diffusion parameters
-	glMaterialfv(GL_FRONT, GL_SPECULAR, white);//set specular parameters
-	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);  //set shiness
+	use_material(golden, white, NULL, 2);
 	glTranslatef(0, 4, 0);
 	glutSolidTeapot(1);
 	glPopMatrix();
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);  //set diffusion parameters
-	glMaterialfv(GL_FRONT, GL_SPECULAR, black);//set specular parameters
-	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);  //set shiness
+	use_material(white, black, NULL, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
 		const Pt3 &p = it->first;

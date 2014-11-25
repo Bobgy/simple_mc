@@ -36,6 +36,9 @@
     <ClCompile Include="..\glsl\flatten\textfile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="auxiliary.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glut.h">
@@ -63,6 +66,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\glsl\flatten\textfile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="auxiliary.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

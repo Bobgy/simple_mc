@@ -24,7 +24,7 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 	int MAX_COUNT = 200;
 	while(MAX_COUNT--){
 		int axis = -1;
-		flt next_time = 1e100; //infinite
+		flt next_time = 1e20f; //infinite
 		//find the next intersection point with an interger face
 		for (i = 0; i < 3; ++i){
 			if (sign[i] == 0) continue;

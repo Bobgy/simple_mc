@@ -1,5 +1,10 @@
+//#define _SIMPLE_CUBE_
+#include <GL/glew.h>
 #include "Render.h"
+#include "vec.h"
 #include <cassert>
+#include <GL/GLUT.H>
+
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
 const static int face[6][4]={{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
@@ -62,13 +67,13 @@ void Render::texload(int i,const char *filename)
     BITMAPINFOHEADER bitmapInfoHeader;                                 // bitmap信息头
 	unsigned char*   bitmapData;                                       // 纹理数据
 
-   bitmapData = LoadBitmapFile(filename, &bitmapInfoHeader);
-   if (bitmapData == NULL) {
-	   fprintf(stderr, "%s not loaded!\n", filename);
-	   fflush(stderr);
-   }
+	bitmapData = LoadBitmapFile(filename, &bitmapInfoHeader);
+	if (bitmapData == NULL) {
+		fprintf(stderr, "%s not loaded!\n", filename);
+		fflush(stderr);
+	}
 
-   glBindTexture(GL_TEXTURE_2D, texture[i]);
+	glBindTexture(GL_TEXTURE_2D, texture[i]);
 	// 指定当前纹理的放大/缩小过滤方式
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -105,13 +110,12 @@ void Render::init()
 	texload(4,"texture/5.bmp");
 	texload(5,"texture/6.bmp");
 	for(int i=0;i<256;i++)
-	for(int j=0;j<256;j++)
-	{
-		int t=(i/64)+(j/64);
-		int k=255;
-		if(t & 1) k=0;
-		for(int l=0;l<=2;l++) tex[i][j][l]=k;
-	}
+		for(int j=0;j<256;j++){
+			int t=(i/64)+(j/64);
+			int k=255;
+			if(t & 1) k=0;
+			for(int l=0;l<=2;l++) tex[i][j][l]=k;
+		}
 	set(6);
 }
 
@@ -119,7 +123,12 @@ void Render::init()
 
 void Render::draw_Cube(int type,int state)
 {
-
+#ifdef _SIMPLE_CUBE_
+	glPushMatrix();
+	glTranslatef(0.5, 0.5, 0.5);
+	glutSolidCube(1.0);
+	glPopMatrix();
+#else
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 	glBindTexture(GL_TEXTURE_2D, texture[type]);
@@ -128,20 +137,15 @@ void Render::draw_Cube(int type,int state)
 		int t=(state>>i)&1;
 		if(t==0) continue;
 		glBegin(GL_QUADS);
-			for(int j=0;j<4;j++)
-			{
-				int p=face[i][j];
-				glTexCoord2i(t_point[j][0],t_point[j][1]); glVertex3i(point[p][0],point[p][1],point[p][2]);
-			}
-
-	      //  glTexCoord2i(0,1); glVertex3i(x1,y1);
-	      //  glTexCoord2i(1,1); glVertex3i(x2,y2);
-	      //  glTexCoord2i(1,0); glVertex3i(x3,y3);
+		glNormal3i(FACE[i][0], FACE[i][1], FACE[i][2]);
+		for(int j=0;j<4;j++)
+		{
+			int p=face[i][j];
+			glTexCoord2i(t_point[j][0],t_point[j][1]);
+			glVertex3i(point[p][0],point[p][1],point[p][2]);
+		}
 		glEnd();
-
 	}
-
-
 	glDisable(GL_TEXTURE_2D);
-
+#endif
 }

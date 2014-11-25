@@ -1,4 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define _ENABLE_CUSTOM_SHADERS_
+
+#pragma comment(lib, "glew32.lib")
+
+#include <GL/glew.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -8,13 +13,18 @@
 #include <cassert>
 #include "vec.h"
 #include "world.h"
-#include "glut.h"
+#include <GL/glut.h>
 #include "entity.h"
 #include "render.h"
 #include "KeyBoardControl.h"
 #include "cursor.h"
+#include "textfile.h"
 
 using namespace std;
+
+GLuint v, f, f2, p, loc;
+
+float lpos[4] = { 1, 0.5, 1, 0 };
 
 float fTranslate;
 float fRotate;
@@ -45,6 +55,106 @@ float eye[] = { 0, 4, 8 };
 float PI = acos(-1.0), deg2rad = PI / 180.0;
 flt face[] = { 1, 0, 0 };
 flt face_xz[] = { 1, 0, 0 };
+
+float golden[] = { 0.85f, 0.65f, 0.2f, 1.0f };
+float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float black[] = { 0, 0, 0, 1 };
+
+#define printOpenGLError() printOglError(__FILE__, __LINE__)
+
+int printOglError(char *file, int line)
+{
+	//
+	// Returns 1 if an OpenGL error occurred, 0 otherwise.
+	//
+	GLenum glErr;
+	int    retCode = 0;
+
+	glErr = glGetError();
+	while (glErr != GL_NO_ERROR)
+	{
+		printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
+		retCode = 1;
+		glErr = glGetError();
+	}
+	return retCode;
+}
+
+void printShaderInfoLog(GLuint obj)
+{
+	int infologLength = 0;
+	int charsWritten = 0;
+	char *infoLog;
+
+	glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+
+	if (infologLength > 0)
+	{
+		infoLog = (char *)malloc(infologLength);
+		glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+		printf("%s\n", infoLog);
+		free(infoLog);
+	}
+}
+
+void printProgramInfoLog(GLuint obj)
+{
+	int infologLength = 0;
+	int charsWritten = 0;
+	char *infoLog;
+
+	glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+
+	if (infologLength > 0)
+	{
+		infoLog = (char *)malloc(infologLength);
+		glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+		printf("%s\n", infoLog);
+		free(infoLog);
+	}
+}
+
+void setShaders() {
+
+	char *vs = NULL, *fs = NULL, *fs2 = NULL;
+
+	v = glCreateShader(GL_VERTEX_SHADER);
+	f = glCreateShader(GL_FRAGMENT_SHADER);
+	f2 = glCreateShader(GL_FRAGMENT_SHADER);
+//#define SHADER "pixeldirdifambspec"
+//#define SHADER "textureSimple"
+//#define SHADER "lightPointwise"
+#define SHADER "mine"
+
+	vs = textFileRead("shader/"SHADER".vert");
+	fs = textFileRead("shader/"SHADER".frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	glShaderSource(v, 1, &vv, NULL);
+	glShaderSource(f, 1, &ff, NULL);
+
+	free(vs); free(fs);
+
+	glCompileShader(v);
+	glCompileShader(f);
+
+	printShaderInfoLog(v);
+	printShaderInfoLog(f);
+	printShaderInfoLog(f2);
+
+	p = glCreateProgram();
+	glAttachShader(p, v);
+	glAttachShader(p, f);
+
+	glLinkProgram(p);
+	printProgramInfoLog(p);
+
+	glUseProgram(p);
+	loc = glGetUniformLocation(p, "time");
+
+}
 
 bool enableObserver = 0;
 void DrawObserver(){
@@ -81,7 +191,15 @@ void Draw_Scene_Dynamic(){
 
 void Draw_Scene()
 {
+	glEnable(GL_TEXTURE_2D);
 	glPushMatrix();
+	glMaterialfv(GL_FRONT, GL_AMBIENT, golden);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, golden);  //set diffusion parameters
+	glMaterialfv(GL_FRONT, GL_SPECULAR, white);//set specular parameters
+	glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);  //set shiness
+	glTranslatef(0, 4, 0);
+	glutSolidTeapot(1);
+	glPopMatrix();
 	for (auto it = world.begin(); it != world.end(); ++it){
 		glPushMatrix();
 		const Pt3 &p = it->first;
@@ -91,7 +209,6 @@ void Draw_Scene()
 				render.draw_Cube(tex, 1 << i);
 		glPopMatrix();
 	}
-	glPopMatrix();
 }
 
 float kk = 0;
@@ -103,8 +220,7 @@ void updateView()
 
 	float whRatio = (GLfloat)wWidth/(GLfloat)wHeight;
 	
-	if (bPersp) gluPerspective(40*exp(kk), whRatio, 0.1, 300);
-	else glOrtho(-3 ,3, -3, 3,-100,100);
+	gluPerspective(40*exp(kk), whRatio, 0.1, 300);
 	glViewport(0, 0, wWidth, wHeight);					// Reset The Current Viewport
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
@@ -208,10 +324,6 @@ void RegenTableList(GLint lid){
 	glEndList();
 }
 
-void chg(float &x, float delta, float max){
-	if(fabs(x+delta)<max+eps)x+=delta;
-}
-
 void getFPS()
 {
 	static int frame = 0, time, timebase = 0;
@@ -296,14 +408,6 @@ void redraw()
 	}
 	
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-
-    GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = {5,5,5,1};
-	
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glEnable(GL_LIGHT0);
 
 	Draw_Scene_Dynamic();
 	if (world.changed) {
@@ -314,7 +418,21 @@ void redraw()
 
 	getFPS();
 	Draw_GUI();
-	
+
+	glEnable(GL_LIGHTING);
+
+    GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_pos[] = { 4.0, 4.0, 0.0, 1.0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	int state = 1;
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?white:black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state&2)?white:black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?white:black);
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.001);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
+	glEnable(GL_LIGHT0);
+
 	glutSwapBuffers();
 }
 
@@ -324,19 +442,31 @@ int main (int argc,  char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(1024,600);
 	int windowHandle = glutCreateWindow("Simple MC");
+	glewInit();
 
 	render.init();
 	tableList = GenTableList();
 	keyboard.init();
 
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	init_cursor();
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
-	//glutKeyboardFunc(key);
 	glutIdleFunc(idle);
 	glutSetCursor(GLUT_CURSOR_NONE);
+
+	printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
+	if (glewIsSupported("GL_VERSION_2_0"))
+		printf("Ready for OpenGL 2.0\n");
+	else {
+		printf("OpenGL 2.0 not supported\n");
+		exit(1);
+	}
+
+#ifdef _ENABLE_CUSTOM_SHADERS_
+	setShaders();
+#endif
 
 	glutMainLoop();
 	return 0;

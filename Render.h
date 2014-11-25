@@ -10,6 +10,7 @@
 class Render{
 public:
 	void init();
+	void setupFBO();
 	void draw_Cube(int type,int state);
 private:
 	void texload(int i,const char *filename);
@@ -18,4 +19,6 @@ private:
 	GLuint texture[10];
 	unsigned char tex[256][256][3];
 };
+
+
 #endif

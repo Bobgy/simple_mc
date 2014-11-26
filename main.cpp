@@ -125,8 +125,8 @@ void setShaders() {
 //#define SHADER "lightPointwise"
 #define SHADER "mine"
 
-	vs = textFileRead("shader/"SHADER".vert");
-	fs = textFileRead("shader/"SHADER".frag");
+	vs = textFileRead("shader/"SHADER"_vertex.glsl");
+	fs = textFileRead("shader/"SHADER"_fragment.glsl");
 
 	const char * vv = vs;
 	const char * ff = fs;

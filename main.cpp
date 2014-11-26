@@ -3,17 +3,14 @@
 
 #pragma comment(lib, "glew32.lib")
 
-#include <GL/glew.h>
+#include "stdafx.h"
 
-#include <stdlib.h>
 #include <math.h>
 #include <map>
 #include <array>
 #include <ctime>
 #include <cassert>
-#include "vec.h"
 #include "world.h"
-#include <GL/glut.h>
 #include "entity.h"
 #include "render.h"
 #include "KeyBoardControl.h"
@@ -438,6 +435,7 @@ void redraw()
 
 int main (int argc,  char *argv[])
 {
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(1024,600);

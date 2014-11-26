@@ -1,6 +1,5 @@
 #include <stdlib.h>
-#include"KeyBoardControl.h"
-#include "glut.h"
+#include "KeyBoardControl.h"
 #include "world.h"
 #include "entity.h"
 

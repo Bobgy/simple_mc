@@ -2,8 +2,8 @@
 #define _RENDER_H
 
 #include <stdlib.h>
-#include "glut.h"
-#include <windows.h>
+#include "stdafx.h"
+//#include <windows.h>
 #include <cstdio>
 #define BITMAP_ID 0x4D42
 

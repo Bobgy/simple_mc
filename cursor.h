@@ -1,8 +1,7 @@
 #ifndef _CURSOR_H
 #define _CURSOR_H
 
-#include "vec.h"
-#include "glut.h"
+#include "stdafx.h"
 
 extern void update_center();
 extern void updateView();

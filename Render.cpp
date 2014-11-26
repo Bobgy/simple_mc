@@ -1,9 +1,7 @@
 //#define _SIMPLE_CUBE_
-#include <GL/glew.h>
 #include "Render.h"
 #include "vec.h"
 #include <cassert>
-#include <GL/GLUT.H>
 
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};

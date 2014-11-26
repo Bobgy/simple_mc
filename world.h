@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-#include "vec.h"
+#include "stdafx.h"
 #include "block.h"
 #include "entity.h"
 

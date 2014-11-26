@@ -3,23 +3,37 @@ varying vec3 normal,halfVector;
 uniform sampler2D tex;
 uniform sampler2D ShadowMap;
 varying vec4 ShadowCoord;
+uniform int rg = 2;
+uniform float offset = 1e-4;
+
+float pcf(vec4 sc){
+	int x, y;
+	float sum = 0.0, dist, shadow;
+	if (sc.w > 0.0){
+		for(x=-rg;x<=rg;++x)
+			for(y=-rg;y<=rg;++y){
+				dist = texture2D(ShadowMap,vec2(sc.s+float(x)*offset,sc.t+float(y)*offset)).z;
+ 				shadow = 1.0;
+				if (abs(dist-sc.z)>(1e-2)*abs(dist) && dist < sc.z)
+					shadow = 0.0;
+				sum += shadow;
+			}
+	}
+	int rg2 = rg*2+1;
+	return sum / float(rg2*rg2);
+}
+
 void main()
 {
     vec3 n,halfV,viewV,lightDir;
-    float NdotL,NdotHV;
+    float NdotL,NdotHV,att,dist;
     vec4 color = vec4(0);
-    float att, dist;
     
 	vec4 shadowC = ShadowCoord / ShadowCoord.w ;
 	
 	// Used to lower moir¨¦ pattern and self-shadowing
 	
-	float distanceFromLight = texture2D(ShadowMap,shadowC.st).z;
- 	float shadow = 1.0;
- 	if (ShadowCoord.w > 0.0){
-		if (abs(distanceFromLight-shadowC.z)>1e-6 && distanceFromLight < shadowC.z)
-			shadow = 0.2;
-	}
+	float shadow = pcf(shadowC);
     /* a fragment shader can't write a verying variable, hence we need
     a new variable to store the normalized interpolated normal */
     n = normalize(normal);

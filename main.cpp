@@ -32,7 +32,7 @@ bool bAnim = false;
 bool bWire = false;
 bool bGravity = false;
 
-int wHeight = 724;
+int wHeight =  724;
 int wWidth = 1024;
 extern GLuint tex;
 GLhandleARB shader_id;
@@ -218,7 +218,7 @@ void DisplayScene(){
 	//Disable color rendering, we only want to write to the Z-Buffer
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-	setupMatrices(light_pos, Vec3fZero, true);
+	setupMatrices(light_pos, eye, true);
 
 	// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK

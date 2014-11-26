@@ -185,11 +185,6 @@ void renderSeenBlock(block_and_face seen_block){
 
 void Render::renderScene(){
 	glEnable(GL_TEXTURE_2D);
-	//use_material(golden, white, NULL, 2);
-	//beginTranslate(Vec3f(0, 4, 0));
-	//glRotatef(180, 1, 0, 0);
-	//glutSolidTeapot(-1.0);
-	//endTranslate();
 	use_material(white, white, NULL, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
@@ -271,7 +266,7 @@ void renderCross(){
 	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
 	glPushMatrix();// 保存原矩阵
 	glLoadIdentity();// 装入单位矩阵*/
-	glRasterPos2d(wWidth / 2, wHeight / 2);
+	glRasterPos2d(wWidth/2-6, wHeight/2-6);
 	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

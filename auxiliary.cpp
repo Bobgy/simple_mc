@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 
-void use_material(GLfloat *d, GLfloat *s, GLfloat *e, int shine)
+void use_material(const GLfloat *d, const GLfloat *s, const GLfloat *e, int shine)
 {
 	if(d!=NULL)glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, d);
     if(s!=NULL)glMaterialfv(GL_FRONT, GL_SPECULAR, s);

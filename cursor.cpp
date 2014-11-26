@@ -4,6 +4,7 @@
 extern World world;
 extern block_and_face seen_block;
 Cursor cursor;
+extern int windowHandle;
 
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
@@ -11,7 +12,7 @@ void process_move(int x, int y){
 	cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
 	dx = x - cX;
 	dy = y - cY;
-	if (dx*dx + dy*dy > 10) {
+	if (dx*dx + dy*dy > 7 && glutGetWindow()==windowHandle) {
 		glutWarpPointer(cX, cY);
 		static flt len_x = 0.5, len_y = -0.25;
 		cursor.h_ang += dx * len_x;

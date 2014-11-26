@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "shader.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,10 +103,9 @@ void printProgramInfoLog(GLuint obj)
 	}
 }
 
-GLuint v, f, f2, p, loc;
-
-void setShaders() {
-
+void setShaders()
+{
+	static GLuint v, f, f2, p, loc;
 	char *vs = NULL, *fs = NULL, *fs2 = NULL;
 
 	v = glCreateShader(GL_VERTEX_SHADER);

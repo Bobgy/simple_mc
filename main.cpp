@@ -32,7 +32,7 @@ bool bWire = false;
 
 int wHeight = 500;
 int wWidth = 500;
-int tex = 0;
+extern GLuint tex;
 
 float r = 0.45, h = 1.6;
 bool pot_rotate=0;
@@ -40,7 +40,7 @@ bool pot_rotate=0;
 typedef Vec3i Pt3;
 World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
-Render render;
+extern Render render;
 extern KeyboardControl keyboard;
 extern Cursor cursor;
 
@@ -51,63 +51,14 @@ float eye[] = { 0, 4, 8 };
 float PI = acos(-1.0), deg2rad = PI / 180.0;
 flt face[] = { 1, 0, 0 };
 flt face_xz[] = { 1, 0, 0 };
-
-float golden[] = { 0.85f, 0.65f, 0.2f, 1.0f };
-float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-float black[] = { 0, 0, 0, 1 };
-float grey[] = { 0.5, 0.5, 0.5, 1 };
+int windowHandle;
 
 bool enableObserver = 0;
-void DrawObserver(){
-	if (!enableObserver) return;
-	GLUquadricObj *objCylinder = gluNewQuadric();
-	glPushMatrix();
-	glTranslatef(observer[0], observer[1], observer[2]);
-	//glRotatef(90, 1, 0, 0);
-	glutSolidSphere(0.5, 20, 20);
-	//gluCylinder(objCylinder, r, r, 1, 30, 10);
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(center[0], center[1], center[2]);
-	glutSolidSphere(0.5, 20, 20);
-	//gluCylinder(objCylinder, r, r, 1, 30, 10);
-	glPopMatrix();
-}
-
-void DrawSeenBlock(){
-	if (seen_block.second == -1) return;
-	static flt p[3];
-	for (int i = 0; i < 3; ++i)
-		p[i] = seen_block.first[i] + 0.5;
-	glPushMatrix();
-	glTranslatef(p[0], p[1], p[2]);
-	glutWireCube(1.01);
-	glPopMatrix();
-}
 
 void Draw_Scene_Dynamic(){
-	DrawObserver();
-	DrawSeenBlock();
-}
-
-void Draw_Scene()
-{
-	glEnable(GL_TEXTURE_2D);
-	glPushMatrix();
-	use_material(golden, white, NULL, 2);
-	glTranslatef(0, 4, 0);
-	glutSolidTeapot(1);
-	glPopMatrix();
-	use_material(white, black, NULL, 1);
-	for (auto it = world.begin(); it != world.end(); ++it){
-		glPushMatrix();
-		const Pt3 &p = it->first;
-		glTranslatef(p[0], p[1], p[2]);
-		for (int i = 0; i < 6; ++i)
-			if (world.find(p + FACE[i]) == world.end())
-				render.draw_Cube(tex, 1 << i);
-		glPopMatrix();
-	}
+	if (enableObserver)
+		DrawObserver(observer, r, h);
+	DrawSeenBlock(seen_block);
 }
 
 float kk = 0;
@@ -341,7 +292,7 @@ int main (int argc,  char *argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(1024,600);
-	int windowHandle = glutCreateWindow("Simple MC");
+	windowHandle = glutCreateWindow("Simple MC");
 	glewInit();
 
 	render.init();

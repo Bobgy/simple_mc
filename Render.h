@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 #include "stdafx.h"
-//#include <windows.h>
 #include <cstdio>
+#include "entity.h"
 #define BITMAP_ID 0x4D42
 
 class Render{
@@ -20,5 +20,11 @@ private:
 	unsigned char tex[256][256][3];
 };
 
+//Draw the observer at position given by Entity observer, with radiu r
+void DrawObserver(Entity observer, flt r, flt h);
+
+void DrawSeenBlock(block_and_face seen_block);
+
+void Draw_Scene();
 
 #endif

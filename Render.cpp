@@ -1,12 +1,19 @@
 //#define _SIMPLE_CUBE_
 #include "Render.h"
 #include "vec.h"
+#include "world.h"
+#include "auxiliary.h"
 #include <cassert>
+
+extern World world;
 
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
 const static int face[6][4] = {{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
 const static int t_point[4][2] = {{0,0},{0,1},{1,1},{1,0}};
+
+Render render;
+GLuint tex;
 
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
@@ -117,8 +124,6 @@ void Render::init()
 	set(6);
 }
 
-
-
 void Render::draw_Cube(int type,int state)
 {
 #ifdef _SIMPLE_CUBE_
@@ -146,4 +151,42 @@ void Render::draw_Cube(int type,int state)
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 #endif
+}
+
+void DrawObserver(Entity observer, flt r, flt h){
+	GLUquadricObj *objCylinder = gluNewQuadric();
+	glPushMatrix();
+	glTranslatef(observer[0], observer[1], observer[2]);
+	gluCylinder(objCylinder, r, r, h, 30, 10);
+	glPopMatrix();
+}
+
+void DrawSeenBlock(block_and_face seen_block){
+	if (seen_block.second == -1) return;
+	static flt p[3];
+	for (int i = 0; i < 3; ++i)
+		p[i] = seen_block.first[i] + 0.5;
+	glPushMatrix();
+	glTranslatef(p[0], p[1], p[2]);
+	glutWireCube(1.01);
+	glPopMatrix();
+}
+
+void Draw_Scene(){
+	glEnable(GL_TEXTURE_2D);
+	glPushMatrix();
+	use_material(golden, white, NULL, 2);
+	glTranslatef(0, 4, 0);
+	glutSolidTeapot(1);
+	glPopMatrix();
+	use_material(white, black, NULL, 1);
+	for (auto it = world.begin(); it != world.end(); ++it){
+		glPushMatrix();
+		Vec3i p = it->first;
+		glTranslatef(p[0], p[1], p[2]);
+		for (int i = 0; i < 6; ++i)
+			if (world.find(p + FACE[i]) == world.end())
+				render.draw_Cube(tex, 1 << i);
+		glPopMatrix();
+	}
 }

@@ -115,23 +115,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\glsl\flatten\textfile.cpp" />
     <ClCompile Include="auxiliary.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="KeyBoardControl.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\glsl\flatten\textfile.h" />
     <ClInclude Include="auxiliary.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="KeyBoardControl.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="world.h" />

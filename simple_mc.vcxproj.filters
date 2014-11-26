@@ -33,10 +33,10 @@
     <ClCompile Include="cursor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\glsl\flatten\textfile.cpp">
+    <ClCompile Include="auxiliary.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="auxiliary.cpp">
+    <ClCompile Include="shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,13 +62,13 @@
     <ClInclude Include="cursor.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\glsl\flatten\textfile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="auxiliary.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

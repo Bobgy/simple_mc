@@ -15,12 +15,10 @@
 #include "render.h"
 #include "KeyBoardControl.h"
 #include "cursor.h"
-#include "textfile.h"
+#include "shader.h"
 #include "auxiliary.h"
 
 using namespace std;
-
-GLuint v, f, f2, p, loc;
 
 float lpos[4] = { 1, 0.5, 1, 0 };
 
@@ -58,102 +56,6 @@ float golden[] = { 0.85f, 0.65f, 0.2f, 1.0f };
 float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float black[] = { 0, 0, 0, 1 };
 float grey[] = { 0.5, 0.5, 0.5, 1 };
-
-#define printOpenGLError() printOglError(__FILE__, __LINE__)
-
-int printOglError(char *file, int line)
-{
-	//
-	// Returns 1 if an OpenGL error occurred, 0 otherwise.
-	//
-	GLenum glErr;
-	int    retCode = 0;
-
-	glErr = glGetError();
-	while (glErr != GL_NO_ERROR)
-	{
-		printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
-		retCode = 1;
-		glErr = glGetError();
-	}
-	return retCode;
-}
-
-void printShaderInfoLog(GLuint obj)
-{
-	int infologLength = 0;
-	int charsWritten = 0;
-	char *infoLog;
-
-	glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-
-	if (infologLength > 0)
-	{
-		infoLog = (char *)malloc(infologLength);
-		glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
-		printf("%s\n", infoLog);
-		free(infoLog);
-	}
-}
-
-void printProgramInfoLog(GLuint obj)
-{
-	int infologLength = 0;
-	int charsWritten = 0;
-	char *infoLog;
-
-	glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
-
-	if (infologLength > 0)
-	{
-		infoLog = (char *)malloc(infologLength);
-		glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
-		printf("%s\n", infoLog);
-		free(infoLog);
-	}
-}
-
-void setShaders() {
-
-	char *vs = NULL, *fs = NULL, *fs2 = NULL;
-
-	v = glCreateShader(GL_VERTEX_SHADER);
-	f = glCreateShader(GL_FRAGMENT_SHADER);
-	f2 = glCreateShader(GL_FRAGMENT_SHADER);
-//#define SHADER "pixeldirdifambspec"
-//#define SHADER "textureSimple"
-//#define SHADER "lightPointwise"
-#define SHADER "mine"
-
-	vs = textFileRead("shader/"SHADER"_vertex.glsl");
-	fs = textFileRead("shader/"SHADER"_fragment.glsl");
-
-	const char * vv = vs;
-	const char * ff = fs;
-
-	glShaderSource(v, 1, &vv, NULL);
-	glShaderSource(f, 1, &ff, NULL);
-
-	free(vs); free(fs);
-
-	glCompileShader(v);
-	glCompileShader(f);
-
-	printShaderInfoLog(v);
-	printShaderInfoLog(f);
-	printShaderInfoLog(f2);
-
-	p = glCreateProgram();
-	glAttachShader(p, v);
-	glAttachShader(p, f);
-
-	glLinkProgram(p);
-	printProgramInfoLog(p);
-
-	glUseProgram(p);
-	loc = glGetUniformLocation(p, "time");
-
-}
 
 bool enableObserver = 0;
 void DrawObserver(){

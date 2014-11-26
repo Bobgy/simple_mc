@@ -1,9 +1,12 @@
 varying vec4 diffuse,ambientGlobal,ambient,ecPos;
 varying vec3 normal,halfVector;
+varying vec4 ShadowCoord;
 void main()
 {   
     vec3 aux;
     
+	ShadowCoord = gl_TextureMatrix[7] * gl_Vertex;
+
     /* first transform the normal into eye space and normalize the result */
     normal = normalize(gl_NormalMatrix * gl_Normal);
 	

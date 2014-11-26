@@ -86,6 +86,8 @@ public:
 typedef Vec3<int> Vec3i;
 typedef Vec3<flt> Vec3f;
 
+
+const Vec3f Vec3fZero(0, 0, 0);
 const flt EPS = 1e-5;
 
 //test if x is zero under eps
@@ -122,4 +124,8 @@ inline Vec3i floor(Vec3f x){
 inline Vec3i round(Vec3f x){
 	return Vec3i(round(x[0]), round(x[1]), round(x[2]));
 }
+inline Vec3f toVec3f(Vec3i x){
+	return Vec3f(x[0], x[1], x[2]);
+}
+
 #endif

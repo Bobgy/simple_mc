@@ -9,34 +9,40 @@
 
 class Render{
 public:
+	GLuint texture[10];
+
 	void init();
 	void setupFBO();
-	void draw_Cube(int type,int state);
+	void renderCube(int type,int state);
+	void renderScene();
+	void beginTranslate(Vec3f p);
+	void endTranslate();
+	void setTextureState(bool);
+
 private:
+	
+	bool bTexture;
 	void texload(int i,const char *filename);
 	unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader);
 	void set(int k);
-	GLuint texture[10];
-	unsigned char tex[256][256][3];
+	unsigned char tex_check[256][256][3];
 };
 
-//Draw the observer at position given by Entity observer, with radiu r
-void DrawObserver(Entity observer, flt r, flt h);
+//render the observer at position given by Entity observer, with radiu r
+void renderObserver(Entity observer, flt r, flt h);
 
-void DrawSeenBlock(block_and_face seen_block);
-
-void Draw_Scene();
+void renderSeenBlock(block_and_face seen_block);
 
 GLint genTableList();
 
 void regenTableList(GLint lid);
 
-void drawInfo(Entity);
+void renderInfo(Entity);
 
-void drawTableList();
+void renderTableList();
 
-void drawCross();
+void renderCross();
 
-void drawGUI(Entity);
+void renderGUI(Entity);
 
 #endif

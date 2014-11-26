@@ -13,7 +13,7 @@ const static int face[6][4] = {{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4}
 const static int t_point[4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 Render render;
-GLuint tex;
+GLuint tex=0;
 
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
@@ -98,7 +98,7 @@ void Render::set(int k)
 {
 	glBindTexture(GL_TEXTURE_2D,texture[k]);
   	glPixelStorei(GL_UNPACK_ALIGNMENT,1); //设置像素存储模式控制所读取的图像数据的行对齐方式.
-    glTexImage2D(GL_TEXTURE_2D,0,3,256,256,0,GL_RGB,GL_UNSIGNED_BYTE,tex);
+    glTexImage2D(GL_TEXTURE_2D,0,3,256,256,0,GL_RGB,GL_UNSIGNED_BYTE,tex_check);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -107,39 +107,55 @@ void Render::set(int k)
 
 void Render::init()
 {
-	glGenTextures(7, texture);
-	texload(0,"texture/Monet.bmp");
-    texload(1,"texture/Crack.bmp");
-	texload(2,"texture/3.bmp");
-	texload(3,"texture/4.bmp");
-	texload(4,"texture/5.bmp");
-	texload(5,"texture/6.bmp");
+	setTextureState(false);
+#ifndef _SIMPLE_CUBE_
+	setTextureState(true);
+	glGenTextures(5, texture);
+	texload(0,"texture/3.bmp");
+	texload(1,"texture/4.bmp");
+	texload(2,"texture/5.bmp");
+	texload(3,"texture/6.bmp");
 	for(int i=0;i<256;i++)
 		for(int j=0;j<256;j++){
 			int t=(i/64)+(j/64);
 			int k=255;
 			if(t & 1) k=0;
-			for(int l=0;l<=2;l++) tex[i][j][l]=k;
+			for(int l=0;l<=2;l++) tex_check[i][j][l]=k;
 		}
-	set(6);
+	set(4);
+#endif
 }
 
-void Render::draw_Cube(int type,int state)
+void Render::beginTranslate(Vec3f p)
+{
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glTranslatef(p[0], p[1], p[2]);
+	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
+	glPushMatrix();
+	glTranslatef(p[0], p[1], p[2]);
+}
+
+void Render::endTranslate()
+{
+	glMatrixMode(GL_TEXTURE);
+	glPopMatrix();
+
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+}
+
+void Render::renderCube(int type,int state)
 {
 #ifdef _SIMPLE_CUBE_
-	glPushMatrix();
-	glTranslatef(0.5, 0.5, 0.5);
+	beginTranslate(Vec3f(0.5, 0.5, 0.5));
 	glutSolidCube(1.0);
-	glPopMatrix();
+	endTranslate();
 #else
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, texture[type]);
+	if (bTexture) glBindTexture(GL_TEXTURE_2D, texture[type]);
 	glBegin(GL_QUADS);
-	for(int i=0;i<6;i++)
-	{
-		int t=(state>>i)&1;
-		if(t==0) continue;
+	for (int i = 0; i<6; i++)if (state>>i&1){
 		glNormal3f(FACE[i][0], FACE[i][1], FACE[i][2]);
 		for(int j=0;j<4;j++)
 		{
@@ -149,11 +165,10 @@ void Render::draw_Cube(int type,int state)
 		}
 	}
 	glEnd();
-	glDisable(GL_TEXTURE_2D);
 #endif
 }
 
-void DrawObserver(Entity observer, flt r, flt h){
+void renderObserver(Entity observer, flt r, flt h){
 	GLUquadricObj *objCylinder = gluNewQuadric();
 	glPushMatrix();
 	glTranslatef(observer[0], observer[1], observer[2]);
@@ -161,34 +176,30 @@ void DrawObserver(Entity observer, flt r, flt h){
 	glPopMatrix();
 }
 
-void DrawSeenBlock(block_and_face seen_block){
+void renderSeenBlock(block_and_face seen_block){
 	if (seen_block.second == -1) return;
-	static flt p[3];
-	for (int i = 0; i < 3; ++i)
-		p[i] = seen_block.first[i] + 0.5;
-	glPushMatrix();
-	glTranslatef(p[0], p[1], p[2]);
+	render.beginTranslate(toVec3f(seen_block.first)+0.5);
 	glutWireCube(1.01);
-	glPopMatrix();
+	render.endTranslate();
 }
 
-void Draw_Scene(){
+void Render::renderScene(){
 	glEnable(GL_TEXTURE_2D);
-	glPushMatrix();
-	use_material(golden, white, NULL, 2);
-	glTranslatef(0, 4, 0);
-	glRotatef(180, 1, 0, 0);
-	glutSolidTeapot(-1.0);
-	glPopMatrix();
-	use_material(white, black, NULL, 1);
+	//use_material(golden, white, NULL, 2);
+	//beginTranslate(Vec3f(0, 4, 0));
+	//glRotatef(180, 1, 0, 0);
+	//glutSolidTeapot(-1.0);
+	//endTranslate();
+	use_material(white, white, NULL, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
-		glPushMatrix();
 		Vec3i p = it->first;
-		glTranslatef(p[0], p[1], p[2]);
+		beginTranslate(toVec3f(p));
+		int msk = 0;
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
-				render.draw_Cube(tex, 1 << i);
-		glPopMatrix();
+				msk |= 1 << i;
+		render.renderCube(tex, msk);
+		endTranslate();
 	}
 }
 
@@ -196,17 +207,17 @@ GLint tableList;
 GLint genTableList(){
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);
-	Draw_Scene();
+	render.renderScene();
 	glEndList();
 	return lid;
 }
 void regenTableList(GLint lid){
 	glNewList(lid, GL_COMPILE);
-	Draw_Scene();
+	render.renderScene();
 	glEndList();
 }
 
-void drawInfo(Entity observer)
+void renderInfo(Entity observer)
 {
 	static int frame = 0, time, timebase = 0;
 	static char buffer[256];
@@ -224,7 +235,6 @@ void drawInfo(Entity observer)
 		idle_count = 0;
 	}
 
-	//glutSetWindowTitle(buffer);
 	char *c;
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
@@ -235,9 +245,8 @@ void drawInfo(Entity observer)
 	glPushMatrix();// 保存原矩阵
 	glLoadIdentity();// 装入单位矩阵*/
 	glRasterPos2f(10, 10);
-	for (c = buffer; *c != '\0'; c++) {
+	for (c = buffer; *c != '\0'; c++)
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-	}
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
 	glPopMatrix();// 重置为原保存矩阵
 	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
@@ -245,11 +254,15 @@ void drawInfo(Entity observer)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void drawTableList(){
+void renderTableList(){
+	if (world.changed) {
+		regenTableList(tableList);
+		world.changed = false;
+	}
 	glCallList(tableList);
 }
 
-void drawCross(){
+void renderCross(){
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
 	glPushMatrix();// 保存原矩阵
@@ -267,7 +280,13 @@ void drawCross(){
 	glEnable(GL_DEPTH_TEST);
 }
 
-void drawGUI(Entity observer){
-	drawInfo(observer);
-	drawCross();
+void renderGUI(Entity observer){
+	renderInfo(observer);
+	renderCross();
+}
+
+void Render::setTextureState(bool bTex){
+	bTexture = bTex;
+	if (bTex) glEnable(GL_TEXTURE_2D);
+	else glDisable(GL_TEXTURE_2D);
 }

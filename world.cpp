@@ -50,12 +50,12 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 }
 
 //generate a world by random seed: seed
-World::World(int seed):changed(false){
+World::World(int seed, int range) :changed(false){
 	srand(seed);
 	block_list.push_back(Block(AIR));
 	block_list.push_back(Block(DIRT));
-	for (int i = -32; i <= 32; ++i)
-		for (int j = -32; j <= 32; ++j)
+	for (int i = -range; i <= range; ++i)
+		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k){
 				int t = (1 << (k + 2)) - 1;
 				if (k == 0 || (rand()&t) == t) blocks[Vec3i(i, k, j)] = &block_list[DIRT];

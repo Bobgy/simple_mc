@@ -32,7 +32,7 @@ public:
 	block_and_face look_at_block(Vec3f p, Vec3f dir, flt r) const;
 	
 	//generate a world by random seed: seed
-	World(int seed);
+	World(int seed, int range);
 
 	//place a block at p of type tp
 	bool place_block(block_and_face p, block_type tp);

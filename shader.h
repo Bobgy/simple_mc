@@ -3,6 +3,6 @@
 
 #include "stdafx.h"
 
-void setShaders();
+GLhandleARB getShaders();
 
 #endif

@@ -103,14 +103,17 @@ void printProgramInfoLog(GLuint obj)
 	}
 }
 
-void setShaders()
+GLuint time_loc, shadow_map_loc;
+
+GLhandleARB getShaders()
 {
-	static GLuint v, f, f2, p, loc;
-	char *vs = NULL, *fs = NULL, *fs2 = NULL;
+	static GLuint v, f, f2;
+	GLhandleARB p;
+	char *vs = NULL, *fs = NULL;
 
 	v = glCreateShader(GL_VERTEX_SHADER);
 	f = glCreateShader(GL_FRAGMENT_SHADER);
-	f2 = glCreateShader(GL_FRAGMENT_SHADER);
+
 	//#define SHADER "pixeldirdifambspec"
 	//#define SHADER "textureSimple"
 	//#define SHADER "lightPointwise"
@@ -132,7 +135,6 @@ void setShaders()
 
 	printShaderInfoLog(v);
 	printShaderInfoLog(f);
-	printShaderInfoLog(f2);
 
 	p = glCreateProgram();
 	glAttachShader(p, v);
@@ -141,7 +143,7 @@ void setShaders()
 	glLinkProgram(p);
 	printProgramInfoLog(p);
 
-	glUseProgram(p);
-	loc = glGetUniformLocation(p, "time");
-
+	time_loc = glGetUniformLocation(p, "time");
+	shadow_map_loc = glGetUniformLocationARB(p, "ShadowMap");
+	return p;
 }

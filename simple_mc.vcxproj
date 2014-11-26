@@ -122,6 +122,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shadow.cpp" />
     <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +133,7 @@
     <ClInclude Include="cursor.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shadow.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="world.h" />

@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _ENABLE_CUSTOM_SHADERS_
-
+#define CULL_BACK
 #pragma comment(lib, "glew32.lib")
 
 #include "stdafx.h"
@@ -17,10 +17,11 @@
 #include "cursor.h"
 #include "shader.h"
 #include "auxiliary.h"
+#include "shadow.h"
 
 using namespace std;
 
-float lpos[4] = { 1, 0.5, 1, 0 };
+const GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
 
 float fTranslate;
 float fRotate;
@@ -29,14 +30,16 @@ float fScale     = 1.0f;	// set inital scale value to 1.0f
 bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
+bool bGravity = false;
 
-int wHeight = 500;
-int wWidth = 500;
+int wHeight = 724;
+int wWidth = 1024;
 extern GLuint tex;
+GLhandleARB shader_id;
 
 float r = 0.45, h = 1.6;
 typedef Vec3i Pt3;
-World world(time(NULL));
+World world(time(NULL), 13);
 block_and_face seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 extern KeyboardControl keyboard;
@@ -45,7 +48,7 @@ extern Cursor cursor;
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 Entity observer(pp, vv, r, h, 1.0);
 float center[] = { 0, 4, 0 };
-float eye[] = { 0, 4, 8 };
+float eye[] = { 0, 4, 8, 1};
 float PI = acos(-1.0), deg2rad = PI / 180.0;
 flt face[] = { 1, 0, 0 };
 flt face_xz[] = { 1, 0, 0 };
@@ -53,13 +56,10 @@ int windowHandle;
 
 bool enableObserver = 0;
 
-void Draw_Scene_Dynamic(){
+void renderSceneDynamic(){
 	if (enableObserver)
-		DrawObserver(observer, r, h);
-	DrawSeenBlock(seen_block);
+		renderObserver(observer, r, h);
 }
-
-float kk = 0;
 
 void updateView()
 {
@@ -68,7 +68,7 @@ void updateView()
 
 	float whRatio = (GLfloat)wWidth/(GLfloat)wHeight;
 	
-	gluPerspective(40*exp(kk), whRatio, 0.1, 300);
+	gluPerspective(45, whRatio, 0.1, 300);
 	glViewport(0, 0, wWidth, wHeight);					// Reset The Current Viewport
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
@@ -95,7 +95,7 @@ void update_dir(){
 	face[1] = sin(va);
 }
 
-float dis = 10.0;
+float dis = 1.0;
 
 void update_center(){
 	update_dir();
@@ -115,7 +115,7 @@ void idle()
 	static clock_t now;
 	now = clock();
 	if (lst + inter <= now) {
-		observer.fall();
+		if(bGravity)observer.fall();
 		int df = 0;
 		static flt ff[3];
 		if (keyboard.get_state('w') ^ keyboard.get_state('s')){
@@ -129,8 +129,15 @@ void idle()
 			ff[2] = -face_xz[0];
 			observer.give_velocity(ff, step*0.5*df);
 		}
-		if (keyboard.get_state(' ') && observer.on_ground){
-			observer.force(Vec3f(0, 13, 0));
+		if (bGravity){
+			if (keyboard.get_state(' ') && observer.on_ground){
+				observer.force(Vec3f(0, 13, 0));
+			}
+		} else {
+			if (keyboard.get_state(' '))
+				observer.give_velocity(Vec3f(0, 0.5, 0), 1);
+			if (keyboard.get_state('g'))
+				observer.give_velocity(Vec3f(0, -0.5, 0), 1);
 		}
 		static int p[3];
 		for (int i = 0; i < 3; ++i)
@@ -157,8 +164,8 @@ void idle()
 	glutPostRedisplay();
 }
 
-extern int tableList;
 
+extern int tableList;
 void redraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -169,31 +176,22 @@ void redraw()
 		center[0], center[1], center[2],
 		0, 1, 0);				// 场景（0，0，0）的视点中心 (0,5,50)，Y轴向上
 
-	if (bWire) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
 	glEnable(GL_DEPTH_TEST);
 
-	Draw_Scene_Dynamic();
-	if (world.changed) {
-		regenTableList(tableList);
-		world.changed = false;
-	}
-	drawTableList();
-
-	drawGUI(observer);
+	renderSceneDynamic();
+	renderTableList();
+	renderGUI(observer);
 
 	glEnable(GL_LIGHTING);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, grey);
-	static const GLfloat light_pos[] = { 4.5, 4.5, 0.5, 0.0 };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
+
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?dark_grey:black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, (state&2)?sun:black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR,(state&2)?sun:black);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?sun:black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
@@ -203,27 +201,129 @@ void redraw()
 	glutSwapBuffers();
 }
 
-int main (int argc,  char *argv[])
-{
+void DisplayScene(){
+	//First step: Render from the light POV to a FBO, story depth values only
+	extern GLuint fboId;
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
 
+	//Using the fixed pipeline to render to the depthbuffer
+	glUseProgramObjectARB(0);
+
+	// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
+	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+
+	// Clear previous frame values
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	//Disable color rendering, we only want to write to the Z-Buffer
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	setupMatrices(light_pos, Vec3fZero, true);
+
+	// Culling switching, rendering only backface, this is done to avoid self-shadowing
+#ifdef CULL_BACK
+	glCullFace(GL_BACK);
+#else
+	glCullFace(GL_FRONT);
+#endif
+
+	render.setTextureState(false);
+	//render the scene
+	renderSceneDynamic();
+	//renderTableList();
+	render.renderScene();
+
+	//Save modelview/projection matrice into texture7, also add a biais
+	setTextureMatrix();
+
+	// Now rendering from the camera POV, using the FBO to generate shadows
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glViewport(0, 0, wWidth, wHeight);
+
+	//Enabling color write (previously disabled for light POV z-buffer rendering)
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+	// Clear previous frame values
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	extern GLuint shadow_map_loc, time_loc, depth_texture_id;
+
+	// Clear the color to be sky blue
+	glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
+
+	//Using the shadow shader
+	glUseProgramObjectARB(shader_id);
+	glUniform1iARB(shadow_map_loc, 7);
+
+	//Bind shadow depth as texture
+	glActiveTextureARB(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+
+	//Bind ordinary texture
+	glActiveTextureARB(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, render.texture[tex]);
+	setupMatrices(eye, center, false);
+	//setupMatrices(light_pos, eye, true);
+
+	glCullFace(GL_BACK);
+	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	render.setTextureState(false);
+	//render the scene
+	renderSceneDynamic();
+	//renderTableList();
+	render.renderScene();
+
+	glEnable(GL_LIGHTING);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, grey);
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	int state = 7;
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? dark_grey : black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
+	glEnable(GL_LIGHT0);
+
+	renderSeenBlock(seen_block);
+	renderGUI(observer);
+//#define _DEBUG_SHOW_DEPTH_MAP_
+#ifdef _DEBUG_SHOW_DEPTH_MAP_
+
+	// DEBUG only. this piece of code draw the depth buffer onscreen
+	glUseProgramObjectARB(0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0,SHADOW_MAP_WIDTH,0,SHADOW_MAP_HEIGHT,1,200);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glColor4f(1,1,1,1);
+	glActiveTextureARB(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D,depth_texture_id);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+	glEnable(GL_TEXTURE_2D);
+	glTranslated(0, 0, -1);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,0);glVertex3f(wWidth/2.0,wHeight/2.0,0);
+	glTexCoord2d(1,0);glVertex3f(wWidth,wHeight/2.0,0);
+	glTexCoord2d(1,1);glVertex3f(wWidth,wHeight,0);
+	glTexCoord2d(0,1);glVertex3f(wWidth/2.0,wHeight,0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+#endif
+	glutSwapBuffers();
+}
+
+void init(int argc, char *argv[]){
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(1024,600);
+	glutInitWindowSize(wWidth, wHeight);
 	windowHandle = glutCreateWindow("Simple MC");
+	
 	glewInit();
-
-	render.init();
-	tableList = genTableList();
-	keyboard.init();
-
-	glEnable(GL_CULL_FACE);
-	init_cursor();
-	glLineWidth(3.0);
-	glutDisplayFunc(redraw);
-	glutReshapeFunc(reshape);
-	glutIdleFunc(idle);
-	glutSetCursor(GLUT_CURSOR_NONE);
-
 	printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
 	if (glewIsSupported("GL_VERSION_2_0"))
 		printf("Ready for OpenGL 2.0\n");
@@ -231,11 +331,30 @@ int main (int argc,  char *argv[])
 		printf("OpenGL 2.0 not supported\n");
 		exit(1);
 	}
+	generateShadowFBO();
+
+	keyboard.init();
+	render.init();
+	tableList = genTableList();
+
+	init_cursor();
+	glutDisplayFunc(DisplayScene);
+	glutReshapeFunc(reshape);
+	glutIdleFunc(idle);
+
+	glLineWidth(3.0);
+	glEnable(GL_CULL_FACE);
+	glutSetCursor(GLUT_CURSOR_NONE);
 
 #ifdef _ENABLE_CUSTOM_SHADERS_
-	setShaders();
+	shader_id = getShaders();
 #endif
+}
 
+
+int main (int argc,  char *argv[])
+{
+	init(argc, argv);
 	glutMainLoop();
 	return 0;
 }

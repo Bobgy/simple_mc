@@ -11,8 +11,7 @@ void main()
     ecPos = gl_ModelViewMatrix * gl_Vertex;
  
     /* Normalize the halfVector to pass it to the fragment shader */
-	vec4 half = gl_LightSource[0].halfVector;
-    halfVector = normalize(half.xyz / half.w);
+    halfVector = normalize(gl_LightSource[0].halfVector.xyz / gl_LightSource[0].halfVector.w);
     
     /* Compute the diffuse, ambient and globalAmbient terms */
     diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;

@@ -35,8 +35,6 @@ int wWidth = 500;
 extern GLuint tex;
 
 float r = 0.45, h = 1.6;
-bool pot_rotate=0;
-
 typedef Vec3i Pt3;
 World world(time(NULL));
 block_and_face seen_block = make_pair(Vec3i(), -1);
@@ -159,86 +157,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-GLint tableList;
-GLint GenTableList()
-{
-	GLint lid = glGenLists(1);
-	glNewList(lid, GL_COMPILE);
-	Draw_Scene();
-	glEndList();
-	return lid;
-}
-void RegenTableList(GLint lid){
-	glNewList(lid, GL_COMPILE);
-	Draw_Scene();
-	glEndList();
-}
-
-void getFPS()
-{
-	static int frame = 0, time, timebase = 0;
-	static char buffer[256];
-
-	char mode[64];
-	sprintf_s<64>(mode, " (%.4f,%.4f,%.4f)", observer[0], observer[1], observer[2]);
-
-	frame++;
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase > 1000) {
-		sprintf_s<256> (buffer, "FPS:%4.2f %s IPS:%4.2f",
-			frame*1000.0 / (time - timebase), mode, idle_count*1000.0 / (time - timebase));
-		timebase = time;
-		frame = 0;
-		idle_count = 0;
-	}
-
-	//glutSetWindowTitle(buffer);
-	char *c;
-	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵
-	glOrtho(0, 480, 0, 480, -1, 1);// 位置正投影
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵*/
-	glRasterPos2f(10, 10);
-	for (c = buffer; *c != '\0'; c++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-	}
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPopMatrix();// 重置为原保存矩阵
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPopMatrix();// 重置为原保存矩阵
-	glEnable(GL_DEPTH_TEST);
-}
-
-void Draw_Table_List()
-{
-	glCallList(tableList);
-}
-
-void DrawCross(){
-	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPushMatrix();// 保存原矩阵
-		glLoadIdentity();// 装入单位矩阵
-		glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
-		glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-		glPushMatrix();// 保存原矩阵
-			glLoadIdentity();// 装入单位矩阵*/
-			glRasterPos2d(wWidth/2, wHeight/2);
-			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
-			glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glEnable(GL_DEPTH_TEST);
-}
-
-void Draw_GUI(){
-	DrawCross();
-}
+extern int tableList;
 
 void redraw()
 {
@@ -261,26 +180,24 @@ void redraw()
 
 	Draw_Scene_Dynamic();
 	if (world.changed) {
-		RegenTableList(tableList);
+		regenTableList(tableList);
 		world.changed = false;
 	}
-	Draw_Table_List();
+	drawTableList();
 
-	getFPS();
-	Draw_GUI();
+	drawGUI(observer);
 
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, grey);
-    GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 4.5, 4.5, 0.5, 1.0 };
+	static const GLfloat light_pos[] = { 4.5, 4.5, 0.5, 0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?white:black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, (state&2)?white:black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?white:black);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?dark_grey:black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state&2)?sun:black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?sun:black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.03);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
 	glEnable(GL_LIGHT0);
 
 	glutSwapBuffers();
@@ -296,10 +213,10 @@ int main (int argc,  char *argv[])
 	glewInit();
 
 	render.init();
-	tableList = GenTableList();
+	tableList = genTableList();
 	keyboard.init();
 
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	init_cursor();
 	glLineWidth(3.0);
 	glutDisplayFunc(redraw);

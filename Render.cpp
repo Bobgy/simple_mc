@@ -6,7 +6,7 @@
 #include <cassert>
 
 extern World world;
-
+extern int idle_count, wWidth, wHeight;
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
 const static int face[6][4] = {{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
@@ -177,7 +177,8 @@ void Draw_Scene(){
 	glPushMatrix();
 	use_material(golden, white, NULL, 2);
 	glTranslatef(0, 4, 0);
-	glutSolidTeapot(1);
+	glRotatef(180, 1, 0, 0);
+	glutSolidTeapot(-1.0);
 	glPopMatrix();
 	use_material(white, black, NULL, 1);
 	for (auto it = world.begin(); it != world.end(); ++it){
@@ -189,4 +190,84 @@ void Draw_Scene(){
 				render.draw_Cube(tex, 1 << i);
 		glPopMatrix();
 	}
+}
+
+GLint tableList;
+GLint genTableList(){
+	GLint lid = glGenLists(1);
+	glNewList(lid, GL_COMPILE);
+	Draw_Scene();
+	glEndList();
+	return lid;
+}
+void regenTableList(GLint lid){
+	glNewList(lid, GL_COMPILE);
+	Draw_Scene();
+	glEndList();
+}
+
+void drawInfo(Entity observer)
+{
+	static int frame = 0, time, timebase = 0;
+	static char buffer[256];
+
+	char mode[64];
+	sprintf_s<64>(mode, " (%.4f,%.4f,%.4f)", observer[0], observer[1], observer[2]);
+
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		sprintf_s<256>(buffer, "FPS:%4.2f %s IPS:%4.2f",
+			frame*1000.0 / (time - timebase), mode, idle_count*1000.0 / (time - timebase));
+		timebase = time;
+		frame = 0;
+		idle_count = 0;
+	}
+
+	//glutSetWindowTitle(buffer);
+	char *c;
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵
+	glOrtho(0, 480, 0, 480, -1, 1);// 位置正投影
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵*/
+	glRasterPos2f(10, 10);
+	for (c = buffer; *c != '\0'; c++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+	}
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPopMatrix();// 重置为原保存矩阵
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPopMatrix();// 重置为原保存矩阵
+	glEnable(GL_DEPTH_TEST);
+}
+
+void drawTableList(){
+	glCallList(tableList);
+}
+
+void drawCross(){
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵
+	glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵*/
+	glRasterPos2d(wWidth / 2, wHeight / 2);
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+}
+
+void drawGUI(Entity observer){
+	drawInfo(observer);
+	drawCross();
 }

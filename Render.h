@@ -27,4 +27,16 @@ void DrawSeenBlock(block_and_face seen_block);
 
 void Draw_Scene();
 
+GLint genTableList();
+
+void regenTableList(GLint lid);
+
+void drawInfo(Entity);
+
+void drawTableList();
+
+void drawCross();
+
+void drawGUI(Entity);
+
 #endif

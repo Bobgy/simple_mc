@@ -4,7 +4,7 @@
 #include "entity.h"
 
 KeyboardControl keyboard;
-extern void RegenTableList(GLint);
+extern void regenTableList(GLint);
 extern bool bPersp, bWire;
 extern int tableList, wWidth, wHeight;
 extern GLuint tex;
@@ -24,7 +24,7 @@ void KeyDown(unsigned char key, int x, int y)
 		case 'o': { bWire = !bWire; break; }
 		case 't': {
 			tex = (tex + 1) % 7;
-			RegenTableList(tableList);
+			regenTableList(tableList);
 			break;
 		}
 	}
@@ -38,17 +38,17 @@ void SpecialKeyDown(int key, int x, int y)
 {
 	static bool fullscreen = 0;
 	switch (key){
-	case GLUT_KEY_F5: {
-		if (fullscreen){
-			glutReshapeWindow(1000, 700);
-			glutPositionWindow(0, 0);
-			fullscreen = 0;
-		} else {
-			glutFullScreen();
-			fullscreen = 1;
+		case GLUT_KEY_F5: {
+			if (fullscreen){
+				glutReshapeWindow(1000, 700);
+				glutPositionWindow(0, 0);
+				fullscreen = 0;
+			} else {
+				glutFullScreen();
+				fullscreen = 1;
+			}
+			break;
 		}
-		break;
-	}
 	}
 }
 bool KeyboardControl::get_state(unsigned char key)

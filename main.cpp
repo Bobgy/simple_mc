@@ -2,7 +2,6 @@
 #define _ENABLE_CUSTOM_SHADERS_
 //#define _MOVING_LIGHT_
 #define CULL_BACK
-#pragma comment(lib, "glew32.lib")
 
 #include "stdafx.h"
 

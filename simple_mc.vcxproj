@@ -139,8 +139,15 @@
     <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="freeglut.dll" />
+    <None Include="glew32.dll" />
     <None Include="shader\mine_fragment.glsl" />
     <None Include="shader\mine_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\freeglut.lib" />
+    <Library Include="lib\glew32.lib" />
+    <Library Include="lib\glew32s.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,5 @@
+#include "stdafx.h"
 #include "auxiliary.h"
-#include <stdlib.h>
-#include <GL/glut.h>
 
 void use_material(const GLfloat *d, const GLfloat *s, const GLfloat *e, int shine)
 {

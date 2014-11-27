@@ -1,8 +1,9 @@
 //#define _SIMPLE_CUBE_
-#include "Render.h"
-#include "vec.h"
-#include "world.h"
+#include "stdafx.h"
 #include "auxiliary.h"
+#include "Render.h"
+#include "world.h"
+#include "lodepng.h"
 #include <cassert>
 
 extern World world;
@@ -66,6 +67,32 @@ unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bi
 	return bitmapImage;
 }
 
+void Render::texLoadPNG(int i, const char *filename)
+{
+	unsigned error;
+	unsigned char* image;
+	unsigned width, height;
+	error = lodepng_decode32_file(&image, &width, &height, filename);
+	if (error) {
+		printf("error %u: %s\n", error, lodepng_error_text(error));
+		return;
+	}
+	glBindTexture(GL_TEXTURE_2D, texture[i]);
+	// 指定当前纹理的放大/缩小过滤方式
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D,
+		0, 			//mipmap层次(通常为，表示最上层)
+		GL_RGBA,	//RGBA
+		width, //纹理宽带，必须是n，若有边框+2
+		height, //纹理高度，必须是n，若有边框+2
+		0, //边框(0=无边框, 1=有边框)
+		GL_RGBA,	//bitmap数据的格式
+		GL_UNSIGNED_BYTE, //每个颜色数据的类型
+		image);	//bitmap数据指针
+	//free(image);
+}
+
 void Render::texload(int i,const char *filename)
 {
 
@@ -111,19 +138,13 @@ void Render::init()
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
 	glGenTextures(6, texture);
-	texload(0,"texture/0.bmp");
+	//texload(0,"texture/0.bmp");
+	texLoadPNG(0,"texture/cobblestone.png");
 	texload(1,"texture/3.bmp");
 	texload(2,"texture/4.bmp");
 	texload(3,"texture/5.bmp");
-	texload(4,"texture/6.bmp");
-	for(int i=0;i<256;i++)
-		for(int j=0;j<256;j++){
-			int t=(i/64)+(j/64);
-			int k=255;
-			if(t & 1) k=0;
-			for(int l=0;l<=2;l++) tex_check[i][j][l]=k;
-		}
-	set(5);
+	texLoadPNG(4,"texture/gold_block.png");
+	texLoadPNG(5,"texture/tallgrass.png");
 #endif
 }
 
@@ -186,14 +207,16 @@ void renderSeenBlock(block_and_face seen_block){
 
 void Render::renderScene(){
 	glEnable(GL_TEXTURE_2D);
+	/*
 	beginTranslate(Vec3f(0, 3, 0));
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW); //NOTE: you must do every matrix operation both on MODELVIEW and TEXTURE matrix
 	glScalef(2, 2, 2);
 	glMatrixMode(GL_TEXTURE);
 	glScalef(2, 2, 2);
 	use_material(light_grey, white, NULL, 32);
 	glutSolidSphere(1, 100, 100);
 	endTranslate();
+	*/
 	use_material(light_grey, white, NULL, 8);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;

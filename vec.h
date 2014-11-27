@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <iostream>
+#include <cmath>
 
 typedef float flt;
 template <class T> inline T sqr(T x){ return x*x; }

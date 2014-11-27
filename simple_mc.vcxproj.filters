@@ -42,6 +42,9 @@
     <ClCompile Include="shadow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="lodepng.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec.h">
@@ -77,6 +80,15 @@
     <ClInclude Include="shadow.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GL\freeglut.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GL\glew.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_fragment.glsl">
@@ -85,5 +97,22 @@
     <None Include="shader\mine_vertex.glsl">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="freeglut.dll">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="glew32.dll">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\freeglut.lib">
+      <Filter>资源文件</Filter>
+    </Library>
+    <Library Include="lib\glew32.lib">
+      <Filter>资源文件</Filter>
+    </Library>
+    <Library Include="lib\glew32s.lib">
+      <Filter>资源文件</Filter>
+    </Library>
   </ItemGroup>
 </Project>

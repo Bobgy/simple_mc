@@ -23,6 +23,7 @@
 using namespace std;
 
 GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
+//GLfloat light_pos[] = { 4.5, 4.5, 4.5, 0.2 };
 
 float fTranslate;
 float fRotate;
@@ -175,40 +176,6 @@ void idle()
 
 
 extern int tableList;
-void redraw()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
-	glLoadIdentity();									// Reset The Current Modelview Matrix
-
-	gluLookAt(eye[0], eye[1], eye[2],
-		center[0], center[1], center[2],
-		0, 1, 0);				// 场景（0，0，0）的视点中心 (0,5,50)，Y轴向上
-
-	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	
-	glEnable(GL_DEPTH_TEST);
-
-	renderSceneDynamic();
-	renderTableList();
-	renderGUI(observer);
-
-	glEnable(GL_LIGHTING);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
-
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	int state = 7;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?sun:black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR,(state&2)?sun:black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?sun:black);
-	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
-	glEnable(GL_LIGHT0);
-
-	glutSwapBuffers();
-}
 
 void DisplayScene(){
 	//First step: Render from the light POV to a FBO, story depth values only
@@ -285,7 +252,7 @@ void DisplayScene(){
 	render.renderScene();
 
 	glEnable(GL_LIGHTING);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, grey);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;

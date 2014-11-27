@@ -1,10 +1,13 @@
-varying vec4 diffuse,ambientGlobal,ambient,ecPos;
+varying vec4 diffuse,amb_global,ambient,frag_pos,shadow_coord;
 varying vec3 normal;
 uniform sampler2D tex;
 uniform sampler2D ShadowMap;
-varying vec4 ShadowCoord;
-uniform int rg = 2;
-uniform float offset = 1e-4;
+uniform int rg = 2;			 //determines the sampling numbers
+uniform float offset = 1e-4; //determines the sampling distance
+
+vec3 toVec3(vec4 x){
+	return x.rgb/x.w;
+}
 
 //percentage closer filtering
 float pcf(vec4 sc){
@@ -26,52 +29,44 @@ float pcf(vec4 sc){
 
 void main()
 {
-    vec3 n,lightDir,R;
+    vec3 N,L,R,V;
     float NdotL,att,dist,RdotV;
-    vec4 color = vec4(0.0), sp_color = vec4(0.0);
-    
-	vec4 shadowC = ShadowCoord / ShadowCoord.w ;
-	
-	// Used to lower moir¨¦ pattern and self-shadowing
-	
-	float shadow = pcf(shadowC);
-    /* a fragment shader can't write a verying variable, hence we need
-    a new variable to store the normalized interpolated normal */
-    n = normalize(normal);
-	
-    // Compute the light direction
-	vec3 ecPos3 = ecPos.xyz/ecPos.w;
+    vec4 color_amb = amb_global, color_diff = vec4(0.0), color_sp = vec4(0.0);
+	float shadow = pcf(shadow_coord / shadow_coord.w);
+
+    N = normalize(normal); //normalize the interpolated normal
+	V = toVec3(frag_pos);  //calculate the fragment's position in vec3
+
+	//parallel light from infinitely far away
 	if(abs(gl_LightSource[0].position.w)<1e-5){
-		lightDir = normalize(gl_LightSource[0].position.xyz);
-		NdotL = max(dot(n,lightDir),0.0);
-		R = 2.0 * NdotL * n - lightDir;
-		RdotV = max(-dot(normalize(ecPos3),R),0.0);
-		color += ambient;
+		L = normalize(gl_LightSource[0].position.xyz);
+		NdotL = max(dot(N,L),0.0);
+		R = 2.0 * NdotL * N - L; //calculate the reflection light's direction
+		RdotV = max(-dot(normalize(V),R),0.0);
+		color_amb += ambient;
 		if (NdotL > 0.0) {
-			color += diffuse * NdotL;
-			sp_color += gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(RdotV,gl_FrontMaterial.shininess);
+			color_diff += diffuse * NdotL;
+			color_sp += gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(RdotV,gl_FrontMaterial.shininess);
 		}
 	} else {
-		vec3 light3 = gl_LightSource[0].position.xyz/gl_LightSource[0].position.w;
-		lightDir = light3 - ecPos3;
-		dist = length(lightDir);
-		lightDir = normalize(lightDir);
-		NdotL = dot(n,lightDir);
+		vec3 light_pos = toVec3(gl_LightSource[0].position);
+		shadow = 1.0; //disable shadow for point light, TODO: add this functionality
+		L = light_pos - V;
+		dist = length(L);
+		L = normalize(L);
+		NdotL = dot(N,L);
+		R = 2.0 * NdotL * N - L; //calculate the reflection light's direction
+		RdotV = max(-dot(normalize(V),R),0.0);
 		if (NdotL > 0.0) {
 			att = 1.0 / (gl_LightSource[0].constantAttenuation +
 					gl_LightSource[0].linearAttenuation * dist +
 					gl_LightSource[0].quadraticAttenuation * dist * dist);
-			color += att * (diffuse * NdotL + ambient);
-			sp_color += att * gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(RdotV,gl_FrontMaterial.shininess);
+			color_amb += att * ambient;
+			color_diff += att * diffuse * NdotL;
+			color_sp += att * gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(RdotV,gl_FrontMaterial.shininess);
 		}
 	}
 	vec4 colorTex = texture2D(tex,gl_TexCoord[0].st);
-	//color = vec4(n.xyz,1.0);
-	//color = vec4(vec3(dot(lightDir,n)),1.0);
-	//color = vec4(ecPos3.xyz,1.0);
-	//color = vec4(lightDir.xyz/10.0,1.0);
-	//color = vec4(vec3(dist),1.0);
-	//color = vec4(1);
-	color.rgb = (color.rgb)*0.7*shadow + ambientGlobal.rgb;
-    gl_FragColor = vec4(colorTex.rgb * color.rgb + sp_color.rgb*0.7*shadow, 1.0);
+	vec3 color = (color_amb.rgb + color_diff.rgb * shadow) * colorTex.rgb + color_sp.rgb * shadow;
+    gl_FragColor = vec4(color.rgb, 1.0);
 }

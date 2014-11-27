@@ -1,23 +1,23 @@
-varying vec4 diffuse,ambientGlobal,ambient,ecPos;
+varying vec4 diffuse,amb_global,ambient,frag_pos,shadow_coord;
 varying vec3 normal;
-varying vec4 ShadowCoord;
 void main()
 {   
-    vec3 aux;
-    
-	ShadowCoord = gl_TextureMatrix[7] * gl_Vertex;
-
-    /* first transform the normal into eye space and normalize the result */
+    /* transform the normal into eye space and normalize the result */
     normal = normalize(gl_NormalMatrix * gl_Normal);
 	
     /* compute the vertex position  in camera space. */
-    ecPos = gl_ModelViewMatrix * gl_Vertex;
+    frag_pos = gl_ModelViewMatrix * gl_Vertex;
  
-    /* Compute the diffuse, ambient and globalAmbient terms */
+	/* calculate the texture coordinates at the shadow map */
+	shadow_coord = gl_TextureMatrix[7] * gl_Vertex;
+
+    /* compute the diffuse, ambient and global ambient terms */
     diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
     ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
-    ambientGlobal = gl_LightModel.ambient * gl_FrontMaterial.ambient;
+    amb_global = gl_LightModel.ambient * gl_FrontMaterial.ambient;
     
+	/* compute the texture coordinates for Texture0 */
     gl_TexCoord[0] = gl_MultiTexCoord0;
+
     gl_Position = ftransform();
 }

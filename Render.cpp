@@ -110,11 +110,12 @@ void Render::init()
 	setTextureState(false);
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
-	glGenTextures(5, texture);
-	texload(0,"texture/3.bmp");
-	texload(1,"texture/4.bmp");
-	texload(2,"texture/5.bmp");
-	texload(3,"texture/6.bmp");
+	glGenTextures(6, texture);
+	texload(0,"texture/0.bmp");
+	texload(1,"texture/3.bmp");
+	texload(2,"texture/4.bmp");
+	texload(3,"texture/5.bmp");
+	texload(4,"texture/6.bmp");
 	for(int i=0;i<256;i++)
 		for(int j=0;j<256;j++){
 			int t=(i/64)+(j/64);
@@ -122,7 +123,7 @@ void Render::init()
 			if(t & 1) k=0;
 			for(int l=0;l<=2;l++) tex_check[i][j][l]=k;
 		}
-	set(4);
+	set(5);
 #endif
 }
 
@@ -185,7 +186,15 @@ void renderSeenBlock(block_and_face seen_block){
 
 void Render::renderScene(){
 	glEnable(GL_TEXTURE_2D);
-	use_material(white, white, NULL, 1);
+	beginTranslate(Vec3f(0, 3, 0));
+	glMatrixMode(GL_MODELVIEW);
+	glScalef(2, 2, 2);
+	glMatrixMode(GL_TEXTURE);
+	glScalef(2, 2, 2);
+	use_material(light_grey, white, NULL, 32);
+	glutSolidSphere(1, 100, 100);
+	endTranslate();
+	use_material(light_grey, white, NULL, 8);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTranslate(toVec3f(p));

@@ -70,9 +70,9 @@ void setupMatrices(const flt eye[4], Vec3f center, bool lightSource)
 		width = wWidth;
 		height = wHeight;
 	}
-	int sz = lightSource ? 50 : 10;
-	if(!parallel) gluPerspective(lightSource ? 100 : 45,  width / flt(height), 0.1, 40000);
-	else glOrtho(-sz, sz, -sz, sz, 0.1, 40000);
+	int sz = lightSource ? 20 : 10;
+	if(!parallel) gluPerspective(lightSource ? 100 : 45,  width / flt(height), 0.1, 100);
+	else glOrtho(-sz, sz, -sz, sz, 0.1, 100);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	Vec3f neye = Vec3f(eye[0], eye[1], eye[2]);

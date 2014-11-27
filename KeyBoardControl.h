@@ -1,6 +1,8 @@
 #ifndef _KEY_BOARD_CONTROL_H
 #define _KEY_BOARD_CONTROL_H
 
+extern bool bDebugDepthMap;
+
 class KeyboardControl{
 private:
 	bool key_state[2000];

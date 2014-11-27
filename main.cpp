@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _ENABLE_CUSTOM_SHADERS_
+//#define _MOVING_LIGHT_
 #define CULL_BACK
 #pragma comment(lib, "glew32.lib")
 
@@ -21,7 +22,7 @@
 
 using namespace std;
 
-const GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
+GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
 
 float fTranslate;
 float fRotate;
@@ -114,6 +115,14 @@ void idle()
 	++idle_count;
 	static clock_t now;
 	now = clock();
+	
+#ifdef _MOVING_LIGHT_
+	flt ang = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
+	light_pos[0] = cos(ang);
+	light_pos[1] = sin(ang);
+	light_pos[2] = 1.0;
+#endif
+
 	if (lst + inter <= now) {
 		if(bGravity)observer.fall();
 		int df = 0;
@@ -190,7 +199,7 @@ void redraw()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?dark_grey:black);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state&1)?sun:black);
 	glLightfv(GL_LIGHT0, GL_SPECULAR,(state&2)?sun:black);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state&4)?sun:black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
@@ -280,9 +289,9 @@ void DisplayScene(){
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? dark_grey : black);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? light_grey : black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
@@ -290,30 +299,28 @@ void DisplayScene(){
 
 	renderSeenBlock(seen_block);
 	renderGUI(observer);
-//#define _DEBUG_SHOW_DEPTH_MAP_
-#ifdef _DEBUG_SHOW_DEPTH_MAP_
 
-	// DEBUG only. this piece of code draw the depth buffer onscreen
-	glUseProgramObjectARB(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0,SHADOW_MAP_WIDTH,0,SHADOW_MAP_HEIGHT,1,200);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glColor4f(1,1,1,1);
-	glActiveTextureARB(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D,depth_texture_id);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-	glEnable(GL_TEXTURE_2D);
-	glTranslated(0, 0, -1);
-	glBegin(GL_QUADS);
-	glTexCoord2d(0,0);glVertex3f(wWidth/2.0,wHeight/2.0,0);
-	glTexCoord2d(1,0);glVertex3f(wWidth,wHeight/2.0,0);
-	glTexCoord2d(1,1);glVertex3f(wWidth,wHeight,0);
-	glTexCoord2d(0,1);glVertex3f(wWidth/2.0,wHeight,0);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-#endif
+	if (bDebugDepthMap) {
+		// DEBUG only. this piece of code draw the depth buffer onscreen
+		glUseProgramObjectARB(0);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, wWidth, 0, wHeight, 1, 200);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glColor4f(1, 1, 1, 1);
+		glActiveTextureARB(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+		glEnable(GL_TEXTURE_2D);
+		glTranslated(0, 0, -1);
+		glBegin(GL_QUADS);
+		glTexCoord2d(0, 0); glVertex3f(wWidth / 2.0, wHeight / 2.0, 0);
+		glTexCoord2d(1, 0); glVertex3f(wWidth, wHeight / 2.0, 0);
+		glTexCoord2d(1, 1); glVertex3f(wWidth, wHeight, 0);
+		glTexCoord2d(0, 1); glVertex3f(wWidth / 2.0, wHeight, 0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
 	glutSwapBuffers();
 }
 

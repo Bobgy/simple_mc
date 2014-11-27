@@ -12,6 +12,7 @@ extern void update_center();
 extern void updateView(int, int);
 extern World world;
 extern Entity observer;
+bool bDebugDepthMap = false;
 
 void KeyDown(unsigned char key, int x, int y)
 {
@@ -38,7 +39,7 @@ void SpecialKeyDown(int key, int x, int y)
 {
 	static bool fullscreen = 0;
 	switch (key){
-		case GLUT_KEY_F5: {
+		case GLUT_KEY_F11:
 			if (fullscreen){
 				glutReshapeWindow(1000, 700);
 				glutPositionWindow(0, 0);
@@ -48,7 +49,9 @@ void SpecialKeyDown(int key, int x, int y)
 				fullscreen = 1;
 			}
 			break;
-		}
+		case GLUT_KEY_F10:
+			bDebugDepthMap ^= 1;
+			break;
 	}
 }
 bool KeyboardControl::get_state(unsigned char key)

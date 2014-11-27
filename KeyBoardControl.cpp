@@ -3,6 +3,7 @@
 #include "world.h"
 #include "entity.h"
 #include "Render.h"
+#include "screenshot.h"
 
 KeyboardControl keyboard;
 extern void regenTableList(GLint);
@@ -14,6 +15,7 @@ extern void updateView(int, int);
 extern World world;
 extern Entity observer;
 extern Render render;
+extern int screenshotCount;
 bool bDebugDepthMap = false;
 
 void KeyDown(unsigned char key, int x, int y)
@@ -33,6 +35,11 @@ void KeyDown(unsigned char key, int x, int y)
 		case '/': {
 			//write world to file
 			break;
+		}
+		case 'c':{
+			std::string filename = "screenshot_" + std::to_string(screenshotCount) + ".bmp";
+			ScreenShot(filename);
+			screenshotCount++;
 		}
 	}
 	update_center();

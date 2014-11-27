@@ -10,7 +10,6 @@
 #include <map>
 #include <array>
 #include <ctime>
-#include <string>
 #include <cassert>
 #include "world.h"
 #include "entity.h"
@@ -20,7 +19,6 @@
 #include "shader.h"
 #include "auxiliary.h"
 #include "shadow.h"
-#include "screenshot.h"
 
 using namespace std;
 
@@ -59,8 +57,6 @@ flt face_xz[] = { 1, 0, 0 };
 int windowHandle;
 
 bool enableObserver = 0;
-
-int screenshotCount = 0;
 
 void renderSceneDynamic(){
 	if (enableObserver)
@@ -132,11 +128,6 @@ void idle()
 		if(bGravity)observer.fall();
 		int df = 0;
 		static flt ff[3];
-		if (keyboard.get_state('c')){
-			std::string filename = "screenshot_"+std::to_string(screenshotCount) +".bmp";
-			ScreenShot(filename);
-			screenshotCount++;
-		}
 		if (keyboard.get_state('w') ^ keyboard.get_state('s')){
 			df = keyboard.get_state('w') ? 1 : -1;
 			observer.give_velocity(face_xz, step*df);

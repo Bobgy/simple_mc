@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include <cstdio>
 #include "entity.h"
+#include <vector>
 #define BITMAP_ID 0x4D42
 
 class Render{
@@ -18,12 +19,14 @@ public:
 	void beginTranslate(Vec3f p);
 	void endTranslate();
 	void setTextureState(bool);
+	void texLoadPNG(int i, const char *filename);
 
 private:
 	
 	bool bTexture;
 	void texload(int i,const char *filename);
 	unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader);
+	unsigned char *LoadPngImage(const char *filename);
 	void set(int k);
 	unsigned char tex_check[256][256][3];
 };

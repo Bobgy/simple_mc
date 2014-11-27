@@ -32,7 +32,10 @@ void main()
     vec3 N,L,R,V;
     float NdotL,att,dist,RdotV;
     vec4 color_amb = amb_global, color_diff = vec4(0.0), color_sp = vec4(0.0);
+	vec4 colorTex = texture2D(tex,gl_TexCoord[0].st);
 	float shadow = pcf(shadow_coord / shadow_coord.w);
+
+	if(abs(colorTex.a)<1e-5)discard;
 
     N = normalize(normal); //normalize the interpolated normal
 	V = toVec3(frag_pos);  //calculate the fragment's position in vec3
@@ -66,7 +69,7 @@ void main()
 			color_sp += att * gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(RdotV,gl_FrontMaterial.shininess);
 		}
 	}
-	vec4 colorTex = texture2D(tex,gl_TexCoord[0].st);
 	vec3 color = (color_amb.rgb + color_diff.rgb * shadow) * colorTex.rgb + color_sp.rgb * shadow;
+	//color = colorTex.aaa;
     gl_FragColor = vec4(color.rgb, 1.0);
 }

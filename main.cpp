@@ -7,9 +7,9 @@
 
 #include <math.h>
 #include <map>
-#include <array>
 #include <ctime>
 #include <cassert>
+#include <iostream>
 #include "world.h"
 #include "entity.h"
 #include "render.h"
@@ -18,11 +18,12 @@
 #include "shader.h"
 #include "auxiliary.h"
 #include "shadow.h"
+#include "lodepng.h"
 
 using namespace std;
 
+//The light's position
 GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
-//GLfloat light_pos[] = { 4.5, 4.5, 4.5, 0.2 };
 
 float fTranslate;
 float fRotate;
@@ -31,7 +32,7 @@ float fScale     = 1.0f;	// set inital scale value to 1.0f
 bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
-bool bGravity = false;
+bool bGravity = true;
 
 int wHeight =  724;
 int wWidth = 1024;
@@ -40,7 +41,7 @@ GLhandleARB shader_id;
 
 float r = 0.45, h = 1.6;
 typedef Vec3i Pt3;
-World world(time(NULL), 13);
+World world(time(NULL), 30);
 block_and_face seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 extern KeyboardControl keyboard;

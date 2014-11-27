@@ -119,6 +119,7 @@
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="KeyBoardControl.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="shader.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="GL\glew.h" />
     <ClInclude Include="KeyBoardControl.h" />
     <ClInclude Include="cursor.h" />
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shadow.h" />

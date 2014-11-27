@@ -2,6 +2,7 @@
 #include "KeyBoardControl.h"
 #include "world.h"
 #include "entity.h"
+#include "Render.h"
 
 KeyboardControl keyboard;
 extern void regenTableList(GLint);
@@ -12,6 +13,7 @@ extern void update_center();
 extern void updateView(int, int);
 extern World world;
 extern Entity observer;
+extern Render render;
 bool bDebugDepthMap = false;
 
 void KeyDown(unsigned char key, int x, int y)
@@ -26,6 +28,10 @@ void KeyDown(unsigned char key, int x, int y)
 		case 't': {
 			tex = (tex + 1) % 7;
 			regenTableList(tableList);
+			break;
+		}
+		case '/': {
+			//write world to file
 			break;
 		}
 	}

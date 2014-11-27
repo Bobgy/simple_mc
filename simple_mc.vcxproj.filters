@@ -42,6 +42,9 @@
     <ClCompile Include="shadow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="lodepng.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec.h">
@@ -81,6 +84,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GL\glew.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

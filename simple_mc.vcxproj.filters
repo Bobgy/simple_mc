@@ -77,6 +77,12 @@
     <ClInclude Include="shadow.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GL\freeglut.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GL\glew.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_fragment.glsl">

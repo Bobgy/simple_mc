@@ -129,6 +129,8 @@
     <ClInclude Include="auxiliary.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="GL\freeglut.h" />
+    <ClInclude Include="GL\glew.h" />
     <ClInclude Include="KeyBoardControl.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="Render.h" />

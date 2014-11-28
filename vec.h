@@ -8,6 +8,8 @@ using namespace std;
 typedef float flt;
 template <class T> inline T sqr(T x){ return x*x; }
 
+const flt PI = acos(-1.0);
+
 template < class T >
 class Vec3{
 
@@ -82,14 +84,21 @@ public:
 		T len = !*this;
 		return *this * (1/len);
 	}
+
+	template < class TT >
+	Vec3<T>(Vec3<TT> r){
+		x[0] = r[0];
+		x[1] = r[1];
+		x[2] = r[2];
+	}
 };
 
 typedef Vec3<int> Vec3i;
 typedef Vec3<flt> Vec3f;
-
+typedef Vec3<double> Vec3fd;
 
 const Vec3f Vec3fZero(0, 0, 0);
-const flt EPS = 1e-5;
+const flt EPS = 1e-6;
 
 //test if x is zero under eps
 inline bool zero(flt x){
@@ -113,20 +122,21 @@ const int FACE_AXIS[3][2] = {
 typedef std::pair<Vec3i, int> block_and_face;
 
 //find the next integer in direction dir (-1/1)
-inline int next_int(flt x, int dir){
-	if (dir > 0) return ceil(x + EPS);
-	else return floor(x - EPS);
+inline int next_int(double x, int dir){
+	if (dir > 0) return ceil(x + 1e-10);
+	else return floor(x - 1e-10);
 }
 
 inline Vec3i floor(Vec3f x){
 	return Vec3i(floor(x[0]), floor(x[1]), floor(x[2]));
 }
 
+inline Vec3i floor(Vec3fd x){
+	return Vec3i(floor(x[0]), floor(x[1]), floor(x[2]));
+}
+
 inline Vec3i round(Vec3f x){
 	return Vec3i(round(x[0]), round(x[1]), round(x[2]));
-}
-inline Vec3f toVec3f(Vec3i x){
-	return Vec3f(x[0], x[1], x[2]);
 }
 
 #endif

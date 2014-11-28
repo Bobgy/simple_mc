@@ -13,13 +13,7 @@ class Cursor{
 
 private:
 
-	int h_ang, v_ang;
-	flt h_ang_f, v_ang_f;
-	
-	void update(){
-		h_ang_f = h_ang * DEG2RAD;
-		v_ang_f = v_ang * DEG2RAD;
-	}
+	flt h_ang, v_ang;
 
 public:
 
@@ -29,14 +23,12 @@ public:
 	void update_facing_vector();
 
 	flt get_horizontal_angle() const {
-		return h_ang_f;
+		return h_ang;
 	}
 	flt get_vertical_angle() const {
-		return v_ang_f;
+		return v_ang;
 	}
-	Cursor() :h_ang(0), v_ang(0) {
-		update();
-	}
+	Cursor() :h_ang(0), v_ang(0) {}
 	friend void process_move(int, int);
 
 };

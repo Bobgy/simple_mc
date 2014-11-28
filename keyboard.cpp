@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "KeyBoardControl.h"
+#include "keyboard.h"
 #include "world.h"
 #include "entity.h"
 #include "render.h"
@@ -59,11 +59,15 @@ void SpecialKeyDown(int key, int x, int y)
 {
 	static bool fullscreen = 0;
 	switch (key){
-
 		case GLUT_KEY_F5:
 			view_mode = (view_mode + 1) % VIEW_MODE_TOTAL_NUMBER;
 			break;
-
+		case GLUT_KEY_F6:
+			bObserver ^= 1;
+			break;
+		case GLUT_KEY_F9:
+			bBoxLine ^= 1;
+			break;
 		//toggle showing the shadow depth map at the top right corner
 		case GLUT_KEY_F10:
 			bDebugDepthMap ^= 1;

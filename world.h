@@ -29,7 +29,7 @@ public:
 	//returns the first block within radius r that is seen by an eye
 	//at p looking at the direction vector dir
 	//returns -1 in face to indicate no block is found
-	block_and_face look_at_block(Vec3f p, Vec3f dir, flt r) const;
+	block_and_face look_at_block(Vec3<double> p, Vec3<double> dir, double r) const;
 
 	//generate a world by a stage file
 	World(string stage_file_path);

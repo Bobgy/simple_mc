@@ -18,4 +18,10 @@ extern bool bObserver;
 //the distance between observer and camera in third person views
 extern flt observer_dist;
 
+//the smoothness of the ground, v' = v * smoothness
+extern flt smoothness_ground;
+
+//whether show all the lines of boxes for debug
+extern bool bBoxLine;
+
 #endif

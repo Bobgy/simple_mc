@@ -15,16 +15,16 @@ void process_move(int x, int y){
 	cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
 	dx = x - cX;
 	dy = y - cY;
-	if (dx*dx + dy*dy > 7 && glutGetWindow()==windowHandle) {
+	if (abs(dx) + abs(dy) > 2 && glutGetWindow()==windowHandle) {
 		glutWarpPointer(cX, cY);
-		static flt len_x = 0.5, len_y = -0.25;
-		cursor.h_ang += dx * len_x;
-		cursor.h_ang %= 360;
-		cursor.v_ang += dy * len_y;
-		if (abs(cursor.v_ang) >= 90){
-			cursor.v_ang = cursor.v_ang > 0 ? 89 : -89;
-		}
-		cursor.update();
+		flt &ha = cursor.h_ang, &va = cursor.v_ang;
+		const static flt len_x = 0.01, len_y = -0.006;
+		ha += dx * len_x;
+		if (ha > PI) ha -= 2 * PI;
+		if (ha < -PI) ha += 2 * PI;
+		va += dy * len_y;
+		if (va + EPS > PI*0.5) va = PI*0.5 - EPS;
+		if (va - EPS < PI*-0.5) va = -PI*0.5 + EPS;
 		render.update_center(cursor);
 		updateView();
 	}
@@ -48,12 +48,12 @@ void process_click(int button, int state, int x, int y){
 void Cursor::update_facing_vector(){
 	face = cursor.face;
 	face_xz = cursor.face_xz;
-	face_xz[0] = cos(h_ang_f);
-	face_xz[2] = sin(h_ang_f);
+	face_xz[0] = cos(h_ang);
+	face_xz[2] = sin(h_ang);
 	face_xz[1] = 0;
-	face[0] = face_xz[0] * cos(v_ang_f);
-	face[2] = face_xz[2] * cos(v_ang_f);
-	face[1] = sin(v_ang_f);
+	face[0] = face_xz[0] * cos(v_ang);
+	face[2] = face_xz[2] * cos(v_ang);
+	face[1] = sin(v_ang);
 }
 
 void init_cursor(){

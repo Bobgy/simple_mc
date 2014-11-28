@@ -17,3 +17,9 @@ bool bObserver = false;
 
 //the distance between observer and camera in third person views
 flt observer_dist = 4.0;
+
+//the smoothness of the ground, v' = v * smoothness
+flt smoothness_ground = 0.80;
+
+//whether show all the lines of boxes for debug
+bool bBoxLine = false;

@@ -12,6 +12,9 @@
 
 extern World world;
 extern Cursor cursor;
+extern block_and_face seen_block;
+extern Entity observer;
+
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
 const static float emission[10][4] = { {1,1,1,1}, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 } };
@@ -246,7 +249,7 @@ void Render::renderObserver(Entity observer, flt r, flt h){
 void renderSeenBlock(block_and_face seen_block){
 	if (seen_block.second == -1) return;
 	render.beginTransform();
-	render.translate(toVec3f(seen_block.first)+0.5);
+	render.translate(Vec3f(seen_block.first)+0.5);
 	glutWireCube(1.01);
 	render.endTransform();
 }
@@ -266,7 +269,7 @@ void Render::renderScene(){
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
-		translate(toVec3f(p));
+		translate(p);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
@@ -374,9 +377,22 @@ void renderSceneDynamic(Entity observer){
 		render.renderObserver(observer, r, h);
 }
 
-
-extern block_and_face seen_block;
-extern Entity observer;
+void Render::renderBoxLine(){
+	Vec3f p = floor(observer);
+	glLineWidth(2.0);
+	glColor3d(1, 1, 1);
+	const int rg = 5;
+	for (int i = -rg; i <= rg; ++i){
+		for (int j = -rg; j <= rg; ++j){
+			for (int k = -rg; k <= rg; ++k){
+				beginTransform();
+				translate(p+Vec3f(i+0.5, j+0.5, k+0.5));
+				glutWireCube(1.0);
+				endTransform();
+			}
+		}
+	}
+}
 
 void DisplayScene(){
 	//First step: Render from the light POV to a FBO, story depth values only
@@ -469,9 +485,18 @@ void DisplayScene(){
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
 	glEnable(GL_LIGHT0);
-
-	renderSeenBlock(seen_block);
+	
 	renderGUI(observer);
+
+	//Draw the GUI
+	glUseProgramObjectARB(0);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_COLOR_MATERIAL);
+	if (bBoxLine) {
+		render.renderBoxLine();
+	}
+	glColor3d(0, 0, 0);
+	renderSeenBlock(seen_block);
 
 	extern bool bDebugDepthMap;
 	// DEBUG only. this piece of code draw the depth buffer onscreen
@@ -505,18 +530,15 @@ void Render::update_center(Cursor &cursor){
 	case VIEW_MODE_FIRST_PERSON:
 		eye = p_eye;
 		center = eye + cursor.face;
-		bObserver = false;
 		break;
 	case VIEW_MODE_THIRD_PERSON_FRONT:
 		center = p_eye;
 		eye = p_eye + cursor.face * observer_dist;
-		bObserver = true;
 		break;
 	case VIEW_MODE_THIRD_PERSON_BACK:
 		center = p_eye;
 		eye = p_eye - cursor.face * observer_dist;
-		bObserver = true;
 		break;
 	}
-	seen_block = world.look_at_block(eye, cursor.face, 10.0);
+	seen_block = world.look_at_block(p_eye, cursor.face, 10.0);
 }

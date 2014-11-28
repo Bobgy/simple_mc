@@ -28,10 +28,10 @@ bool Entity::collide_cube_vertically(const Vec3i x){
 void Entity::collide_cube_horizontally(const Vec3i x){
 	flt len = seg_intersect(x[1], x[1] + 1, p[1], p[1] + h);
 	if (zero(len)) return; //not vertically intersecting
-	static flt cx[3];
-	cx[0] = x[0] + 0.5, cx[1] = x[1] + 0.5, cx[2] = x[2] + 0.5;
+	Vec3f cx;
+	cx = Vec3f(x) + 0.5;
 	if (zero(p[0] - cx[0]) && zero(p[2] - cx[2])) return; //the center coincide, cannot collide
-	static int a, b, dt;
+	int a, b, dt;
 	get_quadrant(p[0] - cx[0], p[2] - cx[2], a, dt);
 	b = a == 0 ? 2 : 0; //collide along "a" axis;
 	assert(a != b && (a == 0 || a == 2) && (b == 0 || b == 2));
@@ -43,24 +43,15 @@ void Entity::collide_cube_horizontally(const Vec3i x){
 		}
 	} else { //collide with the corner
 		Vec3f p_corner;
-		p_corner = toVec3f(x);
+		p_corner = x;
 		p_corner[a] += dt;
-		flt pos;
-		if (p[b] < x[b] + 0.5){
-			p_corner[b] = x[b];
-			pos = fabs(p[b] - x[b]);
-		} else {
-			p_corner[b] = x[b] + 1;
-			pos = fabs(p[b] - (x[b] + 1));
-		}
-		if (pos > r) return;
-		pos = -sig * sqrt(r*r - pos*pos); //p[a]+pos is the coordinate at the corner
-		if (in_range(pos, cx[a], x[a] + dt, false, true)) {
-			p[a] += (x[a] + dt) - pos;
-			if ((v[a] > 0) != dt) {
-				Vec3f dir = (p_corner - p).normalize();
-				v = v - (v*dir)*dir;
-			}
-		}
+		p_corner[b] = p[b] < cx[b] ? x[b] : x[b] + 1;
+		Vec3f rel = p_corner - p;
+		// the corner
+		if (!test_point_in_circle(rel[0], rel[2], r)) return;
+		rel = rel.normalize();
+		//force((len - r - 1.0)*rel.normalize()); //elastic
+		p = p_corner - rel * r;
+		if (v*rel > 0) v = v - (v*rel)* rel;
 	}
 }

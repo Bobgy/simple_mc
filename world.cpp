@@ -21,22 +21,22 @@ Block* World::get_block(Vec3i p) const {
 //returns the first block within radius r that is seen by an eye
 //at p looking at the direction vector dir
 //returns -1 in face to indicate no block is found
-block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
+block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	static int sign[3], i;
 	for (i = 0; i < 3; ++i)
 		sign[i] = sgn(dir[i]);
 	assert(sign[0] || sign[1] || sign[2]);
-	Vec3f now(p);
+	Vec3fd now(p);
 	Vec3i p_block;
 	int MAX_COUNT = 200;
 	while(MAX_COUNT--){
 		int axis = -1;
-		flt next_time = 1e20f; //infinite
+		double next_time = 1e20; //infinite
 		//find the next intersection point with an interger face
-		for (i = 0; i < 3; ++i){
+		for (i = 0; i < 3; ++i) {
 			if (sign[i] == 0) continue;
 			int ni = next_int(now[i], sign[i]);
-			flt t = (ni - now[i]) / dir[i];
+			double t = (ni - now[i]) / dir[i];
 			assert(t >= 0);
 			if (t < next_time){
 				next_time = t;
@@ -44,12 +44,12 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 			}
 		}
 		assert(~axis);
-		now = now + (next_time + 1e-6) * dir;
+		now = now + (next_time + 1e-10) * dir;
 		if (sqr(now - p) > r*r) break;
 		p_block = floor(now);
 		auto it = blocks.find(p_block);
 		if (it != blocks.end() && it->second->test_intersection(p, dir)){
-			return make_pair(p_block, FACE_AXIS[axis][dir[axis] < 0]);
+			return make_pair(p_block, FACE_AXIS[axis][sign[axis]<0]);
 		}
 	}
 	assert(MAX_COUNT >= 0);
@@ -60,7 +60,7 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 World::World(string stage_file_path):changed(false){
 	for (int i = 0; i < 10; i++)
 		block_list.push_back(Block(int2block_type[i]));
-	if (!read_from_file(stage_file_path)){
+	if (!read_from_file(stage_file_path)) {
 		//fail to construct the world from file, generate it randomly
 		cerr << "Failed to read from file " << stage_file_path.c_str() << endl;
 	}

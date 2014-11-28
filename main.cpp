@@ -13,7 +13,7 @@
 #include "world.h"
 #include "entity.h"
 #include "render.h"
-#include "KeyBoardControl.h"
+#include "keyboard.h"
 #include "cursor.h"
 #include "shader.h"
 #include "auxiliary.h"
@@ -51,7 +51,7 @@ extern Cursor cursor;
 
 flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
 Entity observer(pp, vv, r, h, 1.0);
-float PI = acos(-1.0), deg2rad = PI / 180.0;
+float deg2rad = PI / 180.0;
 int windowHandle;
 
 extern bool bObserver;
@@ -138,7 +138,7 @@ void idle()
 				}
 			}
 		}
-		if (observer.on_ground) observer.be_slowed(0.90);
+		if (observer.on_ground) observer.be_slowed(smoothness_ground);
 		observer.update();
 		render.update_center(cursor);
 		updateView();

@@ -28,6 +28,9 @@ public:
 	void setTextureState(bool);
 	void texLoadPNG(int i, const char *filename);
 	
+	//render box lines around the player for debug use
+	void Render::renderBoxLine();
+
 	//use this function to start a series of transformation
 	void beginTransform();
 

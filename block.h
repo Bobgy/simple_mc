@@ -1,9 +1,21 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 enum block_type{
+	TREASURE,
 	AIR,
-	DIRT
+	DIRT,
+	RED,
+	BLUE,
+	YELLOW,
+	GREEN,
+	STONE,
+	GLASS,
+	WOOD
+	
 };
+
+
+
 class Block {
 private:
 	block_type type;

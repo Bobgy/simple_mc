@@ -8,13 +8,15 @@
 
 extern World world;
 extern int idle_count, wWidth, wHeight;
+const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
+const static float emission[10][4] = { {1,1,1,1}, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 } };
 //                                 0       1       2       3       4       5       6       7
 const static int point[8][3] = {{0,0,0},{0,1,0},{1,1,0},{1,0,0},{0,0,1},{0,1,1},{1,1,1},{1,0,1}};
 const static int face[6][4] = {{1,5,6,2},{0,3,7,4},{3,2,6,7},{4,5,1,0},{7,6,5,4},{0,1,2,3}};// top->down->right->left->front->back
 const static int t_point[4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 Render render;
-GLuint tex=0;
+GLuint tex=1;
 
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
@@ -74,7 +76,7 @@ void Render::texLoadPNG(int i, const char *filename)
 	unsigned width, height;
 	error = lodepng_decode32_file(&image, &width, &height, filename);
 	if (error) {
-		printf("error %u: %s\n", error, lodepng_error_text(error));
+		printf("error %u when opening %s : %s\n", error, filename, lodepng_error_text(error));
 		return;
 	}
 	glBindTexture(GL_TEXTURE_2D, texture[i]);
@@ -137,14 +139,15 @@ void Render::init()
 	setTextureState(false);
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
-	glGenTextures(6, texture);
-	//texload(0,"texture/0.bmp");
-	texLoadPNG(0,"texture/cobblestone.png");
+	glGenTextures(8, texture);
+	texLoadPNG(0,"texture/sun.png");
 	texload(1,"texture/3.bmp");
 	texload(2,"texture/4.bmp");
 	texload(3,"texture/5.bmp");
 	texLoadPNG(4,"texture/gold_block.png");
 	texLoadPNG(5,"texture/tallgrass.png");
+	texload(6, "texture/6.bmp");
+	texLoadPNG(7, "texture/cobblestone.png");
 #endif
 }
 
@@ -176,6 +179,7 @@ void Render::renderCube(int type,int state)
 	endTranslate();
 #else
 	if (bTexture) glBindTexture(GL_TEXTURE_2D, texture[type]);
+
 	glBegin(GL_QUADS);
 	for (int i = 0; i<6; i++)if (state>>i&1){
 		glNormal3f(FACE[i][0], FACE[i][1], FACE[i][2]);
@@ -187,6 +191,7 @@ void Render::renderCube(int type,int state)
 		}
 	}
 	glEnd();
+
 #endif
 }
 
@@ -217,7 +222,7 @@ void Render::renderScene(){
 	glutSolidSphere(1, 100, 100);
 	endTranslate();
 	*/
-	use_material(light_grey, white, NULL, 8);
+	//use_material(light_grey, white, NULL, 8);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTranslate(toVec3f(p));
@@ -225,7 +230,10 @@ void Render::renderScene(){
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
 				msk |= 1 << i;
-		render.renderCube(tex, msk);
+		int b = it->second->get_block_type();
+		use_material(color_list[b], color_list[b], NULL, 8);
+		//if (b == 0) cout << "SUN!" << endl;
+		render.renderCube(b, msk);
 		endTranslate();
 	}
 }

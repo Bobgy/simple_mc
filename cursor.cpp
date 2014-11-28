@@ -5,6 +5,7 @@ extern World world;
 extern block_and_face seen_block;
 Cursor cursor;
 extern int windowHandle;
+extern block_type type;
 
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
@@ -36,7 +37,7 @@ void process_click(int button, int state, int x, int y){
 	}
 	if (button == GLUT_RIGHT_BUTTON) {
 		if (state == GLUT_DOWN){
-			world.place_block(seen_block, DIRT);
+			world.place_block(seen_block, type);
 		}
 	}
 }

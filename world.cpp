@@ -1,9 +1,16 @@
 #include <map>
 #include <cassert>
+#include <iostream>
+#include <fstream>
+
 #include "vec.h"
 #include "block.h"
 #include "world.h"
 
+
+using namespace std;
+
+extern block_type int2block_type[10];
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
 Block* World::get_block(Vec3i p) const {
 	auto it = blocks.find(p);
@@ -49,11 +56,20 @@ block_and_face World::look_at_block(Vec3f p, Vec3f dir, flt r) const {
 	return make_pair(p_block, -1); //-1 means not found
 }
 
+//generate a world by file in path stage_file_path
+World::World(string stage_file_path):changed(false){
+	for (int i = 0; i < 10; i++)
+		block_list.push_back(Block(int2block_type[i]));
+	if (!read_from_file(stage_file_path)){
+		//fail to construct the world from file, generate it randomly
+		cerr << "Failed to read from file " << stage_file_path.c_str() << endl;
+	}
+}
+
 //generate a world by random seed: seed
-World::World(int seed, int range) :changed(false){
+World::World(int seed, int range):changed(false){
 	srand(seed);
-	block_list.push_back(Block(AIR));
-	block_list.push_back(Block(DIRT));
+	for (int i = 0; i < 10; i++) block_list.push_back(Block(int2block_type[i]));
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k){
@@ -69,6 +85,7 @@ bool World::place_block(block_and_face p, block_type tp){
 	if (get_block(pos) == NULL){
 		blocks[pos] = &block_list[tp];
 		changed = true;
+		//cout << tp << endl;
 		return true;
 	}
 	return false;
@@ -81,4 +98,35 @@ bool World::destroy_block(Vec3i p){
 		return true;
 	}
 	return false;
+}
+
+void World::print()
+{
+	ofstream f("print.txt");
+	static map<Vec3i, Block*>::const_iterator it;
+	for (it = blocks.begin(); it != blocks.end(); ++it)
+	{
+		Vec3i point = it->first;
+		Block* type = it->second;
+		f << point[0] << " " << point[1] << " " << point[2] << " " << type->get_block_type() << endl;
+
+	}
+	f.close();
+}
+
+bool World::read_from_file(string name)
+{
+	int x, y, z, type;
+	block_type bt;
+	blocks.clear();
+	ifstream f(name);
+	if (f.rdstate() & f.failbit) return false;
+	f >> x >> y >> z >> type;
+	while (!f.eof())
+	{
+		Vec3i pos(x, y, z);
+		blocks[pos] = &block_list[int2block_type[type]];
+		f >> x >> y >> z >> type;
+	}
+	return true;
 }

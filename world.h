@@ -30,7 +30,10 @@ public:
 	//at p looking at the direction vector dir
 	//returns -1 in face to indicate no block is found
 	block_and_face look_at_block(Vec3f p, Vec3f dir, flt r) const;
-	
+
+	//generate a world by a stage file
+	World(string stage_file_path);
+
 	//generate a world by random seed: seed
 	World(int seed, int range);
 
@@ -38,7 +41,7 @@ public:
 	bool place_block(block_and_face p, block_type tp);
 
 	//destroy a block at p
-	bool World::destroy_block(Vec3i p);
+	bool destroy_block(Vec3i p);
 
 	map<Vec3i, Block*>::const_iterator begin() const {
 		return blocks.begin();
@@ -49,5 +52,10 @@ public:
 	map<Vec3i, Block*>::const_iterator find(Vec3i p) const {
 		return blocks.find(p);
 	}
+
+	void print();
+
+	//Read the world from a file, returns true when successful, false otherwise.
+	bool read_from_file(string name);
 };
 #endif

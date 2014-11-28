@@ -10,7 +10,6 @@
 #include <ctime>
 #include <cassert>
 #include <iostream>
-#include <string>
 #include "world.h"
 #include "entity.h"
 #include "render.h"
@@ -20,13 +19,12 @@
 #include "auxiliary.h"
 #include "shadow.h"
 #include "lodepng.h"
-#include "screenshot.h"
 
 using namespace std;
 
 //The light's position
 GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
-
+block_type int2block_type[10] = { TREASURE, AIR, DIRT, RED, BLUE, YELLOW, GREEN, STONE, GLASS, WOOD };
 float fTranslate;
 float fRotate;
 float fScale     = 1.0f;	// set inital scale value to 1.0f
@@ -35,15 +33,19 @@ bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
 bool bGravity = true;
+block_type type;
 
 int wHeight =  724;
 int wWidth = 1024;
 extern GLuint tex;
 GLhandleARB shader_id;
+int screenshot_count = 0;
 
 float r = 0.45, h = 1.6;
 typedef Vec3i Pt3;
-World world(time(NULL), 30);
+//World world(time(NULL), 30);
+World world("stage/1.txt");
+
 block_and_face seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 extern KeyboardControl keyboard;
@@ -59,8 +61,6 @@ flt face_xz[] = { 1, 0, 0 };
 int windowHandle;
 
 bool enableObserver = 0;
-
-int screenshotCount = 0;
 
 void renderSceneDynamic(){
 	if (enableObserver)
@@ -296,6 +296,7 @@ void DisplayScene(){
 }
 
 void init(int argc, char *argv[]){
+	type = DIRT;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(wWidth, wHeight);

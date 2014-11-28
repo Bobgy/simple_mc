@@ -1,3 +1,5 @@
+#version 120
+
 varying vec4 diffuse,amb_global,ambient,frag_pos,shadow_coord;
 varying vec3 normal;
 uniform sampler2D tex;

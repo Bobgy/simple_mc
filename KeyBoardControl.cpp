@@ -15,7 +15,9 @@ extern void updateView(int, int);
 extern World world;
 extern Entity observer;
 extern Render render;
-extern int screenshotCount;
+extern block_type type;
+extern block_type int2block_type[10];
+extern int screenshot_count;
 bool bDebugDepthMap = false;
 
 void KeyDown(unsigned char key, int x, int y)
@@ -28,18 +30,23 @@ void KeyDown(unsigned char key, int x, int y)
 		case 'p': { bPersp = !bPersp; break; }
 		case 'o': { bWire = !bWire; break; }
 		case 't': {
-			tex = (tex + 1) % 7;
+			tex =1+ (tex + 1) % 7;
 			regenTableList(tableList);
 			break;
 		}
 		case '/': {
 			//write world to file
+			world.print();
 			break;
 		}
-		case 'c':{
-			std::string filename = "screenshot_" + std::to_string(screenshotCount) + ".bmp";
-			ScreenShot(filename);
-			screenshotCount++;
+		default:
+		{
+			if ((key >= '0') && (key <= '9'))
+			{
+				int k = key - '0';
+				type = int2block_type[k];
+			//	cout << key << " " << k << " " << type << endl;
+			}
 		}
 	}
 	update_center();
@@ -52,6 +59,8 @@ void SpecialKeyDown(int key, int x, int y)
 {
 	static bool fullscreen = 0;
 	switch (key){
+
+		//toggle fullscreen
 		case GLUT_KEY_F11:
 			if (fullscreen){
 				glutReshapeWindow(1000, 700);
@@ -62,9 +71,19 @@ void SpecialKeyDown(int key, int x, int y)
 				fullscreen = 1;
 			}
 			break;
+
+		//toggle showing the shadow depth map at the top right corner
 		case GLUT_KEY_F10:
 			bDebugDepthMap ^= 1;
 			break;
+
+		//screen_shot
+		case GLUT_KEY_F12: {
+			std::string filename = "screenshot_" + std::to_string(screenshot_count) + ".bmp";
+			ScreenShot(filename);
+			screenshot_count++;
+			break;
+		}
 	}
 }
 bool KeyboardControl::get_state(unsigned char key)

@@ -22,7 +22,6 @@ public:
 	void texLoadPNG(int i, const char *filename);
 
 private:
-	
 	bool bTexture;
 	void texload(int i,const char *filename);
 	unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader);

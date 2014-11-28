@@ -6,7 +6,7 @@ const int SHADOW_MAP_WIDTH = 1024 * SHADOW_MAP_RATIO;
 const int SHADOW_MAP_HEIGHT = 724 * SHADOW_MAP_RATIO;
 
 void generateShadowFBO();
-void setupMatrices(const flt lightDir[4], Vec3f center, bool lightSource = false);
+void setupMatrices(const Vec3f, Vec3f center, bool lightSource, bool parallel);
 void setTextureMatrix(void);
 
 #endif

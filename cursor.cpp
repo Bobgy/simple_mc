@@ -1,11 +1,13 @@
 #include "cursor.h"
 #include "world.h"
+#include "Render.h"
 
 extern World world;
 extern block_and_face seen_block;
 Cursor cursor;
 extern int windowHandle;
 extern block_type type;
+extern Render render;
 
 void process_move(int x, int y){
 	static int cX, cY, dx, dy;
@@ -23,7 +25,7 @@ void process_move(int x, int y){
 			cursor.v_ang = cursor.v_ang > 0 ? 89 : -89;
 		}
 		cursor.update();
-		update_center();
+		render.update_center(cursor);
 		updateView();
 	}
 }
@@ -40,6 +42,18 @@ void process_click(int button, int state, int x, int y){
 			world.place_block(seen_block, type);
 		}
 	}
+}
+
+
+void Cursor::update_facing_vector(){
+	face = cursor.face;
+	face_xz = cursor.face_xz;
+	face_xz[0] = cos(h_ang_f);
+	face_xz[2] = sin(h_ang_f);
+	face_xz[1] = 0;
+	face[0] = face_xz[0] * cos(v_ang_f);
+	face[2] = face_xz[2] * cos(v_ang_f);
+	face[1] = sin(v_ang_f);
 }
 
 void init_cursor(){

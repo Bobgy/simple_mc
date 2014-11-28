@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="auxiliary.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="KeyBoardControl.cpp" />
@@ -130,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="auxiliary.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="GL\freeglut.h" />
     <ClInclude Include="GL\glew.h" />

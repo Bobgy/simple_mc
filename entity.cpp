@@ -42,12 +42,25 @@ void Entity::collide_cube_horizontally(const Vec3i x){
 			if ((v[a] > 0) != dt) v[a] = 0;
 		}
 	} else { //collide with the corner
-		flt pos = min(fabs(p[b] - x[b] - 1), fabs(p[b] - x[b]));
+		Vec3f p_corner;
+		p_corner = toVec3f(x);
+		p_corner[a] += dt;
+		flt pos;
+		if (p[b] < x[b] + 0.5){
+			p_corner[b] = x[b];
+			pos = fabs(p[b] - x[b]);
+		} else {
+			p_corner[b] = x[b] + 1;
+			pos = fabs(p[b] - (x[b] + 1));
+		}
 		if (pos > r) return;
 		pos = -sig * sqrt(r*r - pos*pos); //p[a]+pos is the coordinate at the corner
 		if (in_range(pos, cx[a], x[a] + dt, false, true)) {
 			p[a] += (x[a] + dt) - pos;
-			if ((v[a] > 0) != dt) v[a] = 0;
+			if ((v[a] > 0) != dt) {
+				Vec3f dir = (p_corner - p).normalize();
+				v = v - (v*dir)*dir;
+			}
 		}
 	}
 }

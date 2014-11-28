@@ -56,9 +56,8 @@ void generateShadowFBO()
 }
 
 
-void setupMatrices(const flt eye[4], Vec3f center, bool lightSource)
+void setupMatrices(const Vec3f eye, Vec3f center, bool lightSource, bool parallel)
 {
-	bool parallel = zero(eye[3]);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	int width, height;
@@ -73,11 +72,11 @@ void setupMatrices(const flt eye[4], Vec3f center, bool lightSource)
 	int sz = lightSource ? 20 : 10;
 	if(!parallel) gluPerspective(lightSource ? 400 : 45,  width / flt(height), 0.1, 100);
 	else glOrtho(-sz, sz, -sz, sz, 0.1, 100);
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	Vec3f neye = Vec3f(eye[0], eye[1], eye[2]);
+	Vec3f neye = eye;
 	if (parallel) neye = center + neye * 10;
-	else neye = neye * (1 / eye[3]);
 	gluLookAt(neye[0],neye[1],neye[2],center[0],center[1],center[2],0,1,0);
 }
 
@@ -113,51 +112,4 @@ void setTextureMatrix(void)
 
 	// Go back to normal matrix mode
 	glMatrixMode(GL_MODELVIEW);
-}
-
-// During translation, we also have to maintain the GL_TEXTURE8, used in the shadow shader
-// to determine if a vertex is in the shadow.
-void startTranslate(float x, float y, float z)
-{
-	glPushMatrix();
-	glTranslatef(x, y, z);
-
-	glMatrixMode(GL_TEXTURE);
-	glActiveTextureARB(GL_TEXTURE7);
-	glPushMatrix();
-	glTranslatef(x, y, z);
-}
-
-void endTranslate()
-{
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
-
-void drawObjects(void)
-{
-	// Ground
-	glColor4f(0.3f, 0.3f, 0.3f, 1);
-	glBegin(GL_QUADS);
-	glVertex3f(-35, 2, -35);
-	glVertex3f(-35, 2, 15);
-	glVertex3f(15, 2, 15);
-	glVertex3f(15, 2, -35);
-	glEnd();
-
-	glColor4f(0.9f, 0.9f, 0.9f, 1);
-
-	// Instead of calling glTranslatef, we need a custom function that also maintain the light matrix
-	startTranslate(0, 4, -16);
-	glutSolidCube(4);
-	endTranslate();
-	startTranslate(0, 8, -10);
-	glutSolidCylinder(1, 1, 100, 10);
-	endTranslate();
-	startTranslate(0, 4, -5);
-	glutSolidCube(4);
-	endTranslate();
-
-
 }

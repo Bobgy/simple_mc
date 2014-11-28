@@ -15,13 +15,18 @@ private:
 
 	int h_ang, v_ang;
 	flt h_ang_f, v_ang_f;
-
+	
 	void update(){
 		h_ang_f = h_ang * DEG2RAD;
 		v_ang_f = v_ang * DEG2RAD;
 	}
 
 public:
+
+	//The vector denoting the facing direction and facing direction in the xz plane
+	Vec3f face, face_xz;
+
+	void update_facing_vector();
 
 	flt get_horizontal_angle() const {
 		return h_ang_f;

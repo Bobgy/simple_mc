@@ -76,6 +76,14 @@ public:
 
 	operator Vec3f() const { return p; }
 
+	Vec3f get_pos() const {
+		return p;
+	}
+
+	Vec3f get_velocity() const {
+		return v;
+	}
+
 	Entity(Vec3f p, Vec3f v, flt r, flt h, flt mass_inv, bool G = 1, bool M = 1) :
 		p(p), v(v), mass_inv(mass_inv), G(G), M(M), r(r), h(h){}
 

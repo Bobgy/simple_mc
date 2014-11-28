@@ -1,12 +1,17 @@
 //#define _SIMPLE_CUBE_
 #include "stdafx.h"
+#include <cassert>
+
 #include "auxiliary.h"
 #include "Render.h"
 #include "world.h"
 #include "lodepng.h"
-#include <cassert>
+#include "shadow.h"
+#include "cursor.h"
+#include "config.h"
 
 extern World world;
+extern Cursor cursor;
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
 const static float emission[10][4] = { {1,1,1,1}, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 } };
@@ -151,24 +156,58 @@ void Render::init()
 #endif
 }
 
-void Render::beginTranslate(Vec3f p)
+//use this function to start a series of transformation
+void Render::beginTransform()
 {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glTranslatef(p[0], p[1], p[2]);
 	glMatrixMode(GL_TEXTURE);
 	glActiveTextureARB(GL_TEXTURE7);
 	glPushMatrix();
-	glTranslatef(p[0], p[1], p[2]);
 }
 
-void Render::endTranslate()
+//use this function to end a series of transformation
+void Render::endTransform()
 {
 	glMatrixMode(GL_TEXTURE);
 	glPopMatrix();
-
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+}
+
+//load in the identity matrix
+void Render::loadIdentity(){
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+//rotate the following objects angle degree along the axis
+//need to be inside beginTransform() and endTransform
+void Render::rotate(flt angle, Vec3f axis){
+	glMatrixMode(GL_MODELVIEW);
+	glRotatef(angle, axis[0], axis[1], axis[2]);
+	glMatrixMode(GL_TEXTURE);
+	glRotatef(angle, axis[0], axis[1], axis[2]);
+}
+
+//translate the following objects along vector p
+//need to be inside beginTransform() and endTransform
+void Render::translate(Vec3f p){
+	glMatrixMode(GL_MODELVIEW);
+	glTranslatef(p[0], p[1], p[2]);
+	glMatrixMode(GL_TEXTURE);
+	glTranslatef(p[0], p[1], p[2]);
+}
+
+//scale the following objects each by vector p
+//need to be inside beginTransform() and endTransform
+void Render::scale(Vec3f p){
+	glMatrixMode(GL_MODELVIEW);
+	glScalef(p[0], p[1], p[2]);
+	glMatrixMode(GL_TEXTURE);
+	glScalef(p[0], p[1], p[2]);
 }
 
 void Render::renderCube(int type,int state)
@@ -176,7 +215,7 @@ void Render::renderCube(int type,int state)
 #ifdef _SIMPLE_CUBE_
 	beginTranslate(Vec3f(0.5, 0.5, 0.5));
 	glutSolidCube(1.0);
-	endTranslate();
+	endTransform();
 #else
 	if (bTexture) glBindTexture(GL_TEXTURE_2D, texture[type]);
 
@@ -195,19 +234,21 @@ void Render::renderCube(int type,int state)
 #endif
 }
 
-void renderObserver(Entity observer, flt r, flt h){
+void Render::renderObserver(Entity observer, flt r, flt h){
 	GLUquadricObj *objCylinder = gluNewQuadric();
-	glPushMatrix();
-	glTranslatef(observer[0], observer[1], observer[2]);
+	beginTransform();
+	translate(observer);
+	rotate(-90, Vec3f(1, 0, 0));
 	gluCylinder(objCylinder, r, r, h, 30, 10);
-	glPopMatrix();
+	endTransform();
 }
 
 void renderSeenBlock(block_and_face seen_block){
 	if (seen_block.second == -1) return;
-	render.beginTranslate(toVec3f(seen_block.first)+0.5);
+	render.beginTransform();
+	render.translate(toVec3f(seen_block.first)+0.5);
 	glutWireCube(1.01);
-	render.endTranslate();
+	render.endTransform();
 }
 
 void Render::renderScene(){
@@ -220,12 +261,12 @@ void Render::renderScene(){
 	glScalef(2, 2, 2);
 	use_material(light_grey, white, NULL, 32);
 	glutSolidSphere(1, 100, 100);
-	endTranslate();
+	endTransform();
 	*/
-	//use_material(light_grey, white, NULL, 8);
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
-		beginTranslate(toVec3f(p));
+		beginTransform();
+		translate(toVec3f(p));
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
@@ -234,7 +275,7 @@ void Render::renderScene(){
 		use_material(color_list[b], color_list[b], NULL, 8);
 		//if (b == 0) cout << "SUN!" << endl;
 		render.renderCube(b, msk);
-		endTranslate();
+		endTransform();
 	}
 }
 
@@ -324,4 +365,158 @@ void Render::setTextureState(bool bTex){
 	bTexture = bTex;
 	if (bTex) glEnable(GL_TEXTURE_2D);
 	else glDisable(GL_TEXTURE_2D);
+}
+
+extern flt r, h;
+extern bool bObserver;
+void renderSceneDynamic(Entity observer){
+	if (bObserver)
+		render.renderObserver(observer, r, h);
+}
+
+
+extern block_and_face seen_block;
+extern Entity observer;
+
+void DisplayScene(){
+	//First step: Render from the light POV to a FBO, story depth values only
+	extern GLuint fboId;
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
+
+	//Using the fixed pipeline to render to the depthbuffer
+	glUseProgramObjectARB(0);
+
+	// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
+	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+
+	// Clear previous frame values
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	//Disable color rendering, we only want to write to the Z-Buffer
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+
+	extern flt light_pos[3];
+	setupMatrices(light_pos, render.eye, true, true);
+
+	// Culling switching, rendering only backface, this is done to avoid self-shadowing
+#ifdef CULL_BACK
+	glCullFace(GL_BACK);
+#else
+	glCullFace(GL_FRONT);
+#endif
+
+	render.setTextureState(false);
+	//render the scene
+	renderSceneDynamic(observer);
+	//renderTableList();
+	render.renderScene();
+
+	//Save modelview/projection matrice into texture7, also add a biais
+	setTextureMatrix();
+
+	// Now rendering from the camera POV, using the FBO to generate shadows
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glViewport(0, 0, wWidth, wHeight);
+
+	//Enabling color write (previously disabled for light POV z-buffer rendering)
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+	// Clear previous frame values
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	extern GLuint shadow_map_loc, time_loc, depth_texture_id;
+
+	// Clear the color to be sky blue
+	glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
+
+	extern GLhandleARB shader_id;
+	//Using the shadow shader
+	glUseProgramObjectARB(shader_id);
+	glUniform1iARB(shadow_map_loc, 7);
+
+	//Bind shadow depth as texture
+	glActiveTextureARB(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+
+	//Bind ordinary texture
+	glActiveTextureARB(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, render.texture[tex]);
+	setupMatrices(render.eye, render.center, false, false);
+
+	glCullFace(GL_BACK);
+	glDisable(GL_CULL_FACE);
+
+	extern bool bWire;
+	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	render.setTextureState(false);
+	//render the scene
+	renderSceneDynamic(observer);
+	//renderTableList();
+	render.renderScene();
+
+	glEnable(GL_LIGHTING);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	int state = 7;
+	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? light_grey : black);
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
+	glEnable(GL_LIGHT0);
+
+	renderSeenBlock(seen_block);
+	renderGUI(observer);
+
+	extern bool bDebugDepthMap;
+	// DEBUG only. this piece of code draw the depth buffer onscreen
+	if (bDebugDepthMap) {
+		glUseProgramObjectARB(0);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, wWidth, 0, wHeight, 1, 200);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glColor4f(1, 1, 1, 1);
+		glActiveTextureARB(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+		glEnable(GL_TEXTURE_2D);
+		glTranslated(0, 0, -1);
+		glBegin(GL_QUADS);
+		glTexCoord2d(0, 0); glVertex3f(wWidth / 2.0, wHeight / 2.0, 0);
+		glTexCoord2d(1, 0); glVertex3f(wWidth, wHeight / 2.0, 0);
+		glTexCoord2d(1, 1); glVertex3f(wWidth, wHeight, 0);
+		glTexCoord2d(0, 1); glVertex3f(wWidth / 2.0, wHeight, 0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+	glutSwapBuffers();
+}
+
+void Render::update_center(Cursor &cursor){
+	cursor.update_facing_vector();
+	Vec3f p_eye = observer.get_pos() + Vec3f(0, h_eye, 0);
+	switch (view_mode) {
+	case VIEW_MODE_FIRST_PERSON:
+		eye = p_eye;
+		center = eye + cursor.face;
+		bObserver = false;
+		break;
+	case VIEW_MODE_THIRD_PERSON_FRONT:
+		center = p_eye;
+		eye = p_eye + cursor.face * observer_dist;
+		bObserver = true;
+		break;
+	case VIEW_MODE_THIRD_PERSON_BACK:
+		center = p_eye;
+		eye = p_eye - cursor.face * observer_dist;
+		bObserver = true;
+		break;
+	}
+	seen_block = world.look_at_block(eye, cursor.face, 10.0);
 }

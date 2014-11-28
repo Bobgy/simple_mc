@@ -220,7 +220,10 @@ void Render::renderCube(int type,int state)
 	glutSolidCube(1.0);
 	endTransform();
 #else
-	if (bTexture) glBindTexture(GL_TEXTURE_2D, texture[type]);
+	if (bTexture) {
+		glActiveTextureARB(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[type]);
+	}
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i<6; i++)if (state>>i&1){
@@ -255,17 +258,6 @@ void renderSeenBlock(block_and_face seen_block){
 }
 
 void Render::renderScene(){
-	glEnable(GL_TEXTURE_2D);
-	/*
-	beginTranslate(Vec3f(0, 3, 0));
-	glMatrixMode(GL_MODELVIEW); //NOTE: you must do every matrix operation both on MODELVIEW and TEXTURE matrix
-	glScalef(2, 2, 2);
-	glMatrixMode(GL_TEXTURE);
-	glScalef(2, 2, 2);
-	use_material(light_grey, white, NULL, 32);
-	glutSolidSphere(1, 100, 100);
-	endTransform();
-	*/
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
@@ -467,7 +459,7 @@ void DisplayScene(){
 	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	render.setTextureState(false);
+	render.setTextureState(true);
 	//render the scene
 	renderSceneDynamic(observer);
 	//renderTableList();

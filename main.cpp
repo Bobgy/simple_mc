@@ -125,10 +125,10 @@ void idle()
 		static int p[3];
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(observer[i]);
-		p[1] = floor(observer[1] - 0.5*h);
+		p[1] = floor(observer[1] + 0.5*h);
 		observer.on_ground = false;
 		for (int dx = -1; dx <= 1; ++dx){
-			for (int dy = -1; dy <= 2; ++dy){
+			for (int dy = -2; dy <= 2; ++dy){
 				for (int dz = -1; dz <= 1; ++dz){
 					static map<Pt3, Block*>::const_iterator it;
 					if ((it = world.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != world.end()){

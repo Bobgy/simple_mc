@@ -9,7 +9,7 @@ using namespace std;
 
 //calculate the collision with a cube with its lower coordinates at x
 //returns whether x is exactly on the block
-bool Entity::collide_cube_vertically(const Vec3i x){
+bool Entity::collide_cube_vertically(Vec3i x){
 	if (!test_circle_rectangle_intersect(p[0]-x[0],p[2]-x[2],r,1,1)) return false;
 	// inelastic collision for top and bottom face
 	if (in_range(p[1], x[1]+0.5, x[1]+1, false, true)) { //collide with top face
@@ -25,6 +25,7 @@ bool Entity::collide_cube_vertically(const Vec3i x){
 	return false;
 }
 
+//calculate the collision with a cube with its sides
 void Entity::collide_cube_horizontally(const Vec3i x){
 	flt len = seg_intersect(x[1], x[1] + 1, p[1], p[1] + h);
 	if (zero(len)) return; //not vertically intersecting
@@ -54,4 +55,11 @@ void Entity::collide_cube_horizontally(const Vec3i x){
 		p = p_corner - rel * r;
 		if (v*rel > 0) v = v - (v*rel)* rel;
 	}
+}
+
+//test intersection
+bool Entity::intersect_cube(Vec3i x){
+	if (!test_circle_rectangle_intersect(p[0] - x[0], p[2] - x[2], r, 1, 1)) return false;
+	if (zero(seg_intersect(x[1], x[1] + 1, p[1], p[1] + h)))return false;
+	return true;
 }

@@ -7,10 +7,11 @@
 #include "block.h"
 #include "world.h"
 
-
 using namespace std;
 
 extern block_type int2block_type[10];
+extern Entity observer;
+
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
 Block* World::get_block(Vec3i p) const {
 	auto it = blocks.find(p);
@@ -82,7 +83,7 @@ World::World(int seed, int range):changed(false){
 //place a block at p of type tp
 bool World::place_block(block_and_face p, block_type tp){
 	Vec3i pos = p.first + FACE[p.second];
-	if (get_block(pos) == NULL){
+	if (get_block(pos) == NULL && !observer.intersect_cube(pos)){
 		blocks[pos] = &block_list[tp];
 		changed = true;
 		//cout << tp << endl;

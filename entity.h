@@ -72,6 +72,8 @@ private:
 
 public:
 
+	bool intersect_cube(Vec3i x);
+
 	bool on_ground;  //Is this entity on the ground?
 
 	operator Vec3f() const { return p; }

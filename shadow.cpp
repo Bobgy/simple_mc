@@ -11,7 +11,7 @@ void generateShadowFBO()
 	int shadowMapWidth = SHADOW_MAP_WIDTH;
 	int shadowMapHeight = SHADOW_MAP_HEIGHT;
 
-	//GLfloat borderColor[4] = {0,0,0,0};
+	//GLfloat borderColor[4] = {0,0,0,1};
 
 	GLenum FBOstatus;
 
@@ -56,7 +56,7 @@ void generateShadowFBO()
 }
 
 
-void setupMatrices(const Vec3f eye, Vec3f center, bool lightSource, bool parallel)
+void setupPerspective(const Vec3f eye, Vec3f center, bool lightSource, bool parallel)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

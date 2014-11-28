@@ -221,8 +221,8 @@ void Render::renderCube(int type,int state)
 	endTransform();
 #else
 	if (bTexture) {
-		glActiveTextureARB(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[type]);
+		//glActiveTextureARB(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture[type]);
 	}
 
 	glBegin(GL_QUADS);
@@ -405,7 +405,7 @@ void DisplayScene(){
 
 
 	extern flt light_pos[3];
-	setupMatrices(light_pos, render.eye, true, true);
+	setupPerspective(light_pos, render.eye, true, true);
 
 	// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK
@@ -450,7 +450,7 @@ void DisplayScene(){
 	//Bind ordinary texture
 	glActiveTextureARB(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, render.texture[tex]);
-	setupMatrices(render.eye, render.center, false, false);
+	setupPerspective(render.eye, render.center, false, false);
 
 	glCullFace(GL_BACK);
 	glDisable(GL_CULL_FACE);

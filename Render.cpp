@@ -173,6 +173,7 @@ void Render::beginTransform()
 void Render::endTransform()
 {
 	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
@@ -221,8 +222,8 @@ void Render::renderCube(int type,int state)
 	endTransform();
 #else
 	if (bTexture) {
-		//glActiveTextureARB(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, texture[type]);
+		glActiveTextureARB(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[type]);
 	}
 
 	glBegin(GL_QUADS);

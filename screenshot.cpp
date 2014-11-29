@@ -5,35 +5,31 @@
 #include <string>
 
 #define BITMAP_ID 0x4D42;
-
+ 
 bool OutputDataToBMPFile(std::string filename, unsigned char* data, unsigned int width, unsigned int height);
+bool WriteBitmapFile(std::string filename, int width, int height, unsigned char * bitmapData);
 
 bool ScreenShot(std::string filename){
 	GLenum image_buffer;
-	GLbyte* image_data = 0;
+	GLubyte* image_data = 0;
 	unsigned long image_size;
 	GLint view[4];
 
-	glGetIntegerv(GL_VIEWPORT, view);
-	image_size = view[2] * view[3] * 3;
+	int width = glutGet(GLUT_WINDOW_WIDTH);
+	int height = glutGet(GLUT_WINDOW_HEIGHT);
 
-	image_data = (GLbyte*)new unsigned char[image_size];
-
-	if (!image_data){
-		return false;
-	}
-
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-	glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+	printf("w=%d,h=%d", width, height);
+	image_size = (width*24+31)/32 * height * 4;
+	
+	image_data = new GLubyte[image_size];
+	memset(image_data, 0, image_size);
 
 	glGetIntegerv(GL_READ_BUFFER, (GLint*)&image_buffer);
 	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, view[2], view[3], GL_BGR_EXT, GL_UNSIGNED_BYTE, image_data);
+	glReadPixels(0, 0, width, height, GL_BGR_EXT, GL_UNSIGNED_BYTE, image_data);
 	glReadBuffer(image_buffer);
 
-	if (OutputDataToBMPFile(filename, (unsigned char*)image_data, view[2], view[3])){
+	if (OutputDataToBMPFile(filename, (unsigned char*)image_data, width, height)){
 		return true;
 	}
 
@@ -46,7 +42,6 @@ bool OutputDataToBMPFile(std::string filename, unsigned char* data, unsigned int
 
 	BITMAPFILEHEADER file_header;
 	BITMAPINFOHEADER bitmap_info_header;
-
 	image_file.open(filename, std::ios::out | std::ios::binary);
 	if (!image_file.is_open())
 	{
@@ -55,7 +50,7 @@ bool OutputDataToBMPFile(std::string filename, unsigned char* data, unsigned int
 	}
 
 	file_header.bfType = BITMAP_ID;
-	file_header.bfSize = width * height * 3 + sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
+	file_header.bfSize = (width * 24 + 31) / 32 * height * 4 + sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
 	file_header.bfOffBits = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
 	file_header.bfReserved1 = 0;
 	file_header.bfReserved2 = 0;
@@ -66,7 +61,7 @@ bool OutputDataToBMPFile(std::string filename, unsigned char* data, unsigned int
 	bitmap_info_header.biPlanes = 1;
 	bitmap_info_header.biBitCount = 24;
 	bitmap_info_header.biCompression = BI_RGB;
-	bitmap_info_header.biSizeImage = width * height * 3;
+	bitmap_info_header.biSizeImage = (width * 24 + 31) / 32 * height * 4;
 	bitmap_info_header.biXPelsPerMeter = 0;
 	bitmap_info_header.biYPelsPerMeter = 0;
 	bitmap_info_header.biClrUsed = 0;
@@ -74,10 +69,7 @@ bool OutputDataToBMPFile(std::string filename, unsigned char* data, unsigned int
 
 	image_file.write((char*)&file_header, sizeof(BITMAPFILEHEADER));
 	image_file.write((char*)&bitmap_info_header, sizeof(BITMAPINFOHEADER));
-
-	image_file.seekp(file_header.bfOffBits, std::ios::beg);
 	image_file.write((char*)data, bitmap_info_header.biSizeImage);
-
 	image_file.close();
 	return true;
 }

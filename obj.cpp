@@ -10,8 +10,9 @@ using namespace std;
 
 void objModel::parse()
 {
-	for (int i = 0; i < this->F.size(); i++) {
-		face f = this->F[i];
+	for (int i = 0; i < F.size(); i++) {
+		if (F[i][0][0] == '=') continue;
+		face f = F[i];
 		for (int j = 0; j < F[i].size(); j++) {
 			string s = F[i][j];
 			int slashCnt = 0;
@@ -55,27 +56,76 @@ void objModel::parse()
 
 void objModel::clear()
 {
-	V.clear(); VN.clear(); VT.clear(); vList.clear(); vtList.clear(); vnList.clear(); F.clear();
+	V.clear(); VN.clear(); VT.clear(); 
+	vList.clear(); vtList.clear(); vnList.clear(); 
+	F.clear();
+	mtlTable.clear();
 }
 
-void objModel::read(const char *filename)
+void objModel::loadMTL(string filename)
 {
+	ifstream fin(filename);
+	if (!fin) {
+		cerr << "Error : No such MTL file." << endl;
+		return;
+	}
+	else {
+		cerr << "Loaded " << filename << endl;
+	}
+	string s;
+	while (fin >> s) {
+		while (s == "newmtl") {
+			string mtlName;
+			fin >> mtlName;
+			mtl data;
+			while (fin >> s) {
+				if (s == "newmtl") break;
+				else if (s == "Ka") {
+					fin >> data.Ka[0] >> data.Ka[1] >> data.Ka[2];
+					getline(fin, s);
+				}
+				else if (s == "Kd") {
+					fin >> data.Kd[0] >> data.Kd[1] >> data.Kd[2];
+					getline(fin, s);
+				}
+				else if (s == "Ks") {
+					fin >> data.Ks[0] >> data.Ks[1] >> data.Ks[2];
+					getline(fin, s);
+				}
+				else if (s == "illum") {
+					fin >> data.illum;
+				}
+				else if (s == "d" || s == "Tr") {
+					fin >> data.Tr;
+				}
+				else if (s == "Ns") {
+					fin >> data.Ns;
+				}
+				else {
+					cerr << "Something wrong with MTL" << endl;
+				}
+			}
+			mtlTable.insert(make_pair(mtlName, data));
+		}		
+		getline(fin, s);
+	}
+}
 
-	std::string s;
-	std::ifstream fin(filename);
+void objModel::read(string filename)
+{
+	string s;
+	ifstream fin(filename);
 	if (!fin) {
 		cerr << "Error : No such OBJ file." << endl;
 		return;
 	}
 	clear();
-	int lineNum = 0;
 	while (fin >> s) {
-		lineNum++;
-		if (s=="v") {
+		if (s == "v") {
 			vertex3f v;
 			fin >> v.x >> v.y >> v.z;
 			V.push_back(v);
-		}	
+		}
 		else if (s == "vt") {
 			vertex2f v;
 			getline(fin, s);
@@ -96,9 +146,23 @@ void objModel::read(const char *filename)
 			while (tmp >> t) f.push_back(t);
 			F.push_back(f);
 		}
+		else if (s == "mtllib") {
+			fin >> s;
+			string t = filename;
+			for (int k = t.size() - 1; t[k] != '\\'; k--) {
+				t.erase(t.end()-1,t.end());
+			}
+			loadMTL(t+s);
+		}
+		else if (s == "usemtl") {
+			fin >> s;
+			s = '=' + s;
+			face f;
+			f.push_back(s);
+			F.push_back(f);
+		}
 		else {
 			getline(fin, s);
-			//cerr << "Warning: Unrecognized grammar on line " << lineNum << endl;
 		}
 	}
 	parse();
@@ -110,6 +174,21 @@ void objModel::draw()
 	bool hasVT = vtList.size();
 	bool hasVN = vnList.size();
 	for (int i = 0; i < F.size(); i++) {
+		if (F[i][0][0] == '=') {
+			string s = F[i][0];
+			s.erase(0, 1);
+			//cerr << s << endl;
+			mtl data = mtlTable.find(s)->second;
+			//cerr << data.Ka[0] << endl;
+			glMaterialfv(GL_FRONT, GL_AMBIENT, data.Ka);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, data.Kd);
+			if (data.illum == 2) {
+				glMaterialfv(GL_FRONT, GL_SPECULAR, data.Ks);
+			}
+			glMateriali(GL_FRONT, GL_SHININESS, data.Ns);
+			glColor4f(1.0, 1.0, 1.0, data.Tr);
+			continue;
+		}
 		int faceVertexCnt = F[i].size();
 		if (faceVertexCnt == 3) {
 			glBegin(GL_TRIANGLES);

@@ -23,3 +23,10 @@ flt smoothness_ground = 0.80;
 
 //whether show all the lines of boxes for debug
 bool bBoxLine = false;
+
+//whether show the collision box for entities
+bool bCollisionBox = false;
+
+//the texture id for parts of the player
+//in order head, body, leg, arm
+int texPlayer[] = { 1, 1, 1, 1 };

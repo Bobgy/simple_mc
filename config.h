@@ -24,4 +24,10 @@ extern flt smoothness_ground;
 //whether show all the lines of boxes for debug
 extern bool bBoxLine;
 
+//whether show the collision box for entities
+extern bool bCollisionBox;
+
+//the texture id for the body of observer
+extern int texPlayer[];
+
 #endif

@@ -12,6 +12,9 @@ public:
 		for(int i=0;i<2000;i++) key_state[i]=false;
 	}
 	~KeyboardControl(){}
+	bool is_walking() const {
+		return (key_state['w'] ^ key_state['s']) || (key_state['a'] ^ key_state['d']);
+	}
 	bool get_state(unsigned char key);
 	friend void KeyDown(unsigned char key, int x, int y);
 	friend void KeyUp(unsigned char key, int x, int y);

@@ -9,11 +9,13 @@
 #include "shadow.h"
 #include "cursor.h"
 #include "config.h"
+#include "keyboard.h"
 
 extern World world;
 extern Cursor cursor;
 extern block_and_face seen_block;
 extern Entity observer;
+extern KeyboardControl keyboard;
 
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
@@ -172,18 +174,19 @@ void Render::beginTransform()
 //use this function to end a series of transformation
 void Render::endTransform()
 {
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 	glMatrixMode(GL_TEXTURE);
 	glActiveTextureARB(GL_TEXTURE7);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 }
 
 //load in the identity matrix
 void Render::loadIdentity(){
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
 	glLoadIdentity();
 }
 
@@ -193,6 +196,7 @@ void Render::rotate(flt angle, Vec3f axis){
 	glMatrixMode(GL_MODELVIEW);
 	glRotatef(angle, axis[0], axis[1], axis[2]);
 	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
 	glRotatef(angle, axis[0], axis[1], axis[2]);
 }
 
@@ -202,6 +206,7 @@ void Render::translate(Vec3f p){
 	glMatrixMode(GL_MODELVIEW);
 	glTranslatef(p[0], p[1], p[2]);
 	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
 	glTranslatef(p[0], p[1], p[2]);
 }
 
@@ -211,21 +216,19 @@ void Render::scale(Vec3f p){
 	glMatrixMode(GL_MODELVIEW);
 	glScalef(p[0], p[1], p[2]);
 	glMatrixMode(GL_TEXTURE);
+	glActiveTextureARB(GL_TEXTURE7);
 	glScalef(p[0], p[1], p[2]);
 }
 
 void Render::renderCube(int type,int state)
 {
 #ifdef _SIMPLE_CUBE_
-	beginTranslate(Vec3f(0.5, 0.5, 0.5));
 	glutSolidCube(1.0);
-	endTransform();
 #else
 	if (bTexture) {
 		glActiveTextureARB(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[type]);
 	}
-
 	glBegin(GL_QUADS);
 	for (int i = 0; i<6; i++)if (state>>i&1){
 		glNormal3f(FACE[i][0], FACE[i][1], FACE[i][2]);
@@ -233,20 +236,92 @@ void Render::renderCube(int type,int state)
 		{
 			int p=face[i][j];
 			glTexCoord2i(t_point[j][0],t_point[j][1]);
-			glVertex3i(point[p][0],point[p][1],point[p][2]);
+			glVertex3f(point[p][0]-0.5,point[p][1]-0.5,point[p][2]-0.5);
 		}
 	}
 	glEnd();
-
 #endif
 }
 
-void Render::renderObserver(Entity observer, flt r, flt h){
-	GLUquadricObj *objCylinder = gluNewQuadric();
+void Render::renderPlayer(Entity observer, flt r, flt h) {
+	static flt ang = 0, delta = 4.33, body_ang = 0;
+	if (keyboard.is_walking()){
+		ang += delta;
+		if (ang > 45) {
+			ang = 45;
+			delta = -delta;
+		}
+		if (ang < -45) {
+			ang = -45;
+			delta = -delta;
+		}
+	} else {
+		ang *= 0.96;
+	}
+
 	beginTransform();
-	translate(observer);
-	rotate(-90, Vec3f(1, 0, 0));
-	gluCylinder(objCylinder, r, r, h, 30, 10);
+		translate(observer);
+		rotate(-cursor.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
+
+		//begin Head
+		beginTransform();
+			translate(Vec3f(0, 1.35, 0));
+			scale(Vec3f(0.3, 0.4, 0.4));
+			rotate(cursor.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
+			renderCube(texPlayer[1], ~0);
+		endTransform();
+		//end Head
+
+		beginTransform();
+		if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
+			if (keyboard.get_state('a'))
+				body_ang = (body_ang + 0.2 * 45) / 1.2;
+			else
+				body_ang = (body_ang + 0.2 * -45) / 1.2;
+		} else body_ang *= 0.96;
+		rotate(body_ang, Vec3f(0, 1, 0));
+
+		//begin Body
+		beginTransform();
+			translate(Vec3f(0, 0.9, 0));
+			scale(Vec3f(0.35, 0.6, 0.45));
+			renderCube(texPlayer[0], ~0);
+		endTransform();
+		//end Body
+
+		//begin Arm
+		for (int sg :{-1, 1}){
+			beginTransform();
+				translate(Vec3f(0, 1.2, sg*0.3));
+				rotate(sg*ang, Vec3f(0, 0, 1));
+				rotate(sg * -5, Vec3f(1, 0, 0));
+				scale(Vec3f(0.15, 0.7, 0.15));
+				translate(Vec3f(0, -0.5, 0));
+				renderCube(texPlayer[2], ~0);
+			endTransform();
+		}
+		//end Arm
+
+		//begin Leg
+		for (int sg : {-1, 1}){
+			beginTransform();
+				translate(Vec3f(0, 0.7, sg*0.11));
+				rotate(-sg*ang, Vec3f(0, 0, 1));
+				scale(Vec3f(0.2, 0.8, 0.2));
+				translate(Vec3f(0, -0.5, 0));
+				renderCube(texPlayer[3], ~0);
+			endTransform();
+		}
+		//end Leg
+
+		endTransform();
+
+		//CollisionBox
+		if (bCollisionBox) {
+			GLUquadricObj *objCylinder = gluNewQuadric();
+			rotate(-90, Vec3f(1, 0, 0));
+			glutWireCylinder(r, h, 30, 1);
+		}
 	endTransform();
 }
 
@@ -262,7 +337,7 @@ void Render::renderScene(){
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
-		translate(p);
+		translate(Vec3f(p)+0.5);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)
 			if (world.find(p + FACE[i]) == world.end())
@@ -367,7 +442,7 @@ extern flt r, h;
 extern bool bObserver;
 void renderSceneDynamic(Entity observer){
 	if (bObserver)
-		render.renderObserver(observer, r, h);
+		render.renderPlayer(observer, r, h);
 }
 
 void Render::renderBoxLine(){

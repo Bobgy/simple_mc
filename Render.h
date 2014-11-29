@@ -56,8 +56,8 @@ public:
 	//need to be inside beginTransform() and endTransform
 	void scale(Vec3f p);
 
-	//render the observer at position observer with radius r and height h
-	void renderObserver(Entity observer, flt r, flt h);
+	//render the player at position "observer" with radius r and height h
+	void renderPlayer(Entity observer, flt r, flt h);
 
 	//update the center and eye vector
 	void update_center(Cursor &cursor);

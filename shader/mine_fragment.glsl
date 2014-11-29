@@ -5,7 +5,7 @@ varying vec3 normal;
 uniform sampler2D tex;
 uniform sampler2D ShadowMap;
 uniform int rg = 2;			 //determines the sampling numbers
-uniform float offset = 4e-4; //determines the sampling distance
+uniform float offset = 1e-4; //determines the sampling distance
 
 vec3 toVec3(vec4 x){
 	return x.rgb/x.w;

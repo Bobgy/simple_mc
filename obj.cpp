@@ -1,5 +1,5 @@
 #include "obj.h"
-#include "glut.h"
+#include "stdafx.h"
 
 #include <string>
 #include <iostream>

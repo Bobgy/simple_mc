@@ -122,6 +122,7 @@
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="obj.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="screenshot.cpp" />
     <ClCompile Include="shader.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="lodepng.h" />
+    <ClInclude Include="obj.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shadow.h" />

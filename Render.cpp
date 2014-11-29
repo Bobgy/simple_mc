@@ -10,12 +10,15 @@
 #include "cursor.h"
 #include "config.h"
 #include "keyboard.h"
+#include "obj.h"
 
 extern World world;
 extern Cursor cursor;
 extern block_and_face seen_block;
 extern Entity observer;
 extern KeyboardControl keyboard;
+
+objModel obj;
 
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
@@ -158,6 +161,8 @@ void Render::init()
 	texLoadPNG(5,"texture/tallgrass.png");
 	texload(6, "texture/6.bmp");
 	texLoadPNG(7, "texture/cobblestone.png");
+
+	obj.read("model/f-16.obj");
 #endif
 }
 
@@ -334,6 +339,11 @@ void renderSeenBlock(block_and_face seen_block){
 }
 
 void Render::renderScene(){
+	beginTransform();
+		translate(Vec3f(10, 2, 10));
+		scale(Vec3f(0.1,0.1,0.1));
+		obj.draw();
+	endTransform();
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();

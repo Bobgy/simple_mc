@@ -9,7 +9,7 @@ void main()
 	
     /* compute the vertex position  in camera space. */
     frag_pos = gl_ModelViewMatrix * gl_Vertex;
- 
+
 	/* calculate the texture coordinates at the shadow map */
 	shadow_coord = gl_TextureMatrix[7] * gl_Vertex;
 

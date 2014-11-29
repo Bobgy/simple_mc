@@ -405,8 +405,9 @@ void DisplayScene(){
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 
-	extern flt light_pos[3];
-	setupPerspective(light_pos, render.eye, true, true);
+	extern flt light_pos[4];
+	render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
+							cursor.face_xz^Vec3f(light_pos), true, true);
 
 	// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK
@@ -451,8 +452,9 @@ void DisplayScene(){
 	//Bind ordinary texture
 	glActiveTextureARB(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, render.texture[tex]);
-	setupPerspective(render.eye, render.center, false, false);
-
+	render.setupPerspective(render.eye, render.center, Vec3f(0,1,0), false, false);
+	//render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
+	//							cursor.face_xz^Vec3f(light_pos), true, true);
 	glCullFace(GL_BACK);
 	glDisable(GL_CULL_FACE);
 
@@ -472,8 +474,8 @@ void DisplayScene(){
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? light_grey : black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? light_grey : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
@@ -534,4 +536,29 @@ void Render::update_center(Cursor &cursor){
 		break;
 	}
 	seen_block = world.look_at_block(p_eye, cursor.face, 10.0);
+}
+
+void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool lightSource, bool parallel)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	int width, height;
+	if (lightSource) {
+		width = SHADOW_MAP_WIDTH;
+		height = SHADOW_MAP_HEIGHT;
+	}
+	else {
+		extern int wWidth, wHeight;
+		width = wWidth;
+		height = wHeight;
+	}
+	int sz = lightSource ? VIEW_DISTANCE*0.8 : 10;
+	if (!parallel) gluPerspective(45, width / flt(height), 0.1, VIEW_DISTANCE);
+	else glOrtho(-sz, sz, -sz, sz, 0.1, 200);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	Vec3f neye = eye;
+	if (parallel) neye = center + neye.normalize() * 50.0f;
+	gluLookAt(neye[0], neye[1], neye[2], center[0], center[1], center[2], up[0], up[1], up[2]);
 }

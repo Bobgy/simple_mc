@@ -55,31 +55,6 @@ void generateShadowFBO()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-
-void setupPerspective(const Vec3f eye, Vec3f center, bool lightSource, bool parallel)
-{
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	int width, height;
-	if (lightSource) {
-		width = SHADOW_MAP_WIDTH;
-		height = SHADOW_MAP_HEIGHT;
-	} else {
-		extern int wWidth, wHeight;
-		width = wWidth;
-		height = wHeight;
-	}
-	int sz = lightSource ? 20 : 10;
-	if(!parallel) gluPerspective(lightSource ? 400 : 45,  width / flt(height), 0.1, 100);
-	else glOrtho(-sz, sz, -sz, sz, 0.1, 100);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	Vec3f neye = eye;
-	if (parallel) neye = center + neye * 10;
-	gluLookAt(neye[0],neye[1],neye[2],center[0],center[1],center[2],0,1,0);
-}
-
 void setTextureMatrix(void)
 {
 	static double modelView[16];

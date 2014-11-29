@@ -7,6 +7,7 @@ extern void update_center();
 extern void updateView();
 
 const flt DEG2RAD = acos(-1.0) / 180.0;
+const flt L_EPS = 1e-3f;
 void init_cursor();
 
 class Cursor{

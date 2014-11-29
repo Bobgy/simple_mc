@@ -13,6 +13,8 @@
 #define VIEW_MODE_THIRD_PERSON_FRONT 2
 #define VIEW_MODE_TOTAL_NUMBER 3
 
+#define VIEW_DISTANCE 50.0f
+
 class Cursor;
 
 class Render{
@@ -59,6 +61,11 @@ public:
 
 	//update the center and eye vector
 	void update_center(Cursor &cursor);
+
+	//setup perspective matrices
+	//lightSource toggles the setting
+	//parallel toggles orthogonal or perspective
+	void setupPerspective(const Vec3f eye, Vec3f center, Vec3f upVector, bool lightSource, bool parallel);
 
 private:
 

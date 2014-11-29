@@ -23,8 +23,8 @@ void process_move(int x, int y){
 		if (ha > PI) ha -= 2 * PI;
 		if (ha < -PI) ha += 2 * PI;
 		va += dy * len_y;
-		if (va + EPS > PI*0.5) va = PI*0.5 - EPS;
-		if (va - EPS < PI*-0.5) va = -PI*0.5 + EPS;
+		if (va + L_EPS > PI*0.5) va = PI*0.5 - L_EPS;
+		if (va - L_EPS < PI*-0.5) va = -PI*0.5 + L_EPS;
 		render.update_center(cursor);
 		updateView();
 	}

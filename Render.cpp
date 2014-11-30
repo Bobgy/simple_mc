@@ -162,7 +162,7 @@ void Render::init()
 	texload(6, "texture/6.bmp");
 	texLoadPNG(7, "texture/cobblestone.png");
 
-	obj.read("model/f-16.obj");
+	obj.read("objData/rose+vase.obj");
 #endif
 }
 
@@ -341,7 +341,9 @@ void renderSeenBlock(block_and_face seen_block){
 void Render::renderScene(){
 	beginTransform();
 		translate(Vec3f(10, 2, 10));
-		scale(Vec3f(0.1,0.1,0.1));
+		scale(Vec3f(0.01,0.01,0.01));
+		//use_material(white, black, NULL, 1);
+		glEnable(GL_COLOR_MATERIAL);
 		obj.draw();
 	endTransform();
 	for (auto it = world.begin(); it != world.end(); ++it){
@@ -353,7 +355,7 @@ void Render::renderScene(){
 			if (world.find(p + FACE[i]) == world.end())
 				msk |= 1 << i;
 		int b = it->second->get_block_type();
-		use_material(color_list[b], color_list[b], NULL, 8);
+		use_material(color_list[b], color_list[b], color_list[b], NULL, 8);
 		//if (b == 0) cout << "SUN!" << endl;
 		render.renderCube(b, msk);
 		endTransform();
@@ -472,48 +474,48 @@ void Render::renderBoxLine(){
 	}
 }
 
+extern flt light_pos[4];
 void DisplayScene(){
-	//First step: Render from the light POV to a FBO, story depth values only
-	extern GLuint fboId;
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
+	if (bCustomGLSL) {
+		//First step: Render from the light POV to a FBO, story depth values only
+		extern GLuint fboId;
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
 
-	//Using the fixed pipeline to render to the depthbuffer
-	glUseProgramObjectARB(0);
+		//Using the fixed pipeline to render to the depthbuffer
+		glUseProgramObjectARB(0);
 
-	// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
-	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+		// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
+		glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 
-	// Clear previous frame values
-	glClear(GL_DEPTH_BUFFER_BIT);
+		// Clear previous frame values
+		glClear(GL_DEPTH_BUFFER_BIT);
 
-	//Disable color rendering, we only want to write to the Z-Buffer
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		//Disable color rendering, we only want to write to the Z-Buffer
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
+		render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
+			cursor.face_xz^Vec3f(light_pos), true, true);
 
-	extern flt light_pos[4];
-	render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
-							cursor.face_xz^Vec3f(light_pos), true, true);
-
-	// Culling switching, rendering only backface, this is done to avoid self-shadowing
+		// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK
-	glCullFace(GL_BACK);
+		glCullFace(GL_BACK);
 #else
-	glCullFace(GL_FRONT);
+		glCullFace(GL_FRONT);
 #endif
 
-	render.setTextureState(false);
-	//render the scene
-	renderSceneDynamic(observer);
-	//renderTableList();
-	render.renderScene();
+		render.setTextureState(false);
+		//render the scene
+		renderSceneDynamic(observer);
+		//renderTableList();
+		render.renderScene();
 
-	//Save modelview/projection matrice into texture7, also add a biais
-	setTextureMatrix();
+		//Save modelview/projection matrice into texture7, also add a biais
+		setTextureMatrix();
 
-	// Now rendering from the camera POV, using the FBO to generate shadows
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glViewport(0, 0, wWidth, wHeight);
-
+		// Now rendering from the camera POV, using the FBO to generate shadows
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glViewport(0, 0, wWidth, wHeight);
+	}
 	//Enabling color write (previously disabled for light POV z-buffer rendering)
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
@@ -527,16 +529,17 @@ void DisplayScene(){
 
 	extern GLhandleARB shader_id;
 	//Using the shadow shader
-	glUseProgramObjectARB(shader_id);
-	glUniform1iARB(shadow_map_loc, 7);
-
-	//Bind shadow depth as texture
-	glActiveTextureARB(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+	if (bCustomGLSL){
+		glUseProgramObjectARB(shader_id);
+		glUniform1iARB(shadow_map_loc, 7);
+		//Bind shadow depth as texture
+		glActiveTextureARB(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+	}
 
 	//Bind ordinary texture
 	glActiveTextureARB(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, render.texture[tex]);
+
 	render.setupPerspective(render.eye, render.center, Vec3f(0,1,0), false, false);
 	//render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
 	//							cursor.face_xz^Vec3f(light_pos), true, true);
@@ -550,7 +553,7 @@ void DisplayScene(){
 	render.setTextureState(true);
 	//render the scene
 	renderSceneDynamic(observer);
-	//renderTableList();
+
 	render.renderScene();
 
 	glEnable(GL_LIGHTING);
@@ -559,8 +562,8 @@ void DisplayScene(){
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? light_grey : black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? sun : black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);

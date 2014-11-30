@@ -30,4 +30,7 @@ extern bool bCollisionBox;
 //the texture id for the body of observer
 extern int texPlayer[];
 
+//toggles whether we use the custom GLSL that supports shadow
+extern bool bCustomGLSL;
+
 #endif

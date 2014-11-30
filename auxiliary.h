@@ -11,6 +11,6 @@ const float light_grey[] = { 0.75, 0.75, 0.75, 1 };
 const float grey[] = { 0.5, 0.5, 0.5, 1 };
 const float dark_grey[] = { 0.1, 0.1, 0.1, 1 };
 const float sun[] = { 0.8, 0.7, 0.6, 1 };
-void use_material(const GLfloat *d, const GLfloat *s, const GLfloat *e, int shine);
+void use_material(const GLfloat *a, const GLfloat *d, const GLfloat *s, const GLfloat *e, int shine);
 
 #endif

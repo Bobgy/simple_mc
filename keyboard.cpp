@@ -60,6 +60,11 @@ void SpecialKeyDown(int key, int x, int y)
 	static bool fullscreen = 0;
 	switch (key){
 		
+		//toggle the shader
+		case GLUT_KEY_F1:
+			bCustomGLSL ^= 1;
+			break;
+
 		//toggle view_mode
 		case GLUT_KEY_F5:
 			view_mode = (view_mode + 1) % VIEW_MODE_TOTAL_NUMBER;

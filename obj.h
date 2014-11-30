@@ -22,15 +22,18 @@ private:
 	int faceVertexCnt;
 	void parse();
 	struct mtl {
-		GLfloat Ka[3];
-		GLfloat Kd[3];
-		GLfloat Ks[3];
+		bool KaSet;
+		GLfloat Ka[4];
+		GLfloat Kd[4];
+		GLfloat Ks[4];
 		int illum;
 		GLfloat Tr, Ns;
 		mtl() {
+			KaSet = 0;
 			Ka[0] = Ka[1] = Ka[2] = 0.2;
 			Kd[0] = Kd[1] = Kd[2] = 0.8;
 			Ks[0] = Ks[1] = Ks[2] = 1.0;
+			Ka[3] = Kd[3] = Ks[3] = 1.0;
 			illum = 1;
 			Tr = 1.0; Ns = 0.0;
 		}

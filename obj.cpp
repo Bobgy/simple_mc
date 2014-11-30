@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "auxiliary.h"
 
 using namespace std;
 
@@ -66,7 +67,7 @@ void objModel::loadMTL(string filename)
 {
 	ifstream fin(filename);
 	if (!fin) {
-		cerr << "Error : No such MTL file." << endl;
+		cerr << "Error : No such MTL file as " << filename << endl;
 		return;
 	}
 	else {
@@ -82,10 +83,14 @@ void objModel::loadMTL(string filename)
 				if (s == "newmtl") break;
 				else if (s == "Ka") {
 					fin >> data.Ka[0] >> data.Ka[1] >> data.Ka[2];
+					data.KaSet = true;
 					getline(fin, s);
 				}
 				else if (s == "Kd") {
 					fin >> data.Kd[0] >> data.Kd[1] >> data.Kd[2];
+					if (!data.KaSet) {
+						memcpy(data.Ka, data.Kd, sizeof(data.Kd));
+					}
 					getline(fin, s);
 				}
 				else if (s == "Ks") {
@@ -97,6 +102,7 @@ void objModel::loadMTL(string filename)
 				}
 				else if (s == "d" || s == "Tr") {
 					fin >> data.Tr;
+					data.Ks[3] = data.Ka[3] = data.Kd[3] = data.Tr;
 				}
 				else if (s == "Ns") {
 					fin >> data.Ns;
@@ -106,7 +112,7 @@ void objModel::loadMTL(string filename)
 				}
 			}
 			mtlTable.insert(make_pair(mtlName, data));
-		}		
+		}
 		getline(fin, s);
 	}
 }
@@ -116,7 +122,7 @@ void objModel::read(string filename)
 	string s;
 	ifstream fin(filename);
 	if (!fin) {
-		cerr << "Error : No such OBJ file." << endl;
+		cerr << "Error : No such OBJ file as " << filename << endl;
 		return;
 	}
 	clear();
@@ -149,9 +155,8 @@ void objModel::read(string filename)
 		else if (s == "mtllib") {
 			fin >> s;
 			string t = filename;
-			for (int k = t.size() - 1; t[k] != '\\'; k--) {
+			for (int k = t.size() - 1; k>=0 && (t[k] != '\\' && t[k] != '/'); k--)
 				t.erase(t.end()-1,t.end());
-			}
 			loadMTL(t+s);
 		}
 		else if (s == "usemtl") {
@@ -170,7 +175,7 @@ void objModel::read(string filename)
 
 void objModel::draw()
 {
-	int index = 0; 
+	int index = 0;
 	bool hasVT = vtList.size();
 	bool hasVN = vnList.size();
 	for (int i = 0; i < F.size(); i++) {
@@ -179,14 +184,7 @@ void objModel::draw()
 			s.erase(0, 1);
 			//cerr << s << endl;
 			mtl data = mtlTable.find(s)->second;
-			//cerr << data.Ka[0] << endl;
-			glMaterialfv(GL_FRONT, GL_AMBIENT, data.Ka);
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, data.Kd);
-			if (data.illum == 2) {
-				glMaterialfv(GL_FRONT, GL_SPECULAR, data.Ks);
-			}
-			glMateriali(GL_FRONT, GL_SHININESS, data.Ns);
-			glColor4f(1.0, 1.0, 1.0, data.Tr);
+			use_material(data.Ka, data.Kd, data.illum==2?data.Ks:black, NULL, data.Ns);
 			continue;
 		}
 		int faceVertexCnt = F[i].size();

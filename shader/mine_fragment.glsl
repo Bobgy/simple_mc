@@ -72,6 +72,8 @@ void main()
 		}
 	}
 	vec3 color = (color_amb.rgb + color_diff.rgb * shadow) * colorTex.rgb + color_sp.rgb * shadow;
+	//vec3 color = (color_amb.rgb + color_diff.rgb * shadow) + color_sp.rgb * shadow;
 	//color = colorTex.aaa;
+	//color = gl_Color.rgb;
     gl_FragColor = vec4(color.rgb, 1.0);
 }

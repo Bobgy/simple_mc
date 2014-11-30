@@ -26,7 +26,6 @@ void process_move(int x, int y){
 		if (va + L_EPS > PI*0.5) va = PI*0.5 - L_EPS;
 		if (va - L_EPS < PI*-0.5) va = -PI*0.5 + L_EPS;
 		render.update_center(cursor);
-		updateView();
 	}
 }
 
@@ -46,8 +45,6 @@ void process_click(int button, int state, int x, int y){
 
 
 void Cursor::update_facing_vector(){
-	face = cursor.face;
-	face_xz = cursor.face_xz;
 	face_xz[0] = cos(h_ang);
 	face_xz[2] = sin(h_ang);
 	face_xz[1] = 0;

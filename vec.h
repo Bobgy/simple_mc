@@ -110,10 +110,10 @@ inline int sgn(flt x){ return fabs(x) < EPS ? 0 : (x > 0 ? 1 : -1); }
 const Vec3i FACE[6] = {
 		{ 0, 1, 0 },  //top
 		{ 0,-1, 0 },  //bottom
-		{ 1, 0, 0 },  //right
-		{-1, 0, 0 },  //left
-		{ 0, 0, 1 },  //front
-		{ 0, 0,-1 }   //back
+		{ 1, 0, 0 },  //front
+		{-1, 0, 0 },  //back
+		{ 0, 0, 1 },  //right
+		{ 0, 0,-1 }   //left
 };
 const int FACE_AXIS[3][2] = {
 		{ 3, 2 },

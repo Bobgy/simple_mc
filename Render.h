@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include <cstdio>
 #include "entity.h"
+#include "auxiliary.h"
 #include <vector>
 #define BITMAP_ID 0x4D42
 
@@ -19,14 +20,21 @@ class Cursor;
 
 class Render{
 public:
-	GLuint texture[10];
+	GLuint texture[100];
 	//the position of eye and view center
 	Vec3f center, eye;
 
 	void init();
 	void setupFBO();
+
+	//render a cube with 6 faces encoded by state
 	void renderCube(int type,int state);
+
+	//render a cube using tex
+	void renderCubeTex(int type, const CubeTexCoord &tex);
+
 	void renderScene();
+
 	void texLoadPNG(int i, const char *filename);
 	
 	//set whether we use texture or not

@@ -56,27 +56,12 @@ int windowHandle;
 
 extern bool bObserver;
 
-void updateView()
-{
-	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-	glLoadIdentity();									// Reset The Projection Matrix
-
-	float whRatio = (GLfloat)wWidth/(GLfloat)wHeight;
-	
-	gluPerspective(45, whRatio, 0.1, 300);
-	glViewport(0, 0, wWidth, wHeight);					// Reset The Current Viewport
-
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-}
-
 void reshape(int width, int height)
 {
 	if (height==0) height=1;
 
 	wHeight = height;
 	wWidth = width;
-
-	updateView();
 }
 
 float dis = 1.0;
@@ -141,7 +126,6 @@ void idle()
 		if (observer.on_ground) observer.be_slowed(smoothness_ground);
 		observer.update();
 		render.update_center(cursor);
-		updateView();
 		lst += inter;
 	}
 	glutPostRedisplay();

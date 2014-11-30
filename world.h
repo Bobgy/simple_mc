@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "block.h"
 #include "entity.h"
+#include <set>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ private:
 
 	map<Vec3i, Block*> blocks;
 	vector<Block> block_list;
+	set<block_type> ability;
+	void init_ability();
 
 public:
 
@@ -57,5 +60,7 @@ public:
 
 	//Read the world from a file, returns true when successful, false otherwise.
 	bool read_from_file(string name);
+
+	void add(int type);
 };
 #endif

@@ -3,6 +3,8 @@
 
 extern int view_mode;
 
+extern flt range_touch;
+
 //the collision radius for the observer
 extern flt r;
 

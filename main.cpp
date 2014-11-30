@@ -20,6 +20,7 @@
 #include "shadow.h"
 #include "lodepng.h"
 #include "config.h"
+#include "item.h"
 
 using namespace std;
 
@@ -55,6 +56,17 @@ float deg2rad = PI / 180.0;
 int windowHandle;
 
 extern bool bObserver;
+OBJ_ITEM *obj;
+
+
+/*
+	This function is temporarily empty.
+	And it will be used to load the information of each obj-item we need to draw.
+*/
+void load_obj()
+{
+	obj = NULL;
+}
 
 void reshape(int width, int height)
 {
@@ -123,6 +135,27 @@ void idle()
 				}
 			}
 		}
+		/*
+			Those codes are used to detect whether the observer touched an obj-item.
+			If it is, that item is gotten by the observer.
+		*/
+		for (OBJ_ITEM *now = obj; now != NULL;now=now->next)
+			if (now->draw)
+			{
+				Vec3i temp = Pt3(p) - now->loc;
+				int r = temp*temp;
+				if (r <= range_touch)
+				{
+					now->set_false();
+					world.add(now->type);
+
+				}
+
+			}
+		/*
+		mark for the end
+		*/
+
 		if (observer.on_ground) observer.be_slowed(smoothness_ground);
 		observer.update();
 		render.update_center(cursor);
@@ -135,6 +168,7 @@ void idle()
 extern int tableList;
 
 void init(int argc, char *argv[]){
+	load_obj();
 	type = DIRT;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);

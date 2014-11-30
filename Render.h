@@ -28,7 +28,7 @@ public:
 	void setupFBO();
 
 	//render a cube with 6 faces encoded by state
-	void renderCube(int type,int state);
+	void renderCube(int type, int state);
 
 	//render a cube using tex
 	void renderCubeTex(int type, const CubeTexCoord &tex);
@@ -36,7 +36,7 @@ public:
 	void renderScene();
 
 	void texLoadPNG(int i, const char *filename);
-	
+
 	//set whether we use texture or not
 	void setTextureState(bool);
 
@@ -75,12 +75,15 @@ public:
 	//parallel toggles orthogonal or perspective
 	void setupPerspective(const Vec3f eye, Vec3f center, Vec3f upVector, bool lightSource, bool parallel);
 
+	//draw an OBJ item
+	void draw_item();
+
 private:
 
 	//Whether texture is turned on
 	bool bTexture;
 
-	void texload(int i,const char *filename);
+	void texload(int i, const char *filename);
 	unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader);
 	unsigned char *LoadPngImage(const char *filename);
 	void set(int k);

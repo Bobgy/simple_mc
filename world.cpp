@@ -22,6 +22,12 @@ Block* World::get_block(Vec3i p) const {
 //returns the first block within radius r that is seen by an eye
 //at p looking at the direction vector dir
 //returns -1 in face to indicate no block is found
+
+void World::init_ability()
+{
+	ability.clear();
+	ability.insert(TREASURE);
+}
 block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	static int sign[3], i;
 	for (i = 0; i < 3; ++i)
@@ -59,6 +65,7 @@ block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 
 //generate a world by file in path stage_file_path
 World::World(string stage_file_path):changed(false){
+	init_ability();
 	for (int i = 0; i < 10; i++)
 		block_list.push_back(Block(int2block_type[i]));
 	if (!read_from_file(stage_file_path)) {
@@ -69,6 +76,7 @@ World::World(string stage_file_path):changed(false){
 
 //generate a world by random seed: seed
 World::World(int seed, int range):changed(false){
+	init_ability();
 	srand(seed);
 	for (int i = 0; i < 10; i++) block_list.push_back(Block(int2block_type[i]));
 	for (int i = -range; i <= range; ++i)
@@ -93,7 +101,16 @@ bool World::place_block(block_and_face p, block_type tp){
 }
 
 bool World::destroy_block(Vec3i p){
-	if (get_block(p) != NULL) {
+	Block * now = get_block(p);
+	// Here we add the "ability" to check whether the observer is able to destroy that kind of block 
+	if ((now != NULL)&&(ability.count(now->get_block_type())==1)) {
+		if (now->get_block_type() == TREASURE)
+		{
+			/*
+			Here the observer destroys the goal--TREASURE, and finishes the game.
+			Something must be done to end the game.
+			*/
+		}
 		blocks.erase(p);
 		changed = true;
 		return true;
@@ -130,4 +147,9 @@ bool World::read_from_file(string name)
 		f >> x >> y >> z >> type;
 	}
 	return true;
+}
+
+void World::add(int type)
+{
+	ability.insert(int2block_type[type]);
 }

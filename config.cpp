@@ -2,6 +2,7 @@
 #include "vec.h"
 
 int view_mode = VIEW_MODE_FIRST_PERSON;
+flt range_touch = 1;
 
 //the collision radius for the observer
 flt r = 0.45;
@@ -29,7 +30,7 @@ bool bCollisionBox = false;
 
 //the texture id for parts of the player
 //in order head, body, leg, arm
-int texPlayer = 8;
+int texPlayer[] = 8;
 
 //toggles whether we use the custom GLSL that supports shadow
 bool bCustomGLSL = true;

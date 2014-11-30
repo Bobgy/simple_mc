@@ -12,35 +12,37 @@
 #include "keyboard.h"
 #include "obj.h"
 
+
 extern World world;
 extern Cursor cursor;
 extern block_and_face seen_block;
 extern Entity observer;
 extern KeyboardControl keyboard;
 
-objModel obj;
+//objModel obj;
+extern OBJ_ITEM *obj;
 
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
 const static float emission[10][4] = { {1,1,1,1}, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 0, 0, 1 } };
-//                                 0       1       2       3       4       5       6       7
+
 const static int point[8][3] = {
-		{0,0,0},//0
-		{0,1,0},//1
-		{1,1,0},//2
-		{1,0,0},//3
-		{0,0,1},//4
-		{0,1,1},//5
-		{1,1,1},//6
-		{1,0,1} //7
+		{ 0, 0, 0 },//0
+		{ 0, 1, 0 },//1
+		{ 1, 1, 0 },//2
+		{ 1, 0, 0 },//3
+		{ 0, 0, 1 },//4
+		{ 0, 1, 1 },//5
+		{ 1, 1, 1 },//6
+		{ 1, 0, 1 } //7
 };
 const static int face[6][4] = {
-		{5,6,2,1},// top
-		{0,3,7,4},// down
-		{3,2,6,7},// front
-		{1,0,4,5},// back
-		{5,4,7,6},// right
-		{2,3,0,1} // left
+		{ 5, 6, 2, 1 },// top
+		{ 0, 3, 7, 4 },// down
+		{ 3, 2, 6, 7 },// front
+		{ 1, 0, 4, 5 },// back
+		{ 5, 4, 7, 6 },// right
+		{ 2, 3, 0, 1 } // left
 };
 const static int t_point[4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
@@ -168,8 +170,8 @@ void Render::init()
 	setTextureState(false);
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
-	glGenTextures(9, texture);
-	texload(0,"texture/white.bmp");
+	glGenTextures(8, texture);
+	texLoadPNG(0,"texture/sun.png");
 	texload(1,"texture/3.bmp");
 	texload(2,"texture/4.bmp");
 	texload(3,"texture/5.bmp");
@@ -177,9 +179,8 @@ void Render::init()
 	texLoadPNG(5,"texture/tallgrass.png");
 	texload(6, "texture/6.bmp");
 	texLoadPNG(7, "texture/cobblestone.png");
-	texLoadPNG(8, "texture/steve.png");
 
-	obj.read("objData/rose+vase.obj");
+	//obj.read("objData/rose+vase.obj");
 #endif
 }
 
@@ -280,7 +281,7 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 		for (int j = 0; j<4; j++)
 		{
 			int p = face[i][j];
-			glTexCoord2fv(tex.getCoord(i,j));
+			glTexCoord2fv(tex.getCoord(i, j));
 			glVertex3f(point[p][0] - 0.5, point[p][1] - 0.5, point[p][2] - 0.5);
 		}
 	}
@@ -300,79 +301,82 @@ void Render::renderPlayer(Entity observer, flt r, flt h) {
 			ang = -45;
 			delta = -delta;
 		}
-	} else {
+	}
+	else {
 		ang *= 0.96;
 	}
 
 	beginTransform();
-		translate(observer);
-		rotate(-cursor.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
+	translate(observer);
+	rotate(-cursor.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
 
-		//begin Head
+	//begin Head
+	beginTransform();
+	static CubeTexCoord headTexCoord(Vec3i(16, 16, 16), 16, 16, 64, 128);
+	translate(Vec3f(0, 1.35, 0));
+	scale(Vec3f(0.4, 0.4, 0.4));
+	rotate(cursor.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
+	renderCubeTex(texPlayer, headTexCoord);
+	endTransform();
+	//end Head
+
+	beginTransform();
+	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
+		if (keyboard.get_state('a'))
+			body_ang = (body_ang + 0.2 * 45) / 1.2;
+		else
+			body_ang = (body_ang + 0.2 * -45) / 1.2;
+	}
+	else body_ang *= 0.96;
+	rotate(body_ang, Vec3f(0, 1, 0));
+
+	//begin Body
+	beginTransform();
+	static CubeTexCoord bodyTexCoord(Vec3i(8, 24, 16), 40, 40, 64, 128);
+	translate(Vec3f(0, 0.9, 0));
+	scale(Vec3f(0.35, 0.6, 0.45));
+	renderCubeTex(texPlayer, bodyTexCoord);
+	endTransform();
+	//end Body
+
+	static CubeTexCoord armTexCoord(Vec3i(8, 24, 8), 40, 88, 64, 128);
+	//begin Arm
+	for (int sg : {-1, 1}){
 		beginTransform();
-			static CubeTexCoord headTexCoord(Vec3i(16, 16, 16), 16, 16, 64, 128);
-			translate(Vec3f(0, 1.35, 0));
-			scale(Vec3f(0.4, 0.4, 0.4));
-			rotate(cursor.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
-			renderCubeTex(texPlayer, headTexCoord);
+		translate(Vec3f(0, 1.2, sg*0.3));
+		rotate(sg*ang, Vec3f(0, 0, 1));
+		rotate(sg * -5, Vec3f(1, 0, 0));
+		scale(Vec3f(0.15, 0.7, 0.15));
+		translate(Vec3f(0, -0.5, 0));
+		renderCubeTex(texPlayer, armTexCoord);
 		endTransform();
-		//end Head
+	}
+	//end Arm
 
+	static CubeTexCoord legTexCoord(Vec3i(8, 24, 8), 40, 8, 64, 128);
+	//begin Leg
+	for (int sg : {-1, 1}){
 		beginTransform();
-		if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
-			if (keyboard.get_state('a'))
-				body_ang = (body_ang + 0.2 * 45) / 1.2;
-			else
-				body_ang = (body_ang + 0.2 * -45) / 1.2;
-		} else body_ang *= 0.96;
-		rotate(body_ang, Vec3f(0, 1, 0));
-
-		//begin Body
-		beginTransform();
-			static CubeTexCoord bodyTexCoord(Vec3i(8, 24, 16), 40, 40, 64, 128);
-			translate(Vec3f(0, 0.9, 0));
-			scale(Vec3f(0.35, 0.6, 0.45));
-			renderCubeTex(texPlayer, bodyTexCoord);
+		translate(Vec3f(0, 0.7, sg*0.11));
+		rotate(-sg*ang, Vec3f(0, 0, 1));
+		scale(Vec3f(0.2, 0.8, 0.2));
+		translate(Vec3f(0, -0.5, 0));
+		renderCubeTex(texPlayer, legTexCoord);
 		endTransform();
-		//end Body
+	}
+	//end Leg
 
-		static CubeTexCoord armTexCoord(Vec3i(8, 24, 8), 40, 88, 64, 128);
-		//begin Arm
-		for (int sg :{-1, 1}){
-			beginTransform();
-				translate(Vec3f(0, 1.2, sg*0.3));
-				rotate(sg*ang, Vec3f(0, 0, 1));
-				rotate(sg * -5, Vec3f(1, 0, 0));
-				scale(Vec3f(0.15, 0.7, 0.15));
-				translate(Vec3f(0, -0.5, 0));
-				renderCubeTex(texPlayer, armTexCoord);
-			endTransform();
-		}
-		//end Arm
+	endTransform();
 
-		static CubeTexCoord legTexCoord(Vec3i(8, 24, 8), 40, 8, 64, 128);
-		//begin Leg
-		for (int sg : {-1, 1}){
-			beginTransform();
-				translate(Vec3f(0, 0.7, sg*0.11));
-				rotate(-sg*ang, Vec3f(0, 0, 1));
-				scale(Vec3f(0.2, 0.8, 0.2));
-				translate(Vec3f(0, -0.5, 0));
-				renderCubeTex(texPlayer, legTexCoord);
-			endTransform();
-		}
-		//end Leg
-
-		endTransform();
-
-		//CollisionBox
-		if (bCollisionBox) {
-			GLUquadricObj *objCylinder = gluNewQuadric();
-			rotate(-90, Vec3f(1, 0, 0));
-			glutWireCylinder(r, h, 30, 1);
-		}
+	//CollisionBox
+	if (bCollisionBox) {
+		GLUquadricObj *objCylinder = gluNewQuadric();
+		rotate(-90, Vec3f(1, 0, 0));
+		glutWireCylinder(r, h, 30, 1);
+	}
 	endTransform();
 }
+
 
 void renderSeenBlock(block_and_face seen_block){
 	if (seen_block.second == -1) return;
@@ -383,13 +387,13 @@ void renderSeenBlock(block_and_face seen_block){
 }
 
 void Render::renderScene(){
-	beginTransform();
+	/*beginTransform();
 		translate(Vec3f(10, 2, 10));
 		scale(Vec3f(0.01,0.01,0.01));
-		glActiveTextureARB(0);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		//use_material(white, black, NULL, 1);
+		glEnable(GL_COLOR_MATERIAL);
 		obj.draw();
-	endTransform();
+	endTransform();*/
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
@@ -693,4 +697,24 @@ void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool ligh
 	Vec3f neye = eye;
 	if (parallel) neye = center + neye.normalize() * 50.0f;
 	gluLookAt(neye[0], neye[1], neye[2], center[0], center[1], center[2], up[0], up[1], up[2]);
+}
+
+void Render::draw_item()
+{
+	OBJ_ITEM *now = obj;
+	while (now!=NULL)
+	{ 
+		if (now->draw)
+		{
+			beginTransform();
+			translate(now->loc);
+			scale(Vec3f(0.01, 0.01, 0.01));
+			//use_material(white, black, NULL, 1);
+			glEnable(GL_COLOR_MATERIAL);
+			use_material(color_list[now->type], color_list[now->type], color_list[now->type], NULL, 8);
+			now->obj.draw();
+			endTransform();
+		}
+		now = now->next;
+	}
 }

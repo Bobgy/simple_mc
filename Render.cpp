@@ -11,7 +11,7 @@
 #include "config.h"
 #include "keyboard.h"
 #include "obj.h"
-
+#include "item.h"
 
 extern World world;
 extern Cursor cursor;
@@ -170,17 +170,16 @@ void Render::init()
 	setTextureState(false);
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
-	glGenTextures(8, texture);
-	texLoadPNG(0,"texture/sun.png");
-	texload(1,"texture/3.bmp");
-	texload(2,"texture/4.bmp");
-	texload(3,"texture/5.bmp");
-	texLoadPNG(4,"texture/gold_block.png");
-	texLoadPNG(5,"texture/tallgrass.png");
+	glGenTextures(9, texture);
+	texload(0, "texture/white.bmp");
+	texload(1, "texture/3.bmp");
+	texload(2, "texture/4.bmp");
+	texload(3, "texture/5.bmp");
+	texLoadPNG(4, "texture/gold_block.png");
+	texLoadPNG(5, "texture/tallgrass.png");
 	texload(6, "texture/6.bmp");
 	texLoadPNG(7, "texture/cobblestone.png");
-
-	//obj.read("objData/rose+vase.obj");
+	texLoadPNG(8, "texture/steve.png");
 #endif
 }
 

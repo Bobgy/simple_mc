@@ -170,7 +170,7 @@ void objModel::read(string filename)
 			vertex3f v;
 			fin >> v.x >> v.y >> v.z;
 			//v.x = v.y = v.z = 1;
-			//VN.push_back(v);
+			VN.push_back(v);
 		}
 		else if (s == "f") {
 			face f;

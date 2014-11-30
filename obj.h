@@ -20,7 +20,7 @@ private:
 	typedef std::vector <std::string> face;
 	std::vector <face> F;
 	int faceVertexCnt;
-	void parse();
+	void parse(face);
 	struct mtl {
 		bool KaSet;
 		GLfloat Ka[4];

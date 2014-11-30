@@ -5,54 +5,81 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <assert.h>
 #include "auxiliary.h"
 
 using namespace std;
 
-void objModel::parse()
+void objModel::parse(face f)
 {
-	for (int i = 0; i < F.size(); i++) {
-		if (F[i][0][0] == '=') continue;
-		face f = F[i];
-		for (int j = 0; j < F[i].size(); j++) {
-			string s = F[i][j];
-			int slashCnt = 0;
-			int sp1 = -1, sp2 = -1;
-			for (int k = 0; k < s.size(); k++) {
-				if (s[k] == '/') {
-					slashCnt++;
-					if (slashCnt == 1) sp1 = k;
-					else sp2 = k;
-				}
-			}
-			int indexV, indexVT, indexVN;
-			if (slashCnt == 0) {
-				sscanf_s(s.c_str(), "%d", &indexV);
+	string s = f[0];
+	if (s[0] == '=') return;
+	int faceVertexCnt = f.size();
+	int slashCnt = 0;
+	int sp1 = -1, sp2 = -1;
+	for (int k = 0; k < s.size(); k++) {
+		if (s[k] == '/') {
+			slashCnt++;
+			if (slashCnt == 1) sp1 = k;
+			else sp2 = k;
+		}
+	}
+	int indexV, indexVT, indexVN;
+	if (slashCnt == 0) {
+		for (int k = 0; k < faceVertexCnt; k++){
+			s = f[k];
+			sscanf_s(s.c_str(), "%d", &indexV);
+			vList.push_back(indexV - 1);
+		}
+	}
+	else if (slashCnt == 1) {
+		for (int k = 0; k < faceVertexCnt; k++){
+			s = f[k];
+			sscanf_s(s.c_str(), "%d/%d", &indexV, &indexVT);
+			vList.push_back(indexV - 1);
+			vtList.push_back(indexVT - 1);
+		}
+	}
+	else if (slashCnt == 2) {
+		if (sp1 + 1 == sp2) { // no vt
+			for (int k = 0; k < faceVertexCnt; k++){
+				s = f[k];
+				sscanf_s(s.c_str(), "%d//%d", &indexV, &indexVN);
 				vList.push_back(indexV - 1);
+				vnList.push_back(indexVN - 1);
 			}
-			else if (slashCnt == 1) {
-				sscanf_s(s.c_str(), "%d/%d", &indexV, &indexVT);
+		}
+		else { // has vt
+			for (int k = 0; k < faceVertexCnt; k++){
+				s = f[k];
+				sscanf_s(s.c_str(), "%d/%d/%d", &indexV, &indexVT, &indexVN);
 				vList.push_back(indexV - 1);
 				vtList.push_back(indexVT - 1);
-			}
-			else if (slashCnt == 2) {
-				if (sp1 + 1 == sp2) { // no vt
-					sscanf_s(s.c_str(), "%d//%d", &indexV, &indexVN);
-					vList.push_back(indexV - 1);
-					vnList.push_back(indexVN - 1);
-				}
-				else { // has vt
-					sscanf_s(s.c_str(), "%d/%d/%d", &indexV, &indexVT, &indexVN);
-					vList.push_back(indexV - 1);
-					vtList.push_back(indexVT - 1);
-					vnList.push_back(indexVN - 1);
-				}
-			}
-			else {
-				cerr << "Error while parsing slash of faces" << endl;
+				vnList.push_back(indexVN - 1);
 			}
 		}
 	}
+	else {
+		cerr << "Error while parsing slash of faces" << endl;
+	}
+	
+	if (slashCnt < 2) {
+		vertex3f ta, tb, tx;
+		for (int k = vList.size() - faceVertexCnt; k < vList.size(); k++) {
+			int index1 = vList[(k == vList.size() - faceVertexCnt) ? (vList.size()-1) : (k - 1)];
+			int index2 = vList[(k + 1 == vList.size()) ? (vList.size() - faceVertexCnt) : (k + 1)];
+			Vec3 <float> A, B, X;
+			ta = V[index1]; tb = V[index2];
+			A[0] = ta.x - V[k].x; A[1] = ta.y - V[k].y; A[2] = ta.z - V[k].z;
+			B[0] = tb.x - V[k].x; B[1] = tb.y - V[k].y; B[2] = tb.z - V[k].z;
+			X = A^B;
+			tx.x = X[0]; tx.y = X[1]; tx.z = X[2];
+//			tx.x = 1;	tx.y = tx.z = 0;
+			VN.push_back(tx);
+			vnList.push_back(VN.size() - 1);
+		}
+	}
+	
 }
 
 void objModel::clear()
@@ -142,6 +169,7 @@ void objModel::read(string filename)
 		else if (s == "vn") {
 			vertex3f v;
 			fin >> v.x >> v.y >> v.z;
+			//v.x = v.y = v.z = 1;
 			VN.push_back(v);
 		}
 		else if (s == "f") {
@@ -155,9 +183,9 @@ void objModel::read(string filename)
 		else if (s == "mtllib") {
 			fin >> s;
 			string t = filename;
-			for (int k = t.size() - 1; k>=0 && (t[k] != '\\' && t[k] != '/'); k--)
-				t.erase(t.end()-1,t.end());
-			loadMTL(t+s);
+			for (int k = t.size() - 1; k >= 0 && (t[k] != '\\' && t[k] != '/'); k--)
+				t.erase(t.end() - 1, t.end());
+			loadMTL(t + s);
 		}
 		else if (s == "usemtl") {
 			fin >> s;
@@ -170,65 +198,34 @@ void objModel::read(string filename)
 			getline(fin, s);
 		}
 	}
-	parse();
+	for (int i = 0; i < F.size(); i++) {
+		parse(F[i]);
+	}
 }
 
 void objModel::draw()
 {
+	glDisable(GL_CULL_FACE);
 	int index = 0;
 	bool hasVT = vtList.size();
-	bool hasVN = vnList.size();
 	for (int i = 0; i < F.size(); i++) {
 		if (F[i][0][0] == '=') {
 			string s = F[i][0];
 			s.erase(0, 1);
-			//cerr << s << endl;
 			mtl data = mtlTable.find(s)->second;
-			use_material(data.Ka, data.Kd, data.illum==2?data.Ks:black, NULL, data.Ns);
+			use_material(data.Ka, data.Kd, data.illum == 2 ? data.Ks : grey, NULL, data.Ns);
 			continue;
 		}
 		int faceVertexCnt = F[i].size();
-		if (faceVertexCnt == 3) {
-			glBegin(GL_TRIANGLES);
-			for (int j = 0; j < faceVertexCnt; j++) {
-				glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
-				if (hasVT) {
-					glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
-				}
-				if (hasVN) {
-					glNormal3f(VN[vnList[index]].x, VN[vnList[index]].y, VN[vnList[index]].z);
-				}
-				index++;
+		glBegin(GL_POLYGON);
+		for (int j = 0; j < faceVertexCnt; j++) {
+			glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
+			if (hasVT) {
+				glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
 			}
-			glEnd();
+			glNormal3f(VN[vnList[index]].x, VN[vnList[index]].y, VN[vnList[index]].z);
+			index++;
 		}
-		else if (faceVertexCnt == 4) { // 4 vertexes
-			glBegin(GL_QUADS);
-			for (int j = 0; j < faceVertexCnt; j++) {
-				glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
-				if (hasVT) {
-					glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
-				}
-				if (hasVN) {
-					glNormal3f(VN[vnList[index]].x, VN[vnList[index]].y, VN[vnList[index]].z);
-				}
-				index++;
-			}
-			glEnd();
-		}
-		else { // more than 4 vertexes
-			glBegin(GL_POLYGON);
-			for (int j = 0; j < faceVertexCnt; j++) {
-				glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
-				if (hasVT) {
-					glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
-				}
-				if (hasVN) {
-					glNormal3f(VN[vnList[index]].x, VN[vnList[index]].y, VN[vnList[index]].z);
-				}
-				index++;
-			}
-			glEnd();
-		}
+		glEnd();
 	}
 }

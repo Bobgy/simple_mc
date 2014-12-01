@@ -29,11 +29,6 @@ void KeyDown(unsigned char key, int x, int y)
 		case 27:
 		case 'q': { exit(0); break; }
 		case 'o': { bWire = !bWire; break; }
-		case 't': {
-			tex =1+ (tex + 1) % 7;
-			regenTableList(tableList);
-			break;
-		}
 		case '/': {
 			//write world to file
 			world.print();
@@ -45,7 +40,6 @@ void KeyDown(unsigned char key, int x, int y)
 			{
 				int k = key - '0';
 				type = block_type(k);
-			//	cout << key << " " << k << " " << type << endl;
 			}
 		}
 	}
@@ -69,11 +63,12 @@ void SpecialKeyDown(int key, int x, int y)
 			bCreative ^= 1;
 			bGravity ^= 1;
 			break;
-
+		/*
 		//toggle the shader
 		case GLUT_KEY_F1:
 			bCustomGLSL ^= 1;
 			break;
+		*/
 
 		//toggle view_mode
 		case GLUT_KEY_F5:
@@ -122,7 +117,6 @@ void SpecialKeyDown(int key, int x, int y)
 		}
 	}
 }
-
 
 void KeyboardControl::init(){
 	glutKeyboardUpFunc(KeyUp);

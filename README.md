@@ -37,3 +37,11 @@ In creative mode, gravity for the player is turned off, you can use " "(space) t
 Conversely, use the key "LSHIFT" to fall down.  
   
 There are some restrictions of the type of blocks you can destroy, while in creative mode, you can destroy any block.  
+
+========
+
+Reference:  
+1. http://ogldev.atspace.co.uk/www/tutorial23/tutorial23.html  The tutorials are intuitive.
+2. http://www.lighthouse3d.com/opengl/glsl/  I learned basic glsl programming from this website, and used the basic per pixel lighting model.  
+3. http://www.fabiensanglard.net/shadowmapping/index.php  The shadow mapping framework I used come from this website, and merged it to support lighting models.
+4. http://lodev.org/lodepng/ Easy to use png library.  

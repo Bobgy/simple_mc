@@ -1,6 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define _ENABLE_CUSTOM_SHADERS_
-//#define _MOVING_LIGHT_
 #define CULL_BACK
 
 #include "stdafx.h"
@@ -10,6 +8,7 @@
 #include <ctime>
 #include <cassert>
 #include <iostream>
+#include <list>
 #include "world.h"
 #include "entity.h"
 #include "render.h"
@@ -20,19 +19,15 @@
 #include "shadow.h"
 #include "lodepng.h"
 #include "config.h"
+#include "obj.h"
 #include "item.h"
+#include "block.h"
 
 using namespace std;
 
 //The light's position
-GLfloat light_pos[] = { 1.9, 1.0, 0.5, 0 };
-block_type int2block_type[10] = { TREASURE, AIR, DIRT, RED, BLUE, YELLOW, GREEN, STONE, GLASS, WOOD };
-float fTranslate;
-float fRotate;
-float fScale     = 1.0f;	// set inital scale value to 1.0f
+GLfloat light_pos[] = { 1.9, 1.0, -2.0, 0 };
 
-bool bPersp = true;
-bool bGravity = true;
 block_type type;
 
 int wHeight =  724;
@@ -43,21 +38,20 @@ int screenshot_count = 0;
 
 typedef Vec3i Pt3;
 //World world(time(NULL), 30);
-World world("stage/1.txt");
+World world("stage/last_save.txt");
 
 block_and_face seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 extern KeyboardControl keyboard;
 extern Cursor cursor;
 
-flt pp[3] = { 0, 10, 0 }, vv[3] = { 0, 0, 0 };
+flt pp[3] = { 5, 3, 0 }, vv[3] = { 0, 0, 0 };
 Entity observer(pp, vv, r, h, 1.0);
 float deg2rad = PI / 180.0;
 int windowHandle;
 
 extern bool bObserver;
-OBJ_ITEM *obj;
-
+list<Item> items;
 
 /*
 	This function is temporarily empty.
@@ -65,13 +59,15 @@ OBJ_ITEM *obj;
 */
 void load_obj()
 {
-	obj = NULL;
+	//items.push_back(Item(Vec3i(3, 2, 5), "objData/eagle.obj", 1, 0.5, Vec3f(0, 0, 0)));
+	items.push_back(Item(Vec3i(8, 2, 5), "objData/soccerball.obj", 2, 0.1, Vec3f(0, 0, 0)));
+	items.push_back(Item(Vec3i(16, 2, 10), "objData/castle.obj", 2, 0.13, Vec3f(0, 0, 0)));
+	//items.push_back(Item(Vec3i(3, 2, 10), "objData/rose+vase.obj", 2, 0.005, Vec3f(0, 0, 0)));
 }
 
 void reshape(int width, int height)
 {
 	if (height==0) height=1;
-
 	wHeight = height;
 	wWidth = width;
 }
@@ -87,12 +83,15 @@ void idle()
 	static clock_t now;
 	now = clock();
 	
-#ifdef _MOVING_LIGHT_
-	flt ang = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
-	light_pos[0] = cos(ang);
-	light_pos[1] = sin(ang);
-	light_pos[2] = 1.0;
-#endif
+	static flt ang = 1.5, lst_time = 0;
+	if (bMovingLight) {
+		flt time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
+		ang += time - lst_time;
+		lst_time = time;
+		light_pos[0] = 1.0;
+		light_pos[1] = sin(ang);
+		light_pos[2] = cos(ang);
+	} else lst_time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
 
 	if (lst + inter <= now) {
 		if(bGravity)observer.fall();
@@ -116,7 +115,7 @@ void idle()
 		} else {
 			if (keyboard.get_state(' '))
 				observer.give_velocity(Vec3f(0, 0.5, 0), 1);
-			if (keyboard.get_state('g'))
+			if (keyboard.get_special_state(GLUT_KEY_SHIFT_L))
 				observer.give_velocity(Vec3f(0, -0.5, 0), 1);
 		}
 		static int p[3];
@@ -139,19 +138,17 @@ void idle()
 			Those codes are used to detect whether the observer touched an obj-item.
 			If it is, that item is gotten by the observer.
 		*/
-		for (OBJ_ITEM *now = obj; now != NULL;now=now->next)
-			if (now->draw)
-			{
-				Vec3i temp = Pt3(p) - now->loc;
-				int r = temp*temp;
+		for (auto &x : items){
+			if (x.draw) {
+				Vec3i temp = Pt3(p) - x.loc;
+				int r = temp * temp;
 				if (r <= range_touch)
 				{
-					now->set_false();
-					world.add(now->type);
-
+					x.set_false();
+					world.add(x.type);
 				}
-
 			}
+		}
 		/*
 		mark for the end
 		*/
@@ -164,11 +161,9 @@ void idle()
 	glutPostRedisplay();
 }
 
-
 extern int tableList;
 
 void init(int argc, char *argv[]){
-	load_obj();
 	type = DIRT;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
@@ -195,12 +190,11 @@ void init(int argc, char *argv[]){
 	glutIdleFunc(idle);
 
 	glLineWidth(3.0);
-	glEnable(GL_CULL_FACE);
 	glutSetCursor(GLUT_CURSOR_NONE);
 
-#ifdef _ENABLE_CUSTOM_SHADERS_
 	shader_id = getShaders();
-#endif
+
+	load_obj();
 }
 
 

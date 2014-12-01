@@ -35,4 +35,13 @@ extern int texPlayer;
 //toggles whether we use the custom GLSL that supports shadow
 extern bool bCustomGLSL;
 
+//whether the player is in creative mode
+extern bool bCreative;
+
+//whether gravity works on player
+extern bool bGravity;
+
+//whether sun light is moving
+extern bool bMovingLight;
+
 #endif

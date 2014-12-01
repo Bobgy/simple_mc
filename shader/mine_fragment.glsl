@@ -47,7 +47,7 @@ void main()
 		L = normalize(gl_LightSource[0].position.xyz);
 		NdotL = max(dot(N,L),0.0);
 		R = 2.0 * NdotL * N - L; //calculate the reflection light's direction
-		RdotV = max(-dot(normalize(V),R),0.0);
+		RdotV = max(-dot(normalize(V),R),1e-5);
 		color_amb += ambient;
 		if (NdotL > 0.0) {
 			color_diff += diffuse * NdotL;

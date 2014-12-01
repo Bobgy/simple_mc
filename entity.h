@@ -22,8 +22,7 @@ inline void get_quadrant(flt x, flt y, int &dir, int &dt){ //find the face facin
 	if (fabs(x) > fabs(y)){
 		dir = 0;
 		dt = x > 0;
-	}
-	else {
+	} else {
 		dir = 2;
 		dt = y > 0;
 	}

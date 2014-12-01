@@ -6,10 +6,10 @@
 #include "vec.h"
 #include "block.h"
 #include "world.h"
+#include "config.h"
 
 using namespace std;
 
-extern block_type int2block_type[10];
 extern Entity observer;
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -28,6 +28,7 @@ void World::init_ability()
 	ability.clear();
 	ability.insert(TREASURE);
 }
+
 block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	static int sign[3], i;
 	for (i = 0; i < 3; ++i)
@@ -67,7 +68,7 @@ block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 World::World(string stage_file_path):changed(false){
 	init_ability();
 	for (int i = 0; i < 10; i++)
-		block_list.push_back(Block(int2block_type[i]));
+		block_list.push_back(Block(block_type(i)));
 	if (!read_from_file(stage_file_path)) {
 		//fail to construct the world from file, generate it randomly
 		cerr << "Failed to read from file " << stage_file_path.c_str() << endl;
@@ -78,7 +79,7 @@ World::World(string stage_file_path):changed(false){
 World::World(int seed, int range):changed(false){
 	init_ability();
 	srand(seed);
-	for (int i = 0; i < 10; i++) block_list.push_back(Block(int2block_type[i]));
+	for (int i = 0; i < 10; i++) block_list.push_back(Block(block_type(i)));
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k){
@@ -103,7 +104,7 @@ bool World::place_block(block_and_face p, block_type tp){
 bool World::destroy_block(Vec3i p){
 	Block * now = get_block(p);
 	// Here we add the "ability" to check whether the observer is able to destroy that kind of block 
-	if ((now != NULL)&&(ability.count(now->get_block_type())==1)) {
+	if ((now != NULL)&&(ability.count(now->get_block_type())==1 || bCreative)) {
 		if (now->get_block_type() == TREASURE)
 		{
 			/*
@@ -120,7 +121,7 @@ bool World::destroy_block(Vec3i p){
 
 void World::print()
 {
-	ofstream f("print.txt");
+	ofstream f("stage/last_save.txt");
 	static map<Vec3i, Block*>::const_iterator it;
 	for (it = blocks.begin(); it != blocks.end(); ++it)
 	{
@@ -143,7 +144,7 @@ bool World::read_from_file(string name)
 	while (!f.eof())
 	{
 		Vec3i pos(x, y, z);
-		blocks[pos] = &block_list[int2block_type[type]];
+		blocks[pos] = &block_list[block_type(type)];
 		f >> x >> y >> z >> type;
 	}
 	return true;
@@ -151,5 +152,5 @@ bool World::read_from_file(string name)
 
 void World::add(int type)
 {
-	ability.insert(int2block_type[type]);
+	ability.insert(block_type(type));
 }

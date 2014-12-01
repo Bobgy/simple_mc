@@ -2,26 +2,23 @@
 #define BLOCK_H
 enum block_type{
 	TREASURE,
-	AIR,
+	ENDSTONE,
 	DIRT,
 	RED,
-	BLUE,
-	YELLOW,
+	GOLD,
+	GRASS,
 	GREEN,
 	STONE,
-	GLASS,
-	WOOD
-	
+	LEAVES,
+	LOG
 };
-
-
 
 class Block {
 private:
 	block_type type;
 public:
-	bool is_opaque(){
-		return true;
+	bool is_opaque() const {
+		return type != LEAVES;
 	}
 	block_type get_block_type() const {
 		return type;

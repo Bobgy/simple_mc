@@ -107,6 +107,9 @@
     <ClInclude Include="obj.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_fragment.glsl">

@@ -136,6 +136,7 @@
     <ClInclude Include="entity.h" />
     <ClInclude Include="GL\freeglut.h" />
     <ClInclude Include="GL\glew.h" />
+    <ClInclude Include="item.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="lodepng.h" />

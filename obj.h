@@ -14,6 +14,7 @@ private:
 	struct vertex2f {
 		GLfloat x, y;
 	};
+	GLuint display_list_id;
     std::vector <vertex3f> V, VN;
 	std::vector <vertex2f> VT;
 	std::vector <GLuint> vList, vtList, vnList;
@@ -43,6 +44,9 @@ private:
 public:
     void read(std::string);
     void draw();
+	void call_list(){
+		glCallList(display_list_id);
+	}
 	void clear();
 };
 

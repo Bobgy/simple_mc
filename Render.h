@@ -14,7 +14,7 @@
 #define VIEW_MODE_THIRD_PERSON_FRONT 2
 #define VIEW_MODE_TOTAL_NUMBER 3
 
-#define VIEW_DISTANCE 50.0f
+#define VIEW_DISTANCE 80.0f
 
 class Cursor;
 
@@ -34,6 +34,8 @@ public:
 	void renderCubeTex(int type, const CubeTexCoord &tex);
 
 	void renderScene();
+
+	void texLoad(int i, const char *filename);
 
 	void texLoadPNG(int i, const char *filename);
 
@@ -83,7 +85,6 @@ private:
 	//Whether texture is turned on
 	bool bTexture;
 
-	void texload(int i, const char *filename);
 	unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader);
 	unsigned char *LoadPngImage(const char *filename);
 	void set(int k);

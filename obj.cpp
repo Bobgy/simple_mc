@@ -66,20 +66,24 @@ void objModel::parse(face f)
 	if (slashCnt < 2) {
 		vertex3f ta, tb, tx;
 		for (int k = vList.size() - faceVertexCnt; k < vList.size(); k++) {
+			assert(k >= 0);
 			int index1 = vList[(k == vList.size() - faceVertexCnt) ? (vList.size()-1) : (k - 1)];
 			int index2 = vList[(k + 1 == vList.size()) ? (vList.size() - faceVertexCnt) : (k + 1)];
-			Vec3 <float> A, B, X;
+			int index3 = vList[k];
+			Vec3f A, B, X;
+			assert(index1 >= 0 && index1 < V.size());
+			assert(index2 >= 0 && index2 < V.size());
 			ta = V[index1]; tb = V[index2];
-			A[0] = ta.x - V[k].x; A[1] = ta.y - V[k].y; A[2] = ta.z - V[k].z;
-			B[0] = tb.x - V[k].x; B[1] = tb.y - V[k].y; B[2] = tb.z - V[k].z;
-			X = A^B;
+			//cerr << k << ' ' << vList.size() << endl;
+			A[0] = ta.x - V[index3].x; A[1] = ta.y - V[index3].y; A[2] = ta.z - V[index3].z;
+			B[0] = tb.x - V[index3].x; B[1] = tb.y - V[index3].y; B[2] = tb.z - V[index3].z;
+			X = (B^A).normalize();
 			tx.x = X[0]; tx.y = X[1]; tx.z = X[2];
-//			tx.x = 1;	tx.y = tx.z = 0;
+			//tx.x = 1;	tx.y = tx.z = 0;
 			VN.push_back(tx);
 			vnList.push_back(VN.size() - 1);
 		}
 	}
-	
 }
 
 void objModel::clear()
@@ -201,11 +205,20 @@ void objModel::read(string filename)
 	for (int i = 0; i < F.size(); i++) {
 		parse(F[i]);
 	}
+	cerr << "Read from " << filename << endl;
+	display_list_id = glGenLists(1);
+	if (display_list_id == 0) {
+		cerr << "Generating display list failed!" << endl;
+		return;
+	}
+	glNewList(display_list_id, GL_COMPILE);
+	draw();
+	glEndList();
 }
 
 void objModel::draw()
 {
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	int index = 0;
 	bool hasVT = vtList.size();
 	for (int i = 0; i < F.size(); i++) {
@@ -213,17 +226,15 @@ void objModel::draw()
 			string s = F[i][0];
 			s.erase(0, 1);
 			mtl data = mtlTable.find(s)->second;
-			use_material(data.Ka, data.Kd, data.illum == 2 ? data.Ks : grey, NULL, data.Ns);
+			use_material(data.Ka, data.Kd, data.illum == 2 ? data.Ks : black, NULL, data.Ns);
 			continue;
 		}
 		int faceVertexCnt = F[i].size();
 		glBegin(GL_POLYGON);
 		for (int j = 0; j < faceVertexCnt; j++) {
-			glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
-			if (hasVT) {
-				glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
-			}
+			if (hasVT) glTexCoord2f(VT[vtList[index]].x, VT[vtList[index]].y);
 			glNormal3f(VN[vnList[index]].x, VN[vnList[index]].y, VN[vnList[index]].z);
+			glVertex3f(V[vList[index]].x, V[vList[index]].y, V[vList[index]].z);
 			index++;
 		}
 		glEnd();

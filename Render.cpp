@@ -1,6 +1,7 @@
 //#define _SIMPLE_CUBE_
 #include "stdafx.h"
 #include <cassert>
+#include <list>
 
 #include "auxiliary.h"
 #include "Render.h"
@@ -18,9 +19,8 @@ extern Cursor cursor;
 extern block_and_face seen_block;
 extern Entity observer;
 extern KeyboardControl keyboard;
-
+extern list<Item> items;
 //objModel obj;
-extern OBJ_ITEM *obj;
 
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
@@ -126,7 +126,7 @@ void Render::texLoadPNG(int i, const char *filename)
 	//free(image);
 }
 
-void Render::texload(int i,const char *filename)
+void Render::texLoad(int i,const char *filename)
 {
 
     BITMAPINFOHEADER bitmapInfoHeader;                                 // bitmapÐÅÏ¢Í·
@@ -170,16 +170,21 @@ void Render::init()
 	setTextureState(false);
 #ifndef _SIMPLE_CUBE_
 	setTextureState(true);
-	glGenTextures(9, texture);
-	texload(0, "texture/white.bmp");
-	texload(1, "texture/3.bmp");
-	texload(2, "texture/4.bmp");
-	texload(3, "texture/5.bmp");
+	glGenTextures(20, texture);
+	texLoad(0, "texture/white.bmp");
+	texLoad(1, "texture/3.bmp");
+	texLoad(2, "texture/4.bmp");
+	texLoad(3, "texture/5.bmp");
 	texLoadPNG(4, "texture/gold_block.png");
 	texLoadPNG(5, "texture/tallgrass.png");
-	texload(6, "texture/6.bmp");
+	texLoad(6, "texture/6.bmp");
 	texLoadPNG(7, "texture/cobblestone.png");
-	texLoadPNG(8, "texture/steve.png");
+	texLoadPNG(19, "texture/steve.png");
+	texLoadPNG(10, "texture/log.png");
+	texLoadPNG(11, "texture/log_top.png");
+	texLoadPNG(12, "texture/0.png");
+	texLoadPNG(13, "texture/1.png");
+	texLoadPNG(14, "texture/2.png");
 #endif
 }
 
@@ -332,8 +337,8 @@ void Render::renderPlayer(Entity observer, flt r, flt h) {
 	//begin Body
 	beginTransform();
 	static CubeTexCoord bodyTexCoord(Vec3i(8, 24, 16), 40, 40, 64, 128);
-	translate(Vec3f(0, 0.9, 0));
-	scale(Vec3f(0.35, 0.6, 0.45));
+	translate(Vec3f(0, 0.85, 0));
+	scale(Vec3f(0.3, 0.6, 0.45));
 	renderCubeTex(texPlayer, bodyTexCoord);
 	endTransform();
 	//end Body
@@ -386,25 +391,36 @@ void renderSeenBlock(block_and_face seen_block){
 }
 
 void Render::renderScene(){
-	/*beginTransform();
-		translate(Vec3f(10, 2, 10));
-		scale(Vec3f(0.01,0.01,0.01));
-		//use_material(white, black, NULL, 1);
-		glEnable(GL_COLOR_MATERIAL);
-		obj.draw();
-	endTransform();*/
+	draw_item();
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
 		translate(Vec3f(p)+0.5);
 		int msk = 0;
-		for (int i = 0; i < 6; ++i)
-			if (world.find(p + FACE[i]) == world.end())
+		for (int i = 0; i < 6; ++i)	{
+			auto it = world.find(p + FACE[i]);
+			if (it == world.end() || !it->second->is_opaque())
 				msk |= 1 << i;
-		int b = it->second->get_block_type();
-		use_material(color_list[b], color_list[b], color_list[b], NULL, 8);
+		}
+		block_type b = it->second->get_block_type();
+		//use_material(color_list[b], color_list[b], color_list[b], NULL, 8);
 		//if (b == 0) cout << "SUN!" << endl;
-		render.renderCube(b, msk);
+		use_material(white, white, black, black, 1);
+		if (b == LOG) {
+			render.renderCube(10, 0x3c & msk);
+			render.renderCube(11, 3 & msk);
+		} else if (b == LEAVES) {
+			int mask[3] = { 0 };
+			srand(((it->first[0] * 13) + it->first[1] * 13) + it->first[2]);
+			for (int i = 0; i < 6; ++i)
+				mask[rand() % 3] |= 1 << i;
+			use_material(green, green, black, black, 1);
+			for (int i = 0; i < 3; ++i)
+				render.renderCube(12+i, mask[i] & msk);
+		} else if (b == GOLD){
+			use_material(golden, golden, white, black, 10);
+			render.renderCube(b, msk);
+		} else render.renderCube(b, msk);
 		endTransform();
 	}
 }
@@ -521,6 +537,7 @@ void Render::renderBoxLine(){
 	}
 }
 
+extern GLhandleARB shader_id;
 extern flt light_pos[4];
 void DisplayScene(){
 	if (bCustomGLSL) {
@@ -561,8 +578,9 @@ void DisplayScene(){
 
 		// Now rendering from the camera POV, using the FBO to generate shadows
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		glViewport(0, 0, wWidth, wHeight);
 	}
+	glViewport(0, 0, wWidth, wHeight);
+
 	//Enabling color write (previously disabled for light POV z-buffer rendering)
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
@@ -574,9 +592,8 @@ void DisplayScene(){
 	// Clear the color to be sky blue
 	glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
 
-	extern GLhandleARB shader_id;
-	//Using the shadow shader
 	if (bCustomGLSL){
+		//Using the shadow shader
 		glUseProgramObjectARB(shader_id);
 		glUniform1iARB(shadow_map_loc, 7);
 		//Bind shadow depth as texture
@@ -590,8 +607,9 @@ void DisplayScene(){
 	render.setupPerspective(render.eye, render.center, Vec3f(0,1,0), false, false);
 	//render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
 	//							cursor.face_xz^Vec3f(light_pos), true, true);
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 
 	extern bool bWire;
 	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -610,22 +628,19 @@ void DisplayScene(){
 	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? sun : black);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
 	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
 	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
 	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
 	glEnable(GL_LIGHT0);
-	
-	renderGUI(observer);
 
 	//Draw the GUI
 	glUseProgramObjectARB(0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
-	if (bBoxLine) {
-		render.renderBoxLine();
-	}
-	glColor3d(0, 0, 0);
+	glColor3f(0, 0, 0);
+	renderGUI(observer);
+	if (bBoxLine) render.renderBoxLine();
 	renderSeenBlock(seen_block);
 
 	extern bool bDebugDepthMap;
@@ -700,20 +715,15 @@ void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool ligh
 
 void Render::draw_item()
 {
-	OBJ_ITEM *now = obj;
-	while (now!=NULL)
-	{ 
-		if (now->draw)
-		{
+	glActiveTextureARB(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	for (auto x : items){
+		if (x.draw) {
 			beginTransform();
-			translate(now->loc);
-			scale(Vec3f(0.01, 0.01, 0.01));
-			//use_material(white, black, NULL, 1);
-			glEnable(GL_COLOR_MATERIAL);
-			use_material(color_list[now->type], color_list[now->type], color_list[now->type], NULL, 8);
-			now->obj.draw();
+				translate(x.loc);
+				scale(Vec3f(x.scale,x.scale,x.scale));
+				x.obj.call_list();
 			endTransform();
 		}
-		now = now->next;
 	}
 }

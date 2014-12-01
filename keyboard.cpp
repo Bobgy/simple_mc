@@ -17,12 +17,12 @@ extern Entity observer;
 extern Render render;
 extern Cursor cursor;
 extern block_type type;
-extern block_type int2block_type[10];
 extern int screenshot_count;
 bool bDebugDepthMap = false, bWire = false;
 
 void KeyDown(unsigned char key, int x, int y)
 {
+	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
 	keyboard.key_state[key]=true;
 	switch (key)
 	{
@@ -44,7 +44,7 @@ void KeyDown(unsigned char key, int x, int y)
 			if ((key >= '0') && (key <= '9'))
 			{
 				int k = key - '0';
-				type = int2block_type[k];
+				type = block_type(k);
 			//	cout << key << " " << k << " " << type << endl;
 			}
 		}
@@ -53,13 +53,23 @@ void KeyDown(unsigned char key, int x, int y)
 }
 void KeyUp(unsigned char key, int x, int y)
 {
-	keyboard.key_state[key]=false;
+	keyboard.key_state[key] = false;
+}
+void SpecialKeyUp(int key, int x, int y){
+	keyboard.special_key_state[key] = false;
 }
 void SpecialKeyDown(int key, int x, int y)
 {
+	keyboard.special_key_state[key] = true;
 	static bool fullscreen = 0;
 	switch (key){
-		
+
+		//toggle Creative Mode
+		case GLUT_KEY_F2:
+			bCreative ^= 1;
+			bGravity ^= 1;
+			break;
+
 		//toggle the shader
 		case GLUT_KEY_F1:
 			bCustomGLSL ^= 1;
@@ -74,6 +84,12 @@ void SpecialKeyDown(int key, int x, int y)
 		case GLUT_KEY_F6:
 			bObserver ^= 1;
 			break;
+
+		//toggle moving sun light
+		case GLUT_KEY_F7:
+			bMovingLight ^= 1;
+			break;
+
 		//toggle showing the box lines
 		case GLUT_KEY_F9:
 			bBoxLine ^= 1;
@@ -106,12 +122,11 @@ void SpecialKeyDown(int key, int x, int y)
 		}
 	}
 }
-bool KeyboardControl::get_state(unsigned char key)
-{
-	return keyboard.key_state[key];
-}
+
+
 void KeyboardControl::init(){
 	glutKeyboardUpFunc(KeyUp);
 	glutKeyboardFunc(KeyDown);
 	glutSpecialFunc(SpecialKeyDown);
+	glutSpecialUpFunc(SpecialKeyUp);
 }

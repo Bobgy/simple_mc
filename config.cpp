@@ -30,7 +30,16 @@ bool bCollisionBox = false;
 
 //the texture id for parts of the player
 //in order head, body, leg, arm
-int texPlayer = 8;
+int texPlayer = 19;
 
 //toggles whether we use the custom GLSL that supports shadow
 bool bCustomGLSL = true;
+
+//whether the player is in creative mode
+bool bCreative = true;
+
+//whether gravity works on player
+bool bGravity = false;
+
+//whether sun light is moving
+bool bMovingLight = false;

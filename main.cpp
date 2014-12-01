@@ -61,7 +61,7 @@ void load_obj()
 {
 	//items.push_back(Item(Vec3i(3, 2, 5), "objData/eagle.obj", 1, 0.5, Vec3f(0, 0, 0)));
 	items.push_back(Item(Vec3i(8, 2, 5), "objData/soccerball.obj", 2, 0.1, Vec3f(0, 0, 0)));
-	items.push_back(Item(Vec3i(16, 2, 10), "objData/castle.obj", 2, 0.13, Vec3f(0, 0, 0)));
+	items.push_back(Item(Vec3i(16, 2, 10), "objData/castle.obj", 5, 0.13, Vec3f(0, 0, 0)));
 	//items.push_back(Item(Vec3i(3, 2, 10), "objData/rose+vase.obj", 2, 0.005, Vec3f(0, 0, 0)));
 }
 

@@ -47,6 +47,7 @@ void KeyDown(unsigned char key, int x, int y)
 }
 void KeyUp(unsigned char key, int x, int y)
 {
+	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
 	keyboard.key_state[key] = false;
 }
 void SpecialKeyUp(int key, int x, int y){

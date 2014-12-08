@@ -6,7 +6,7 @@
 #include <string>
 #include <map>
 
-class objModel {
+class ObjModel {
 private:
 	struct vertex3f {
 		GLfloat x, y, z;

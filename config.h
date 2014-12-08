@@ -44,4 +44,10 @@ extern bool bGravity;
 //whether sun light is moving
 extern bool bMovingLight;
 
+//the size of the shadow map and the function to update shadow_map_size
+extern double shadow_map_ratio;
+extern int SHADOW_MAP_WIDTH;
+extern int SHADOW_MAP_HEIGHT;
+void update_shadow_map_size();
+
 #endif

@@ -40,9 +40,9 @@ typedef Vec3i Pt3;
 //World world(time(NULL), 30);
 World world("stage/last_save.txt");
 
-block_and_face seen_block = make_pair(Vec3i(), -1);
+BlockAndFace seen_block = make_pair(Vec3i(), -1);
 extern Render render;
-extern KeyboardControl keyboard;
+extern Keyboard keyboard;
 extern Cursor cursor;
 
 flt pp[3] = { 5, 3, 0 }, vv[3] = { 0, 0, 0 };
@@ -185,7 +185,7 @@ void init(int argc, char *argv[]){
 	tableList = genTableList();
 
 	init_cursor();
-	glutDisplayFunc(DisplayScene);
+	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutIdleFunc(idle);
 

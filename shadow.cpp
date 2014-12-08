@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "shadow.h"
+#include "config.h"
 
 GLuint depth_texture_id;
 GLuint fboId;

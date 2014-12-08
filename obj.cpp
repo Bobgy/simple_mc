@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void objModel::parse(face f)
+void ObjModel::parse(face f)
 {
 	string s = f[0];
 	if (s[0] == '=') return;
@@ -86,7 +86,7 @@ void objModel::parse(face f)
 	}
 }
 
-void objModel::clear()
+void ObjModel::clear()
 {
 	V.clear(); VN.clear(); VT.clear(); 
 	vList.clear(); vtList.clear(); vnList.clear(); 
@@ -94,7 +94,7 @@ void objModel::clear()
 	mtlTable.clear();
 }
 
-void objModel::loadMTL(string filename)
+void ObjModel::loadMTL(string filename)
 {
 	ifstream fin(filename);
 	if (!fin) {
@@ -148,7 +148,7 @@ void objModel::loadMTL(string filename)
 	}
 }
 
-void objModel::read(string filename)
+void ObjModel::read(string filename)
 {
 	string s;
 	ifstream fin(filename);
@@ -216,7 +216,7 @@ void objModel::read(string filename)
 	glEndList();
 }
 
-void objModel::draw()
+void ObjModel::draw()
 {
 	//glDisable(GL_CULL_FACE);
 	int index = 0;

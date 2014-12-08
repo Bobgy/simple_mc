@@ -120,7 +120,7 @@ const int FACE_AXIS[3][2] = {
 		{ 1, 0 },
 		{ 5, 4 }
 };
-typedef std::pair<Vec3i, int> block_and_face;
+typedef std::pair<Vec3i, int> BlockAndFace;
 
 //find the next integer in direction dir (-1/1)
 inline int next_int(double x, int dir){

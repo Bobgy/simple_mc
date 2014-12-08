@@ -5,17 +5,17 @@
 
 extern bool bDebugDepthMap;
 
-class KeyboardControl{
+class Keyboard{
 private:
 	bool key_state[512];
 	bool special_key_state[512];
 
 public:
-	KeyboardControl(){
+	Keyboard(){
 		memset(key_state, 0, sizeof key_state);
 		memset(special_key_state, 0, sizeof special_key_state);
 	}
-	~KeyboardControl(){}
+	~Keyboard(){}
 	bool is_walking() const {
 		return (key_state['w'] ^ key_state['s']) || (key_state['a'] ^ key_state['d']);
 	}

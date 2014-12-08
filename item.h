@@ -8,7 +8,7 @@ class Item
 {
 public:
 	Vec3i loc;
-	objModel obj;
+	ObjModel obj;
 	int type;
 	bool draw;
 	flt scale;

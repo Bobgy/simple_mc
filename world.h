@@ -1,5 +1,5 @@
-#ifndef WORLD_H
-#define WORLD_H
+#ifndef _WORLD_H_
+#define _WORLD_H_
 
 #include <map>
 #include <vector>
@@ -32,7 +32,7 @@ public:
 	//returns the first block within radius r that is seen by an eye
 	//at p looking at the direction vector dir
 	//returns -1 in face to indicate no block is found
-	block_and_face look_at_block(Vec3<double> p, Vec3<double> dir, double r) const;
+	BlockAndFace look_at_block(Vec3<double> p, Vec3<double> dir, double r) const;
 
 	//generate a world by a stage file
 	World(string stage_file_path);
@@ -41,7 +41,7 @@ public:
 	World(int seed, int range);
 
 	//place a block at p of type tp
-	bool place_block(block_and_face p, block_type tp);
+	bool place_block(BlockAndFace p, block_type tp);
 
 	//destroy a block at p
 	bool destroy_block(Vec3i p);

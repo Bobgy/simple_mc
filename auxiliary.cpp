@@ -21,43 +21,43 @@ CubeTexCoord::CubeTexCoord(Vec3i sz, int s, int t, int h, int w){
 		set(C[2], s0 + sz[1], t0 + sz[2]);
 		set(C[3], s0, t0 + sz[2]);
 	}
-		{ //left
-			flt(&C)[4][2] = c[5];
-			int s0 = s, t0 = t + sz[2];
-			set(C[0], s0, t0);
-			set(C[1], s0 + sz[1], t0);
-			set(C[2], s0 + sz[1], t0 + sz[0]);
-			set(C[3], s0, t0 + sz[0]);
-		}
-		{ //right
-			flt(&C)[4][2] = c[4];
-			int s0 = s, t0 = t - sz[0];
-			set(C[0], s0, t0);
-			set(C[1], s0 + sz[1], t0);
-			set(C[2], s0 + sz[1], t0 + sz[0]);
-			set(C[3], s0, t0 + sz[0]);
-		}
-		{ //top
-			flt(&C)[4][2] = c[0];
-			int s0 = s - sz[0], t0 = t;
-			set(C[0], s0, t0);
-			set(C[1], s0 + sz[0], t0);
-			set(C[2], s0 + sz[0], t0 + sz[2]);
-			set(C[3], s0, t0 + sz[2]);
-		}
-		{ //front
-			flt(&C)[4][2] = c[2];
-			set(C[0], s + sz[1], t + sz[2]);
-			set(C[1], s, t + sz[2]);
-			set(C[2], s, t);
-			set(C[3], s + sz[1], t);
-		}
-		{ //bottom
-			flt(&C)[4][2] = c[1];
-			int s0 = s - sz[0], t0 = t + sz[2];
-			set(C[0], s0, t0);
-			set(C[1], s0 + sz[0], t0);
-			set(C[2], s0 + sz[0], t0 + sz[2]);
-			set(C[3], s0, t0 + sz[2]);
-		}
+	{ //left
+		flt(&C)[4][2] = c[5];
+		int s0 = s, t0 = t + sz[2];
+		set(C[0], s0, t0);
+		set(C[1], s0 + sz[1], t0);
+		set(C[2], s0 + sz[1], t0 + sz[0]);
+		set(C[3], s0, t0 + sz[0]);
+	}
+	{ //right
+		flt(&C)[4][2] = c[4];
+		int s0 = s, t0 = t - sz[0];
+		set(C[0], s0, t0);
+		set(C[1], s0 + sz[1], t0);
+		set(C[2], s0 + sz[1], t0 + sz[0]);
+		set(C[3], s0, t0 + sz[0]);
+	}
+	{ //top
+		flt(&C)[4][2] = c[0];
+		int s0 = s - sz[0], t0 = t;
+		set(C[0], s0, t0);
+		set(C[1], s0 + sz[0], t0);
+		set(C[2], s0 + sz[0], t0 + sz[2]);
+		set(C[3], s0, t0 + sz[2]);
+	}
+	{ //front
+		flt(&C)[4][2] = c[2];
+		set(C[0], s + sz[1], t + sz[2]);
+		set(C[1], s, t + sz[2]);
+		set(C[2], s, t);
+		set(C[3], s + sz[1], t);
+	}
+	{ //bottom
+		flt(&C)[4][2] = c[1];
+		int s0 = s - sz[0], t0 = t + sz[2];
+		set(C[0], s0, t0);
+		set(C[1], s0 + sz[0], t0);
+		set(C[2], s0 + sz[0], t0 + sz[2]);
+		set(C[3], s0, t0 + sz[2]);
+	}
 }

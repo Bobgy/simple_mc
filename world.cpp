@@ -29,7 +29,7 @@ void World::init_ability()
 	ability.insert(TREASURE);
 }
 
-block_and_face World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
+BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	static int sign[3], i;
 	for (i = 0; i < 3; ++i)
 		sign[i] = sgn(dir[i]);
@@ -90,7 +90,7 @@ World::World(int seed, int range):changed(false){
 }
 
 //place a block at p of type tp
-bool World::place_block(block_and_face p, block_type tp){
+bool World::place_block(BlockAndFace p, block_type tp){
 	Vec3i pos = p.first + FACE[p.second];
 	if (get_block(pos) == NULL && !observer.intersect_cube(pos)){
 		blocks[pos] = &block_list[tp];
@@ -104,7 +104,7 @@ bool World::place_block(block_and_face p, block_type tp){
 bool World::destroy_block(Vec3i p){
 	Block * now = get_block(p);
 	// Here we add the "ability" to check whether the observer is able to destroy that kind of block 
-	if ((now != NULL)&&(ability.count(now->get_block_type())==1 || bCreative)) {
+	if ((now != NULL)) { //&&(ability.count(now->get_block_type())==1 || bCreative)) {
 		if (now->get_block_type() == TREASURE)
 		{
 			/*

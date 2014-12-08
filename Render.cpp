@@ -16,11 +16,11 @@
 
 extern World world;
 extern Cursor cursor;
-extern block_and_face seen_block;
+extern BlockAndFace seen_block;
 extern Entity observer;
-extern KeyboardControl keyboard;
+extern Keyboard keyboard;
 extern list<Item> items;
-//objModel obj;
+//ObjModel obj;
 
 extern int idle_count, wWidth, wHeight;
 const static float color_list[10][4] = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, { 0, 1, 1, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, { 1, 1, 1, 1 }, { 0.5, 0.5, 0.5, 1 } };
@@ -382,7 +382,7 @@ void Render::renderPlayer(Entity observer, flt r, flt h) {
 }
 
 
-void renderSeenBlock(block_and_face seen_block){
+void renderSeenBlock(BlockAndFace seen_block){
 	if (seen_block.second == -1) return;
 	render.beginTransform();
 	render.translate(Vec3f(seen_block.first)+0.5);
@@ -403,8 +403,6 @@ void Render::renderScene(){
 				msk |= 1 << i;
 		}
 		block_type b = it->second->get_block_type();
-		//use_material(color_list[b], color_list[b], color_list[b], NULL, 8);
-		//if (b == 0) cout << "SUN!" << endl;
 		use_material(white, white, black, black, 1);
 		if (b == LOG) {
 			render.renderCube(10, 0x3c & msk);
@@ -539,7 +537,7 @@ void Render::renderBoxLine(){
 
 extern GLhandleARB shader_id;
 extern flt light_pos[4];
-void DisplayScene(){
+void display(){
 	if (bCustomGLSL) {
 		//First step: Render from the light POV to a FBO, story depth values only
 		extern GLuint fboId;

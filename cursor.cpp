@@ -3,7 +3,7 @@
 #include "Render.h"
 
 extern World world;
-extern block_and_face seen_block;
+extern BlockAndFace seen_block;
 Cursor cursor;
 extern int windowHandle;
 extern block_type type;

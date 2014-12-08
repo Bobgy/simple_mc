@@ -7,7 +7,7 @@
 #include "config.h"
 #include "cursor.h"
 
-KeyboardControl keyboard;
+Keyboard keyboard;
 extern void regenTableList(GLint);
 extern int tableList, wWidth, wHeight;
 extern GLuint tex;
@@ -119,7 +119,7 @@ void SpecialKeyDown(int key, int x, int y)
 	}
 }
 
-void KeyboardControl::init(){
+void Keyboard::init(){
 	glutKeyboardUpFunc(KeyUp);
 	glutKeyboardFunc(KeyDown);
 	glutSpecialFunc(SpecialKeyDown);

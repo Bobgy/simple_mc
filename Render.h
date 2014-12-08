@@ -91,7 +91,7 @@ private:
 	unsigned char tex_check[256][256][3];
 };
 
-void renderSeenBlock(block_and_face seen_block);
+void renderSeenBlock(BlockAndFace seen_block);
 
 GLint genTableList();
 
@@ -107,6 +107,6 @@ void renderGUI(Entity);
 
 void renderSceneDynamic(bool bObserver, Entity observer);
 
-void DisplayScene();
+void display();
 
 #endif

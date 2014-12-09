@@ -20,7 +20,7 @@ float pcf(vec4 sc){
 			for(y=-rg;y<=rg;++y){
 				dist = texture2D(ShadowMap,vec2(sc.s+float(x)*offset,sc.t+float(y)*offset)).z;
  				shadow = 1.0;
-				if (abs(dist-sc.z)>2e-4 && dist < sc.z)
+				if (abs(dist-sc.z)>1e-5 && dist < sc.z)
 					shadow = 0.2;
 				sum += shadow;
 			}
@@ -72,8 +72,5 @@ void main()
 		}
 	}
 	vec3 color = (color_amb.rgb + color_diff.rgb * shadow) * colorTex.rgb + color_sp.rgb * shadow;
-	//vec3 color = (color_amb.rgb + color_diff.rgb * shadow) + color_sp.rgb * shadow;
-	//color = colorTex.aaa;
-	//color = gl_Color.rgb;
     gl_FragColor = vec4(color.rgb, 1.0);
 }

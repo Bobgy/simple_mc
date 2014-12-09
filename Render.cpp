@@ -535,6 +535,7 @@ void display(){
 
 		//Using the fixed pipeline to render to the depthbuffer
 		glUseProgramObjectARB(0);
+		//glUseProgramObjectARB(shader_id);
 
 		// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
 		glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);

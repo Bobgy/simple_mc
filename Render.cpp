@@ -391,7 +391,6 @@ void renderSeenBlock(BlockAndFace seen_block){
 }
 
 void Render::renderScene(){
-	draw_item();
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
@@ -423,7 +422,6 @@ void Render::renderScene(){
 	}
 }
 
-GLint tableList;
 GLint genTableList(){
 	GLint lid = glGenLists(1);
 	glNewList(lid, GL_COMPILE);
@@ -433,8 +431,16 @@ GLint genTableList(){
 }
 void regenTableList(GLint lid){
 	glNewList(lid, GL_COMPILE);
+	render.setTextureState(true);
 	render.renderScene();
 	glEndList();
+}
+void renderTableList(){
+	if (world.changed) {
+		regenTableList(tableList);
+		world.changed = false;
+	}
+	glCallList(tableList);
 }
 
 void renderInfo(Entity observer)
@@ -472,14 +478,6 @@ void renderInfo(Entity observer)
 	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
 	glPopMatrix();// 重置为原保存矩阵
 	glEnable(GL_DEPTH_TEST);
-}
-
-void renderTableList(){
-	if (world.changed) {
-		regenTableList(tableList);
-		world.changed = false;
-	}
-	glCallList(tableList);
 }
 
 void renderCross(){
@@ -568,8 +566,9 @@ void display(){
 		render.setTextureState(false);
 		//render the scene
 		renderSceneDynamic(observer);
-		//renderTableList();
-		render.renderScene();
+		renderTableList();
+		render.draw_item();
+		//render.renderScene();
 
 		//Save modelview/projection matrice into texture7, also add a biais
 		setTextureMatrix();
@@ -616,8 +615,9 @@ void display(){
 	render.setTextureState(true);
 	//render the scene
 	renderSceneDynamic(observer);
-
-	render.renderScene();
+	renderTableList();
+	render.draw_item();
+	//render.renderScene();
 
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);

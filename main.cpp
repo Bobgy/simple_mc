@@ -195,6 +195,8 @@ void init(int argc, char *argv[]){
 	shader_id = getShaders();
 
 	load_obj();
+
+	tableList=genTableList();
 }
 
 

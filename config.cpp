@@ -52,3 +52,6 @@ void update_shadow_map_size(){
 	SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
 	SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 }
+
+//scene tableListID
+GLint tableList;

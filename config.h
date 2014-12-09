@@ -50,4 +50,6 @@ extern int SHADOW_MAP_WIDTH;
 extern int SHADOW_MAP_HEIGHT;
 void update_shadow_map_size();
 
+//scene tableListID
+extern GLint tableList;
 #endif

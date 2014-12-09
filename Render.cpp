@@ -462,45 +462,37 @@ void renderInfo(Entity observer)
 	}
 
 	char *c;
-	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵
-	glOrtho(0, 480, 0, 480, -1, 1);// 位置正投影
 	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
 	glPushMatrix();// 保存原矩阵
 	glLoadIdentity();// 装入单位矩阵*/
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++)
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
 	glPopMatrix();// 重置为原保存矩阵
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPopMatrix();// 重置为原保存矩阵
-	glEnable(GL_DEPTH_TEST);
 }
 
 void renderCross(){
+	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
+	glPushMatrix();// 保存原矩阵
+	glLoadIdentity();// 装入单位矩阵*/
+	glRasterPos2f(wWidth/2-6, wHeight/2-6);
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
+	glPopMatrix();
+}
+
+void renderGUI(Entity observer){
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
 	glPushMatrix();// 保存原矩阵
 	glLoadIdentity();// 装入单位矩阵
 	glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵*/
-	glRasterPos2d(wWidth/2-6, wHeight/2-6);
-	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, '+');
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glEnable(GL_DEPTH_TEST);
-}
 
-void renderGUI(Entity observer){
 	renderInfo(observer);
 	renderCross();
+
+	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
+	glPopMatrix();// 重置为原保存矩阵
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Render::setTextureState(bool bTex){

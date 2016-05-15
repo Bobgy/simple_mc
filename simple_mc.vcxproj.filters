@@ -112,9 +112,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\mine_fragment.glsl">
-      <Filter>资源文件</Filter>
-    </None>
     <None Include="shader\mine_vertex.glsl">
       <Filter>资源文件</Filter>
     </None>
@@ -122,6 +119,9 @@
       <Filter>资源文件</Filter>
     </None>
     <None Include="glew32.dll">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="shader\mine_fragment.glsl">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>

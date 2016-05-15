@@ -45,7 +45,7 @@ bool bGravity = false;
 bool bMovingLight = false;
 
 //the size of the shadow map and the function to update shadow_map_size
-double shadow_map_ratio = 8.0;
+double shadow_map_ratio = 2.0;
 int SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
 int SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 void update_shadow_map_size(){

@@ -4,11 +4,26 @@ varying vec4 diffuse,amb_global,ambient,frag_pos,shadow_coord;
 varying vec3 normal;
 uniform sampler2D tex;
 uniform sampler2D ShadowMap;
-uniform int rg = 2;			 //determines the sampling numbers
-uniform float offset = 1e-4; //determines the sampling distance
+uniform int rg = 1;			 //determines the sampling numbers
+uniform float offset = 4e-4; //determines the sampling distance
 
 vec3 toVec3(vec4 x){
 	return x.rgb/x.w;
+}
+
+float cartoon(float x){
+	float step = 0.2;
+	for(float t=1.0; t>0.0; t-=step,step/=1.2){
+		if(x>t)return t;
+	}
+	return 0;
+}
+
+vec3 cartoon(vec3 x){
+	x.r=cartoon(x.r);
+	x.g=cartoon(x.g);
+	x.b=cartoon(x.b);
+	return x;
 }
 
 //percentage closer filtering
@@ -20,8 +35,8 @@ float pcf(vec4 sc){
 			for(y=-rg;y<=rg;++y){
 				dist = texture2D(ShadowMap,vec2(sc.s+float(x)*offset,sc.t+float(y)*offset)).z;
  				shadow = 1.0;
-				if (abs(dist-sc.z)>1e-5 && dist < sc.z)
-					shadow = 0.2;
+				if (abs(dist-sc.z) > 2e-6 && dist < sc.z)
+					shadow = 0.3;
 				sum += shadow;
 			}
 	}
@@ -72,5 +87,6 @@ void main()
 		}
 	}
 	vec3 color = (color_amb.rgb + color_diff.rgb * shadow) * colorTex.rgb + color_sp.rgb * shadow;
+	//color = cartoon(color);
     gl_FragColor = vec4(color.rgb, 1.0);
 }

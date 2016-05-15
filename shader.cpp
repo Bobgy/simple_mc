@@ -117,10 +117,10 @@ GLhandleARB getShaders()
 	//#define SHADER "pixeldirdifambspec"
 	//#define SHADER "textureSimple"
 	//#define SHADER "lightPointwise"
-#define SHADER "mine"
+#define SHADER(path, post) path"mine"post
 
-	vs = textFileRead("shader/"SHADER"_vertex.glsl");
-	fs = textFileRead("shader/"SHADER"_fragment.glsl");
+	vs = textFileRead(SHADER("shader/","_vertex.glsl"));
+	fs = textFileRead(SHADER("shader/","_fragment.glsl"));
 
 	const char * vv = vs;
 	const char * ff = fs;

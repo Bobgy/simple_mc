@@ -2,8 +2,8 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-#include "vec.h"
-#include "entity.h"
+#include <core/vec.h>
+#include <core/entity.h>
 
 using namespace std;
 

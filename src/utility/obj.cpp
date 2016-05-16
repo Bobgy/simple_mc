@@ -1,12 +1,12 @@
 #include "obj.h"
-#include "stdafx.h"
+#include <stdafx.h>
 
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <assert.h>
-#include "auxiliary.h"
+#include <render/auxiliary.h>
 
 using namespace std;
 

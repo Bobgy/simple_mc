@@ -93,6 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>E:\Programming\games\cg\Project\simple_mc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,41 +116,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="auxiliary.cpp" />
-    <ClCompile Include="config.cpp" />
-    <ClCompile Include="view.cpp" />
-    <ClCompile Include="entity.cpp" />
-    <ClCompile Include="keyboard.cpp" />
-    <ClCompile Include="lodepng.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="obj.cpp" />
-    <ClCompile Include="render.cpp" />
-    <ClCompile Include="screenshot.cpp" />
-    <ClCompile Include="shader.cpp" />
-    <ClCompile Include="shadow.cpp" />
-    <ClCompile Include="world.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="auxiliary.h" />
-    <ClInclude Include="block.h" />
-    <ClInclude Include="config.h" />
-    <ClInclude Include="entity.h" />
-    <ClInclude Include="GL\freeglut.h" />
-    <ClInclude Include="GL\glew.h" />
-    <ClInclude Include="item.h" />
-    <ClInclude Include="keyboard.h" />
-    <ClInclude Include="view.h" />
-    <ClInclude Include="lodepng.h" />
-    <ClInclude Include="obj.h" />
-    <ClInclude Include="render.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="shadow.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="vec.h" />
-    <ClInclude Include="world.h" />
-    <ClInclude Include="screenshot.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="freeglut.dll" />
     <None Include="glew32.dll" />
     <None Include="shader\mine_fragment.glsl" />
@@ -159,6 +125,46 @@
     <Library Include="lib\freeglut.lib" />
     <Library Include="lib\glew32.lib" />
     <Library Include="lib\glew32s.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\block.h" />
+    <ClInclude Include="src\core\entity.h" />
+    <ClInclude Include="src\core\item.h" />
+    <ClInclude Include="src\core\vec.h" />
+    <ClInclude Include="src\core\view.h" />
+    <ClInclude Include="src\core\world.h" />
+    <ClInclude Include="src\GL\freeglut.h" />
+    <ClInclude Include="src\GL\freeglut_ext.h" />
+    <ClInclude Include="src\GL\freeglut_std.h" />
+    <ClInclude Include="src\GL\glew.h" />
+    <ClInclude Include="src\GL\glut.h" />
+    <ClInclude Include="src\GL\glxew.h" />
+    <ClInclude Include="src\GL\wglew.h" />
+    <ClInclude Include="src\render\auxiliary.h" />
+    <ClInclude Include="src\render\render.h" />
+    <ClInclude Include="src\render\shader.h" />
+    <ClInclude Include="src\render\shadow.h" />
+    <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\utility\config.h" />
+    <ClInclude Include="src\utility\keyboard.h" />
+    <ClInclude Include="src\utility\lodepng.h" />
+    <ClInclude Include="src\utility\obj.h" />
+    <ClInclude Include="src\utility\screenshot.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\entity.cpp" />
+    <ClCompile Include="src\core\view.cpp" />
+    <ClCompile Include="src\core\world.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\render\auxiliary.cpp" />
+    <ClCompile Include="src\render\render.cpp" />
+    <ClCompile Include="src\render\shader.cpp" />
+    <ClCompile Include="src\render\shadow.cpp" />
+    <ClCompile Include="src\utility\config.cpp" />
+    <ClCompile Include="src\utility\keyboard.cpp" />
+    <ClCompile Include="src\utility\lodepng.cpp" />
+    <ClCompile Include="src\utility\obj.cpp" />
+    <ClCompile Include="src\utility\screenshot.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

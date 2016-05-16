@@ -1,18 +1,18 @@
 //#define _SIMPLE_CUBE_
-#include "stdafx.h"
+#include <stdafx.h>
 #include <cassert>
 #include <list>
 
-#include "auxiliary.h"
-#include "Render.h"
-#include "world.h"
-#include "lodepng.h"
-#include "shadow.h"
-#include "view.h"
-#include "config.h"
-#include "keyboard.h"
-#include "obj.h"
-#include "item.h"
+#include <render/auxiliary.h>
+#include <render/render.h>
+#include <core/world.h>
+#include <utility/lodepng.h>
+#include <render/shadow.h>
+#include <core/view.h>
+#include <utility/config.h>
+#include <utility/keyboard.h>
+#include <utility/obj.h>
+#include <core/item.h>
 
 extern World world;
 extern View main_view;

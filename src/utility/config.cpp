@@ -1,5 +1,5 @@
-#include "Render.h"
-#include "vec.h"
+#include <render/render.h>
+#include <core/vec.h>
 
 int view_mode = VIEW_MODE_FIRST_PERSON;
 flt range_touch = 1;

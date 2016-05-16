@@ -1,6 +1,6 @@
-#include "view.h"
-#include "world.h"
-#include "Render.h"
+#include <core/view.h>
+#include <core/world.h>
+#include <render/render.h>
 
 extern World world;
 extern BlockAndFace seen_block;

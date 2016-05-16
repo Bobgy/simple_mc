@@ -9,19 +9,23 @@
 #include <cassert>
 #include <iostream>
 #include <list>
-#include "world.h"
-#include "entity.h"
-#include "render.h"
-#include "keyboard.h"
-#include "view.h"
-#include "shader.h"
-#include "auxiliary.h"
-#include "shadow.h"
-#include "lodepng.h"
-#include "config.h"
-#include "obj.h"
-#include "item.h"
-#include "block.h"
+
+#include <core/world.h>
+#include <core/entity.h>
+#include <core/item.h>
+#include <core/block.h>
+#include <core/view.h>
+
+#include <render/render.h>
+#include <render/shader.h>
+#include <render/auxiliary.h>
+#include <render/shadow.h>
+
+#include <utility/keyboard.h>
+#include <utility/lodepng.h>
+#include <utility/config.h>
+#include <utility/obj.h>
+
 
 using namespace std;
 

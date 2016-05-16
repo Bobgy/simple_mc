@@ -1,7 +1,7 @@
 #ifndef _OBJ_H_
 #define _OBJ_H_
 
-#include "stdafx.h"
+#include <stdafx.h>
 #include <vector>
 #include <string>
 #include <map>

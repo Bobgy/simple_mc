@@ -1,8 +1,8 @@
 #ifndef _ITEM_
 #define _ITEM_
 
-#include "obj.h"
-#include "vec.h"
+#include <utility/obj.h>
+#include <core/vec.h>
 
 class Item
 {

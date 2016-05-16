@@ -5,7 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-#include "vec.h"
+#include <core/vec.h>
 
 const flt CLOCK_T = 1.0 / 30;
 const flt RESISTANCE = 0.92;

@@ -3,9 +3,9 @@
 
 #include <map>
 #include <vector>
-#include "stdafx.h"
-#include "block.h"
-#include "entity.h"
+#include <stdafx.h>
+#include <core/block.h>
+#include <core/entity.h>
 #include <set>
 
 using namespace std;

@@ -1,6 +1,6 @@
-#include "screenshot.h"
+#include <utility/screenshot.h>
 #include <fstream>
-#include "GL/freeglut.h"
+#include <GL/freeglut.h>
 #include <iostream>
 #include <string>
 

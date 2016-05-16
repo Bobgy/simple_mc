@@ -2,10 +2,10 @@
 #define _RENDER_H
 
 #include <stdlib.h>
-#include "stdafx.h"
+#include <stdafx.h>
 #include <cstdio>
-#include "entity.h"
-#include "auxiliary.h"
+#include <core/entity.h>
+#include <render/auxiliary.h>
 #include <vector>
 #define BITMAP_ID 0x4D42
 

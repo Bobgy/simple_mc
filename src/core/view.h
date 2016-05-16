@@ -1,7 +1,7 @@
 #ifndef _CURSOR_H
 #define _CURSOR_H
 
-#include "stdafx.h"
+#include <stdafx.h>
 
 extern void update_center();
 extern void updateView();

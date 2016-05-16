@@ -3,10 +3,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "vec.h"
-#include "block.h"
-#include "world.h"
-#include "config.h"
+#include <core/vec.h>
+#include <core/block.h>
+#include <core/world.h>
+#include <utility/config.h>
 
 using namespace std;
 

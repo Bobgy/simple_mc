@@ -1,11 +1,11 @@
 #include <stdlib.h>
-#include "keyboard.h"
-#include "world.h"
-#include "entity.h"
-#include "render.h"
-#include "screenshot.h"
-#include "config.h"
-#include "view.h"
+#include <utility/keyboard.h>
+#include <core/world.h>
+#include <core/entity.h>
+#include <render/render.h>
+#include <utility/screenshot.h>
+#include <utility/config.h>
+#include <core/view.h>
 
 Keyboard keyboard;
 extern void regenTableList(GLint);

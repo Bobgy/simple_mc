@@ -55,3 +55,9 @@ void update_shadow_map_size(){
 
 //scene tableListID
 GLint tableList;
+
+//desired frame rate
+flt FRAME_RATE = 60.0f;
+
+//current log level, logs with a larger level will be outputed
+int log_level = 0;

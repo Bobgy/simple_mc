@@ -131,15 +131,15 @@ inline int next_int(double x, int dir){
 }
 
 inline Vec3i floor(Vec3f x){
-	return Vec3i(floor(x[0]), floor(x[1]), floor(x[2]));
+	return Vec3i((int)floor(x[0]), (int)floor(x[1]), (int)floor(x[2]));
 }
 
 inline Vec3i floor(Vec3fd x){
-	return Vec3i(floor(x[0]), floor(x[1]), floor(x[2]));
+	return Vec3i((int)floor(x[0]), (int)floor(x[1]), (int)floor(x[2]));
 }
 
 inline Vec3i round(Vec3f x){
-	return Vec3i(round(x[0]), round(x[1]), round(x[2]));
+	return Vec3i((int)round(x[0]), (int)round(x[1]), (int)round(x[2]));
 }
 
 #endif

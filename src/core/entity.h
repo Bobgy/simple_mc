@@ -7,10 +7,10 @@
 #include <cassert>
 #include <core/vec.h>
 
-const flt CLOCK_T = 1.0 / 30;
-const flt RESISTANCE = 0.92;
-const flt GRAVITY = 1.2;
-const flt EPS_COLLIDE = 1e-2;
+const flt CLOCK_T = 1.0f / 60.0f;
+const flt RESISTANCE = 0.92f;
+const flt GRAVITY = 1.2f;
+const flt EPS_COLLIDE = 1e-2f;
 
 inline bool in_range(flt x, flt low, flt high, bool lowEq = 0, bool highEq = 0){
 	if (lowEq && zero(x - low)) return 1;
@@ -19,7 +19,7 @@ inline bool in_range(flt x, flt low, flt high, bool lowEq = 0, bool highEq = 0){
 	return x >= low + EPS_COLLIDE && x <= high - EPS_COLLIDE;
 }
 inline void get_quadrant(flt x, flt y, int &dir, int &dt){ //find the face facing (x, y)
-	if (fabs(x) > fabs(y)){
+	if (fabs(x) > fabs(y)) {
 		dir = 0;
 		dt = x > 0;
 	} else {
@@ -43,7 +43,7 @@ inline bool test_circle_rectangle_intersect(flt cx, flt cy, flt r, flt lx, flt l
 			if (test_point_in_circle(i*lx - cx, j*ly - cy, r)) return 1;
 	for (int i = -1; i <= 1; i += 2){
 		if (in_range(i*r + cx, 0, lx) && in_range(cy, 0, ly)) return 1;
-		if (in_range(cx, 0, lx) && in_range(i*r + cy, 0, ly))return 1;
+		if (in_range(cx, 0, lx) && in_range(i*r + cy, 0, ly)) return 1;
 	}
 	return 0;
 }

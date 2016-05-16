@@ -148,6 +148,7 @@
     <ClInclude Include="src\utility\config.h" />
     <ClInclude Include="src\utility\keyboard.h" />
     <ClInclude Include="src\utility\lodepng.h" />
+    <ClInclude Include="src\utility\logger.h" />
     <ClInclude Include="src\utility\obj.h" />
     <ClInclude Include="src\utility\screenshot.h" />
   </ItemGroup>

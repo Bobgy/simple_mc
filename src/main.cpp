@@ -23,18 +23,17 @@
 
 #include <utility/keyboard.h>
 #include <utility/lodepng.h>
-#include <utility/config.h>
 #include <utility/obj.h>
 
 
 using namespace std;
 
 //The light's position
-GLfloat light_pos[] = { 1.9, 1.0, -2.0, 0 };
+flt light_pos[] = { 1.9f, 1.0f, -2.0f, 0.0f };
 
 block_type type;
 
-int wHeight =  724;
+int wHeight = 724;
 int wWidth = 1024;
 extern GLuint tex;
 GLhandleARB shader_id;
@@ -49,7 +48,7 @@ extern Render render;
 extern Keyboard keyboard;
 extern View main_view;
 
-flt pp[3] = { 5, 3, 0 }, vv[3] = { 0, 0, 0 };
+flt pp[3] = { 5.0f, 3.0f, 0.0f }, vv[3] = { 0.0f, 0.0f, 0.0f };
 Entity observer(pp, vv, r, h, 1.0);
 float deg2rad = PI / 180.0;
 int windowHandle;
@@ -71,7 +70,7 @@ void load_obj()
 
 void reshape(int width, int height)
 {
-	if (height==0) height=1;
+	if (height == 0) height = 1;
 	wHeight = height;
 	wWidth = width;
 }
@@ -80,52 +79,39 @@ float dis = 1.0;
 
 flt step = 0.3, eps = 1e-8;
 int idle_count = 0;
-clock_t lst = 0, inter = CLOCK_T * CLOCKS_PER_SEC;
 
 void tick_main(flt delta_time)
 {
-	tick_view(delta_time);
-}
+	static flt saved_time = 0.0f;
+	saved_time += delta_time;
+	flt frame_interval = 1.0f / FRAME_RATE;
+	if (saved_time >= frame_interval) {
+		saved_time -= frame_interval;
+		if (saved_time > frame_interval * 3.0f) {
+			saved_time = 0.0f;
+		}
+		tick_view(frame_interval);
 
-void idle()
-{
-	// game tick
-	tick_main(1.0f / 60.0f);
-
-	++idle_count;
-	static clock_t now;
-	now = clock();
-	
-	static flt ang = 1.5, lst_time = 0;
-	if (bMovingLight) {
-		flt time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
-		ang += time - lst_time;
-		lst_time = time;
-		light_pos[0] = 1.0;
-		light_pos[1] = sin(ang);
-		light_pos[2] = cos(ang);
-	} else lst_time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
-
-	if (lst + inter <= now) {
-		if(bGravity)observer.fall();
+		if (bGravity) observer.fall();
 		int df = 0;
 		static flt ff[3];
-		if (keyboard.get_state('w') ^ keyboard.get_state('s')){
+		if (keyboard.get_state('w') ^ keyboard.get_state('s')) {
 			df = keyboard.get_state('w') ? 1 : -1;
 			observer.give_velocity(main_view.face_xz, step*df);
 		}
-		if (keyboard.get_state('a') ^ keyboard.get_state('d')){
+		if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
 			df = keyboard.get_state('a') ? 1 : -1;
 			ff[0] = main_view.face_xz[2];
 			ff[1] = 0;
 			ff[2] = -main_view.face_xz[0];
 			observer.give_velocity(ff, step*0.5*df);
 		}
-		if (bGravity){
-			if (keyboard.get_state(' ') && observer.on_ground){
+		if (bGravity) {
+			if (keyboard.get_state(' ') && observer.on_ground) {
 				observer.force(Vec3f(0, 13, 0));
 			}
-		} else {
+		}
+		else {
 			if (keyboard.get_state(' '))
 				observer.give_velocity(Vec3f(0, 0.5, 0), 1);
 			if (keyboard.get_special_state(GLUT_KEY_SHIFT_L))
@@ -136,11 +122,11 @@ void idle()
 			p[i] = floor(observer[i]);
 		p[1] = floor(observer[1] + 0.5*h);
 		observer.on_ground = false;
-		for (int dx = -1; dx <= 1; ++dx){
-			for (int dy = -2; dy <= 2; ++dy){
-				for (int dz = -1; dz <= 1; ++dz){
+		for (int dx = -1; dx <= 1; ++dx) {
+			for (int dy = -2; dy <= 2; ++dy) {
+				for (int dz = -1; dz <= 1; ++dz) {
 					static map<Pt3, Block*>::const_iterator it;
-					if ((it = world.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != world.end()){
+					if ((it = world.find(Pt3({ p[0] + dx, p[1] + dy, p[2] + dz }))) != world.end()) {
 						observer.on_ground |= observer.collide_cube_vertically(it->first);
 						observer.collide_cube_horizontally(it->first);
 					}
@@ -148,10 +134,10 @@ void idle()
 			}
 		}
 		/*
-			Those codes are used to detect whether the observer touched an obj-item.
-			If it is, that item is gotten by the observer.
+		Those codes are used to detect whether the observer touched an obj-item.
+		If it is, that item is got by the observer.
 		*/
-		for (auto &x : items){
+		for (auto &x : items) {
 			if (x.draw) {
 				Vec3i temp = Pt3(p) - x.loc;
 				int r = temp * temp;
@@ -165,24 +151,47 @@ void idle()
 		/*
 		mark for the end
 		*/
-
 		if (observer.on_ground) observer.be_slowed(smoothness_ground);
 		observer.update();
 		render.update_center(main_view);
-		lst += inter;
+		
+		saved_time = 0.0f;
 	}
+}
+
+void idle()
+{
+	// game tick
+	static clock_t lst = 0;
+	clock_t now = clock();
+	tick_main(flt(now - lst) / (flt)CLOCKS_PER_SEC);
+	lst = now;
+
+	++idle_count;
+
+	static flt ang = 1.5, lst_time = 0;
+	if (bMovingLight) {
+		flt time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
+		ang += time - lst_time;
+		lst_time = time;
+		light_pos[0] = 1.0;
+		light_pos[1] = sin(ang);
+		light_pos[2] = cos(ang);
+	}
+	else lst_time = glutGet(GLUT_ELAPSED_TIME) / 2000.0;
+
 	glutPostRedisplay();
 }
 
 extern int tableList;
 
-void init(int argc, char *argv[]){
+void init(int argc, char *argv[]) {
 	type = DIRT;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(wWidth, wHeight);
 	windowHandle = glutCreateWindow("Simple MC");
-	
+
 	glewInit();
 	printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
 	if (glewIsSupported("GL_VERSION_2_0"))
@@ -209,11 +218,11 @@ void init(int argc, char *argv[]){
 
 	load_obj();
 
-	tableList=genTableList();
+	tableList = genTableList();
 }
 
 
-int main (int argc,  char *argv[])
+int main(int argc, char *argv[])
 {
 	init(argc, argv);
 	glutMainLoop();

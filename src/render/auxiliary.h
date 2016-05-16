@@ -6,12 +6,12 @@
 
 const float golden[] = { 0.9f, 0.9f, 0.2f, 1.0f };
 const float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-const float black[] = { 0, 0, 0, 1 };
-const float light_grey[] = { 0.75, 0.75, 0.75, 1 };
-const float grey[] = { 0.5, 0.5, 0.5, 1 };
-const float dark_grey[] = { 0.1, 0.1, 0.1, 1 };
-const float sun[] = { 0.8, 0.7, 0.6, 1 };
-const float green[] = { 0.2, 1.0, 0.5, 1 };
+const float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+const float light_grey[] = { 0.75f, 0.75f, 0.75f, 1.f };
+const float grey[] = { 0.5f, 0.5f, 0.5f, 1.f };
+const float dark_grey[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+const float sun[] = { 0.8f, 0.7f, 0.6f, 1.f };
+const float green[] = { 0.2f, 1.0f, 0.5f, 1.f };
 
 //use material ambient, diffusion, specular, emission and shininess
 void use_material(const GLfloat *a, const GLfloat *d, const GLfloat *s, const GLfloat *e, int shine);

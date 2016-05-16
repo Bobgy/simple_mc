@@ -65,7 +65,7 @@ void ObjModel::parse(face f)
 	
 	if (slashCnt < 2) {
 		vertex3f ta, tb, tx;
-		for (int k = vList.size() - faceVertexCnt; k < vList.size(); k++) {
+		for (size_t k = vList.size() - faceVertexCnt; k < vList.size(); k++) {
 			assert(k >= 0);
 			int index1 = vList[(k == vList.size() - faceVertexCnt) ? (vList.size()-1) : (k - 1)];
 			int index2 = vList[(k + 1 == vList.size()) ? (vList.size() - faceVertexCnt) : (k + 1)];
@@ -202,7 +202,7 @@ void ObjModel::read(string filename)
 			getline(fin, s);
 		}
 	}
-	for (int i = 0; i < F.size(); i++) {
+	for (size_t i = 0; i < F.size(); i++) {
 		parse(F[i]);
 	}
 	cerr << "Read from " << filename << endl;

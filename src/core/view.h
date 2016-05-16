@@ -3,10 +3,7 @@
 
 #include <stdafx.h>
 
-extern void update_center();
-extern void updateView();
-
-const flt DEG2RAD = acos(-1.0) / 180.0;
+const flt DEG2RAD = acos(-1.0f) / 180.0f;
 const flt L_EPS = 1e-3f;
 void init_cursor();
 void tick_view(flt delta_time);

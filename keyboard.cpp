@@ -5,7 +5,7 @@
 #include "render.h"
 #include "screenshot.h"
 #include "config.h"
-#include "cursor.h"
+#include "view.h"
 
 Keyboard keyboard;
 extern void regenTableList(GLint);
@@ -15,7 +15,7 @@ extern void updateView(int, int);
 extern World world;
 extern Entity observer;
 extern Render render;
-extern Cursor cursor;
+extern View main_view;
 extern block_type type;
 extern int screenshot_count;
 bool bDebugDepthMap = false, bWire = false;
@@ -43,7 +43,7 @@ void KeyDown(unsigned char key, int x, int y)
 			}
 		}
 	}
-	render.update_center(cursor);
+	render.update_center(main_view);
 }
 void KeyUp(unsigned char key, int x, int y)
 {

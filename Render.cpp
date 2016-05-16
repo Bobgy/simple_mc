@@ -8,14 +8,14 @@
 #include "world.h"
 #include "lodepng.h"
 #include "shadow.h"
-#include "cursor.h"
+#include "view.h"
 #include "config.h"
 #include "keyboard.h"
 #include "obj.h"
 #include "item.h"
 
 extern World world;
-extern Cursor cursor;
+extern View main_view;
 extern BlockAndFace seen_block;
 extern Entity observer;
 extern Keyboard keyboard;
@@ -312,14 +312,14 @@ void Render::renderPlayer(Entity observer, flt r, flt h) {
 
 	beginTransform();
 	translate(observer);
-	rotate(-cursor.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
+	rotate(-main_view.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
 
 	//begin Head
 	beginTransform();
 	static CubeTexCoord headTexCoord(Vec3i(16, 16, 16), 16, 16, 64, 128);
 	translate(Vec3f(0, 1.35, 0));
 	scale(Vec3f(0.4, 0.4, 0.4));
-	rotate(cursor.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
+	rotate(main_view.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
 	renderCubeTex(texPlayer, headTexCoord);
 	endTransform();
 	//end Head
@@ -529,7 +529,7 @@ extern GLhandleARB shader_id;
 extern flt light_pos[4];
 void display(){
 	if (bCustomGLSL) {
-		//First step: Render from the light POV to a FBO, story depth values only
+		//First step: Render from the light POV to a FBO, store depth values only
 		extern GLuint fboId;
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
 
@@ -546,8 +546,8 @@ void display(){
 		//Disable color rendering, we only want to write to the Z-Buffer
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-		render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
-			cursor.face_xz^Vec3f(light_pos), true, true);
+		render.setupPerspective(light_pos, render.eye + main_view.face_xz*0.4*VIEW_DISTANCE,
+			main_view.face_xz^Vec3f(light_pos), true, true);
 
 		// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK
@@ -659,7 +659,7 @@ void display(){
 	glutSwapBuffers();
 }
 
-void Render::update_center(Cursor &cursor){
+void Render::update_center(View &cursor){
 	cursor.update_facing_vector();
 	Vec3f p_eye = observer.get_pos() + Vec3f(0, h_eye, 0);
 	switch (view_mode) {

@@ -16,7 +16,7 @@
 
 #define VIEW_DISTANCE 80.0f
 
-class Cursor;
+class View;
 
 class Render{
 public:
@@ -70,7 +70,7 @@ public:
 	void renderPlayer(Entity observer, flt r, flt h);
 
 	//update the center and eye vector
-	void update_center(Cursor &cursor);
+	void update_center(View &cursor);
 
 	//setup perspective matrices
 	//lightSource toggles the setting

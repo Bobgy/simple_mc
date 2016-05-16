@@ -117,7 +117,7 @@
   <ItemGroup>
     <ClCompile Include="auxiliary.cpp" />
     <ClCompile Include="config.cpp" />
-    <ClCompile Include="cursor.cpp" />
+    <ClCompile Include="view.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="lodepng.cpp" />
@@ -138,7 +138,7 @@
     <ClInclude Include="GL\glew.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="keyboard.h" />
-    <ClInclude Include="cursor.h" />
+    <ClInclude Include="view.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="obj.h" />
     <ClInclude Include="render.h" />

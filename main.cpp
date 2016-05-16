@@ -13,7 +13,7 @@
 #include "entity.h"
 #include "render.h"
 #include "keyboard.h"
-#include "cursor.h"
+#include "view.h"
 #include "shader.h"
 #include "auxiliary.h"
 #include "shadow.h"
@@ -43,7 +43,7 @@ World world("stage/last_save.txt");
 BlockAndFace seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 extern Keyboard keyboard;
-extern Cursor cursor;
+extern View main_view;
 
 flt pp[3] = { 5, 3, 0 }, vv[3] = { 0, 0, 0 };
 Entity observer(pp, vv, r, h, 1.0);
@@ -77,8 +77,17 @@ float dis = 1.0;
 flt step = 0.3, eps = 1e-8;
 int idle_count = 0;
 clock_t lst = 0, inter = CLOCK_T * CLOCKS_PER_SEC;
+
+void tick_main(flt delta_time)
+{
+	tick_view(delta_time);
+}
+
 void idle()
 {
+	// game tick
+	tick_main(1.0f / 60.0f);
+
 	++idle_count;
 	static clock_t now;
 	now = clock();
@@ -99,13 +108,13 @@ void idle()
 		static flt ff[3];
 		if (keyboard.get_state('w') ^ keyboard.get_state('s')){
 			df = keyboard.get_state('w') ? 1 : -1;
-			observer.give_velocity(cursor.face_xz, step*df);
+			observer.give_velocity(main_view.face_xz, step*df);
 		}
 		if (keyboard.get_state('a') ^ keyboard.get_state('d')){
 			df = keyboard.get_state('a') ? 1 : -1;
-			ff[0] = cursor.face_xz[2];
+			ff[0] = main_view.face_xz[2];
 			ff[1] = 0;
-			ff[2] = -cursor.face_xz[0];
+			ff[2] = -main_view.face_xz[0];
 			observer.give_velocity(ff, step*0.5*df);
 		}
 		if (bGravity){
@@ -155,7 +164,7 @@ void idle()
 
 		if (observer.on_ground) observer.be_slowed(smoothness_ground);
 		observer.update();
-		render.update_center(cursor);
+		render.update_center(main_view);
 		lst += inter;
 	}
 	glutPostRedisplay();

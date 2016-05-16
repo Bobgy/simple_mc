@@ -9,6 +9,8 @@ typedef float flt;
 template <class T> inline T sqr(T x){ return x*x; }
 
 const flt PI = acos(-1.0);
+const flt HALF_PI = PI / 2.0;
+
 const flt rad2deg = 180.0 / PI;
 
 template < class T >

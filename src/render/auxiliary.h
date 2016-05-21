@@ -1,8 +1,8 @@
 #ifndef _AUXILIARY_
 #define _AUXILIARY_
 
-#include <core/vec.h>
-#include <stdafx.h>
+#include "utility/vec.h"
+#include "stdafx.h"
 
 const float golden[] = { 0.9f, 0.9f, 0.2f, 1.0f };
 const float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };

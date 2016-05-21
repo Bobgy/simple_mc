@@ -5,13 +5,7 @@
 #include <iostream>
 #include <cmath>
 using namespace std;
-typedef float flt;
 template <class T> inline T sqr(T x){ return x*x; }
-
-const flt PI = acos(-1.0);
-const flt HALF_PI = PI / 2.0;
-
-const flt rad2deg = 180.0 / PI;
 
 template < class T >
 class Vec3{
@@ -90,18 +84,23 @@ public:
 
 	template < class TT >
 	Vec3<T>(Vec3<TT> r){
-		x[0] = r[0];
-		x[1] = r[1];
-		x[2] = r[2];
+		x[0] = (T)r[0];
+		x[1] = (T)r[1];
+		x[2] = (T)r[2];
 	}
 };
+
+typedef float flt;
+const flt PI = acos(-1.0f);
+const flt HALF_PI = PI / 2.0f;
+const flt rad2deg = 180.0f / PI;
 
 typedef Vec3<int> Vec3i;
 typedef Vec3<flt> Vec3f;
 typedef Vec3<double> Vec3fd;
 
-const Vec3f Vec3fZero(0, 0, 0);
-const flt EPS = 1e-6;
+const Vec3f Vec3fZero(0.0f, 0.0f, 0.0f);
+const flt EPS = 1e-6f;
 
 //test if x is zero under eps
 inline bool zero(flt x){
@@ -126,8 +125,8 @@ typedef std::pair<Vec3i, int> BlockAndFace;
 
 //find the next integer in direction dir (-1/1)
 inline int next_int(double x, int dir){
-	if (dir > 0) return ceil(x + 1e-10);
-	else return floor(x - 1e-10);
+	if (dir > 0) return (int)ceil(x + 1e-10);
+	else return (int)floor(x - 1e-10);
 }
 
 inline Vec3i floor(Vec3f x){
@@ -141,5 +140,29 @@ inline Vec3i floor(Vec3fd x){
 inline Vec3i round(Vec3f x){
 	return Vec3i((int)round(x[0]), (int)round(x[1]), (int)round(x[2]));
 }
+
+class Rotation {
+private:
+	// horizontal and vertical angle
+	flt h, v;
+public:
+	Rotation(flt h, flt v) : h(h), v(v) {}
+	void setRotation(flt h, flt v) {
+		this->h = h;
+		this->v = v;
+	}
+	flt getH() const {
+		return h;
+	}
+	flt getV() const {
+		return v;
+	}
+	Vec3f getFacingVector() const {
+		return Vec3f(cos(h) * cos(v), sin(v), sin(h) * cos(v));
+	}
+	Vec3f getHorizontalFacingVector() const {
+		return Vec3f(cos(h), 0.0f, sin(h));
+	}
+};
 
 #endif

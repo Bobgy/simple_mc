@@ -3,20 +3,93 @@
 #include <iostream>
 #include <fstream>
 
-#include <core/vec.h>
-#include <core/block.h>
-#include <core/world.h>
-#include <utility/config.h>
+#include "utility/vec.h"
+#include "game/game.h"
+#include "game/block.h"
+#include "game/world.h"
+#include "utility/config.h"
 
 using namespace std;
 
-extern Entity observer;
+void World::tick(flt delta_time)
+{
+	if (bGravity) {
+		for (auto &entity: entity_list) {
+			entity.fall();
+		}
+	}
+
+	int p[3];
+	for (auto &entity : entity_list) {
+		for (int i = 0; i < 3; ++i)
+			p[i] = floor(entity[i]);
+		p[1] = floor(entity[1] + 0.5*h);
+		entity.on_ground = false;
+		for (int dx = -1; dx <= 1; ++dx) {
+			for (int dy = -2; dy <= 2; ++dy) {
+				for (int dz = -1; dz <= 1; ++dz) {
+					static map<Vec3i, Block*>::const_iterator it;
+					if ((it = find(Vec3i({ p[0] + dx, p[1] + dy, p[2] + dz }))) != end()) {
+						entity.on_ground |= entity.collide_cube_vertically(it->first);
+						entity.collide_cube_horizontally(it->first);
+					}
+				}
+			}
+		}
+		if (entity.on_ground) entity.be_slowed(smoothness_ground);
+	}
+	
+}
+
+World::~World()
+{
+	if (p_player != nullptr) {
+		delete p_player;
+	}
+}
+
+int World::spawnEntity(const Entity &entity) {
+	entity_list.push_back(entity);
+	return entity_list.size() - 1;
+}
+
+void World::clear()
+{
+	if (p_player != nullptr) {
+		delete p_player;
+	}
+	blocks.clear();
+	block_list.clear();
+	ability.clear();
+	entity_list.clear();
+}
+
+void World::setup()
+{
+	clear();
+
+	p_player = new Player();
+	p_player->setup();
+}
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
 Block* World::get_block(Vec3i p) const {
 	auto it = blocks.find(p);
 	if (it != blocks.end()) return it->second;
 	return NULL;
+}
+
+Entity *World::getEntity(int entity_id)
+{
+	if (entity_id >= 0 && (size_t)entity_id < entity_list.size()) {
+		return &entity_list[entity_id];
+	}
+	return nullptr;
+}
+
+Player *World::getPlayer()
+{
+	return p_player;
 }
 
 //returns the first block within radius r that is seen by an eye
@@ -64,34 +137,42 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	return make_pair(p_block, -1); //-1 means not found
 }
 
-//generate a world by file in path stage_file_path
-World::World(string stage_file_path):changed(false){
+World::World() {
+	p_player = nullptr;
+	changed = false;
+}
+
+void World::readFromFile(string stage_file_path) {
 	init_ability();
 	for (int i = 0; i < 10; i++)
 		block_list.push_back(Block(block_type(i)));
 	if (!read_from_file(stage_file_path)) {
 		//fail to construct the world from file, generate it randomly
 		cerr << "Failed to read from file " << stage_file_path.c_str() << endl;
+		return;
 	}
+	changed = true;
 }
 
-//generate a world by random seed: seed
-World::World(int seed, int range):changed(false){
+void World::randomGenerate(int seed, int range) {
 	init_ability();
 	srand(seed);
 	for (int i = 0; i < 10; i++) block_list.push_back(Block(block_type(i)));
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
-			for (int k = 0; k <= 3; ++k){
+			for (int k = 0; k <= 3; ++k) {
 				int t = (1 << (k + 2)) - 1;
 				if (k == 0 || (rand()&t) == t) blocks[Vec3i(i, k, j)] = &block_list[DIRT];
 				else break;
 			}
+	changed = true;
 }
 
 //place a block at p of type tp
 bool World::place_block(BlockAndFace p, block_type tp){
 	Vec3i pos = p.first + FACE[p.second];
+	Entity &observer = *p_player->getEntity();
+	// TODO: test intersection with all agents
 	if (get_block(pos) == NULL && !observer.intersect_cube(pos)){
 		blocks[pos] = &block_list[tp];
 		changed = true;
@@ -136,7 +217,6 @@ void World::print()
 bool World::read_from_file(string name)
 {
 	int x, y, z, type;
-	block_type bt;
 	blocks.clear();
 	ifstream f(name);
 	if (f.rdstate() & f.failbit) return false;

@@ -3,22 +3,23 @@
 #include <cassert>
 #include <list>
 
-#include <render/auxiliary.h>
-#include <render/render.h>
-#include <core/world.h>
-#include <utility/lodepng.h>
-#include <render/shadow.h>
-#include <core/view.h>
-#include <utility/config.h>
-#include <utility/keyboard.h>
-#include <utility/obj.h>
-#include <core/item.h>
+#include "render/auxiliary.h"
+#include "render/render.h"
+#include "render/shadow.h"
 
-extern World world;
-extern View main_view;
+#include "game/game.h"
+#include "game/world.h"
+#include "game/item.h"
+#include "game/block.h"
+#include "game/entity.h"
+
+#include "utility/lodepng.h"
+#include "utility/view.h"
+#include "utility/config.h"
+#include "utility/keyboard.h"
+#include "utility/obj.h"
+
 extern BlockAndFace seen_block;
-extern Entity observer;
-extern Keyboard keyboard;
 extern list<Item> items;
 //ObjModel obj;
 
@@ -51,9 +52,9 @@ GLuint tex=1;
 
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
-	FILE *filePtr;	// 文件指针
-	BITMAPFILEHEADER bitmapFileHeader;	// bitmap文件头
-	unsigned char	*bitmapImage;		// bitmap图像数据
+	FILE *filePtr;
+	BITMAPFILEHEADER bitmapFileHeader; // bitmap文件头
+	unsigned char	*bitmapImage;	   // bitmap图像数据
 	int	imageIdx = 0;		// 图像位置索引
 	unsigned char	tempRGB;	// 交换变量
 
@@ -293,33 +294,36 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 #endif
 }
 
-void Render::renderPlayer(Entity observer, flt r, flt h) {
-	static flt ang = 0, delta = 4.33, body_ang = 0;
+void Render::renderPlayer(const Entity &observer, flt r, flt h) {
+	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
+
+	static flt ang = 0.f, delta = 4.33f, body_ang = 0.f;
 	if (keyboard.is_walking()){
 		ang += delta;
-		if (ang > 45) {
-			ang = 45;
+		if (ang > 45.f) {
+			ang = 45.f;
 			delta = -delta;
 		}
-		if (ang < -45) {
-			ang = -45;
+		if (ang < -45.f) {
+			ang = -45.f;
 			delta = -delta;
 		}
 	}
 	else {
-		ang *= 0.96;
+		ang *= 0.96f;
 	}
 
 	beginTransform();
 	translate(observer);
-	rotate(-main_view.get_horizontal_angle() * rad2deg, Vec3f(0, 1, 0));
+	const Rotation *rotations = observer.getRotation();
+	rotate(-rotations->getH() * rad2deg, Vec3f(0, 1, 0));
 
 	//begin Head
 	beginTransform();
 	static CubeTexCoord headTexCoord(Vec3i(16, 16, 16), 16, 16, 64, 128);
 	translate(Vec3f(0, 1.35, 0));
 	scale(Vec3f(0.4, 0.4, 0.4));
-	rotate(main_view.get_vertical_angle()*0.8*rad2deg, Vec3f(0, 0, 1));
+	rotate(rotations->getV() * 0.8 * rad2deg, Vec3f(0, 0, 1));
 	renderCubeTex(texPlayer, headTexCoord);
 	endTransform();
 	//end Head
@@ -327,12 +331,12 @@ void Render::renderPlayer(Entity observer, flt r, flt h) {
 	beginTransform();
 	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
 		if (keyboard.get_state('a'))
-			body_ang = (body_ang + 0.2 * 45) / 1.2;
+			body_ang = (body_ang + 0.2f * 45.f) / 1.2f;
 		else
-			body_ang = (body_ang + 0.2 * -45) / 1.2;
+			body_ang = (body_ang + 0.2f * -45.f) / 1.2f;
 	}
-	else body_ang *= 0.96;
-	rotate(body_ang, Vec3f(0, 1, 0));
+	else body_ang *= 0.96f;
+	rotate(body_ang, Vec3f(0.0f, 1.0f, 0.0f));
 
 	//begin Body
 	beginTransform();
@@ -391,6 +395,7 @@ void renderSeenBlock(BlockAndFace seen_block){
 }
 
 void Render::renderScene(){
+	const World &world = *CurrentGame()->getWorld();
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
@@ -436,6 +441,7 @@ void regenTableList(GLint lid){
 	glEndList();
 }
 void renderTableList(){
+	World &world = *CurrentGame()->getWorld();
 	if (world.changed) {
 		regenTableList(tableList);
 		world.changed = false;
@@ -502,14 +508,14 @@ void Render::setTextureState(bool bTex){
 }
 
 extern flt r, h;
-extern bool bObserver;
-void renderSceneDynamic(Entity observer){
-	if (bObserver)
+void renderSceneDynamic(const Entity &observer){
+	if (bObserver) {
 		render.renderPlayer(observer, r, h);
+	}
 }
 
 void Render::renderBoxLine(){
-	Vec3f p = floor(observer);
+	Vec3f p = floor(CurrentGame()->getPlayerEntity()->get_pos());
 	glLineWidth(2.0);
 	glColor3d(1, 1, 1);
 	const int rg = 5;
@@ -546,8 +552,10 @@ void display(){
 		//Disable color rendering, we only want to write to the Z-Buffer
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-		render.setupPerspective(light_pos, render.eye + main_view.face_xz*0.4*VIEW_DISTANCE,
-			main_view.face_xz^Vec3f(light_pos), true, true);
+		Vec3f face_xz = CurrentGame()->getPlayerEntity()->getRotation()->getHorizontalFacingVector();
+		// TODO
+		render.setupPerspective(light_pos, render.eye + face_xz*0.4*VIEW_DISTANCE,
+			face_xz^Vec3f(light_pos), true, true);
 
 		// Culling switching, rendering only backface, this is done to avoid self-shadowing
 #ifdef CULL_BACK
@@ -558,7 +566,7 @@ void display(){
 
 		render.setTextureState(false);
 		//render the scene
-		renderSceneDynamic(observer);
+		renderSceneDynamic(*CurrentGame()->getPlayerEntity());
 		renderTableList();
 		render.draw_item();
 		//render.renderScene();
@@ -607,7 +615,7 @@ void display(){
 
 	render.setTextureState(true);
 	//render the scene
-	renderSceneDynamic(observer);
+	renderSceneDynamic(*CurrentGame()->getPlayerEntity());
 	renderTableList();
 	render.draw_item();
 	//render.renderScene();
@@ -630,7 +638,7 @@ void display(){
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
 	glColor3f(0, 0, 0);
-	renderGUI(observer);
+	renderGUI(*CurrentGame()->getPlayerEntity());
 	if (bBoxLine) render.renderBoxLine();
 	renderSeenBlock(seen_block);
 
@@ -659,24 +667,27 @@ void display(){
 	glutSwapBuffers();
 }
 
-void Render::update_center(View &cursor){
-	cursor.update_facing_vector();
-	Vec3f p_eye = observer.get_pos() + Vec3f(0, h_eye, 0);
+void Render::update_center(){
+	const Entity *entity = CurrentGame()->getPlayerEntity();
+	Vec3f p_eye = entity->get_pos() + Vec3f(0, h_eye, 0);
+	const Rotation *view = entity->getRotation();
 	switch (view_mode) {
 	case VIEW_MODE_FIRST_PERSON:
 		eye = p_eye;
-		center = eye + cursor.face;
+		center = eye + view->getFacingVector();
 		break;
 	case VIEW_MODE_THIRD_PERSON_FRONT:
 		center = p_eye;
-		eye = p_eye + cursor.face * observer_dist;
+		eye = p_eye + view->getFacingVector() * observer_dist;
 		break;
 	case VIEW_MODE_THIRD_PERSON_BACK:
 		center = p_eye;
-		eye = p_eye - cursor.face * observer_dist;
+		eye = p_eye - view->getFacingVector() * observer_dist;
 		break;
+	default:
+		LOG_WARNING(__FUNCTION__, "unknown view_mode %d\n", view_mode);
 	}
-	seen_block = world.look_at_block(p_eye, cursor.face, 10.0);
+	seen_block = CurrentGame()->getWorld()->look_at_block(p_eye, view->getFacingVector(), 10.0);
 }
 
 void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool lightSource, bool parallel)

@@ -23,7 +23,7 @@ public:
 	friend void KeyUp(unsigned char key, int x, int y);
 	friend void SpecialKeyUp(int key, int x, int y);
 	friend void SpecialKeyDown(int key, int x, int y);
-	void init();
+	void setup();
 	bool get_special_state(int key) const {
 		return special_key_state[key];
 	}

@@ -1,8 +1,11 @@
-#include <utility/screenshot.h>
 #include <fstream>
-#include <GL/freeglut.h>
 #include <iostream>
 #include <string>
+
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+
+#include "utility/screenshot.h"
 
 #define BITMAP_ID 0x4D42;
  

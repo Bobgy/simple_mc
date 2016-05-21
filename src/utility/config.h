@@ -1,6 +1,10 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#include "vec.h"
+
 extern int view_mode;
 
 extern flt range_touch;

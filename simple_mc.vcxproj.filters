@@ -8,9 +8,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{cec57aa2-6cad-4fd0-80e3-5c497ae03b69}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\core">
-      <UniqueIdentifier>{f4ea8050-6ae8-4e5e-8f19-e1c624124f89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\render">
       <UniqueIdentifier>{d050d9d0-44df-4026-82d5-9c2d01bc8007}</UniqueIdentifier>
     </Filter>
@@ -19,6 +16,9 @@
     </Filter>
     <Filter Include="src\GL">
       <UniqueIdentifier>{6c6059eb-a8ac-4782-bcde-6a386e4376b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\game">
+      <UniqueIdentifier>{e6ecd252-b6df-4c18-b258-3b4865264565}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -47,24 +47,6 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\block.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\entity.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\item.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\vec.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\view.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\world.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
     <ClInclude Include="src\utility\config.h">
       <Filter>src\utility</Filter>
     </ClInclude>
@@ -119,17 +101,35 @@
     <ClInclude Include="src\utility\logger.h">
       <Filter>src\utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\game\block.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\entity.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\item.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\player.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\world.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\vec.h">
+      <Filter>src\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\view.h">
+      <Filter>src\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\game.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\entity_controller.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\entity.cpp">
-      <Filter>src\core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\view.cpp">
-      <Filter>src\core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\world.cpp">
-      <Filter>src\core</Filter>
-    </ClCompile>
     <ClCompile Include="src\utility\config.cpp">
       <Filter>src\utility</Filter>
     </ClCompile>
@@ -159,6 +159,24 @@
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\entity.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\player.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\world.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utility\view.cpp">
+      <Filter>src\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\game.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\entity_controller.cpp">
+      <Filter>src\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

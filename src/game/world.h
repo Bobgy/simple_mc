@@ -4,41 +4,71 @@
 #include <map>
 #include <vector>
 #include <stdafx.h>
-#include <core/block.h>
-#include <core/entity.h>
 #include <set>
+#include <list>
+
+#include "game/block.h"
+#include "game/entity.h"
+#include "game/player.h"
 
 using namespace std;
 
 class World{
 
-private:
-
+protected:
 	map<Vec3i, Block*> blocks;
 	vector<Block> block_list;
 	set<block_type> ability;
+	vector<Entity> entity_list;
+	Player *p_player = nullptr;
 	void init_ability();
 
 public:
-
 	//indicates whether this world is changed (requires regenerating tablelist)
 	bool changed;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
+public:
+	// deconstruction
+	~World();
+
+	// spawn an entity into the game world
+	// returns its ID, fails when ID is negative
+	int spawnEntity(const Entity &entity);
+
+	// clear the world
+	void clear();
+
+	// setup the world, propagates to components
+	void setup();
+
+	// tick
+	void tick(flt delta_time);
+	
 	//get the block at (p[0],p[1],p[2]), NULL means AIR block
 	Block* get_block(Vec3i p) const;
+
+	// get entity with entity_id as its id
+	// returns nullptr when invalid entity_id is given
+	Entity *getEntity(int entity_id);
+
+	// get the player
+	Player *getPlayer();
 
 	//returns the first block within radius r that is seen by an eye
 	//at p looking at the direction vector dir
 	//returns -1 in face to indicate no block is found
-	BlockAndFace look_at_block(Vec3<double> p, Vec3<double> dir, double r) const;
+	BlockAndFace look_at_block(Vec3fd p, Vec3fd dir, double r) const;
 
-	//generate a world by a stage file
-	World(string stage_file_path);
+	// default constructor
+	World();
 
-	//generate a world by random seed: seed
-	World(int seed, int range);
+	// read the world data from stage_file_path
+	void readFromFile(string stage_file_path);
+
+	// generate a world randomly by seed: seed and range: range
+	void randomGenerate(int seed, int range);
 
 	//place a block at p of type tp
 	bool place_block(BlockAndFace p, block_type tp);

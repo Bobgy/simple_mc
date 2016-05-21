@@ -5,7 +5,9 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-#include <core/vec.h>
+
+#include "utility/vec.h"
+#include "game/entity_controller.h"
 
 const flt CLOCK_T = 1.0f / 60.0f;
 const flt RESISTANCE = 0.92f;
@@ -18,6 +20,7 @@ inline bool in_range(flt x, flt low, flt high, bool lowEq = 0, bool highEq = 0){
 	if (low > high) std::swap(low, high);
 	return x >= low + EPS_COLLIDE && x <= high - EPS_COLLIDE;
 }
+
 inline void get_quadrant(flt x, flt y, int &dir, int &dt){ //find the face facing (x, y)
 	if (fabs(x) > fabs(y)) {
 		dir = 0;
@@ -62,14 +65,35 @@ private:
 	inline int sgn(flt x){ return fabs(x) < EPS_COLLIDE ? 0 : (x > 0 ? 1 : -1); }
 	inline bool in_block(flt x, int u){ return x >= u && x <= u + 1; }
 
-	Vec3f p;     //Three dimensional coordinates (x, y, z)
-	Vec3f v;     //The speed vector (vx, vy, vz)
+	Vec3f p;      //Three dimensional coordinates (x, y, z)
+	Vec3f v;      //The speed vector (vx, vy, vz)
 	flt mass_inv; //The inverse of mass: mass_inv = 1 / mass
-	bool G;       //Is this entity afftected by gravity?
+	bool G;       //Is this entity affected by gravity?
 	bool M;       //Can this entity move?
 	flt r, h;     //Collision shape as a cylinder with radius r and height h.
 
+	Rotation rot; //Rotation of this entity
+
+	// the controller, can be either an AI controller or a Player controller
+	EntityController *p_entity_controller;
+	
 public:
+	// constructor
+	Entity(
+		Vec3f p, Vec3f v,
+		flt r, flt h,
+		flt mass_inv,
+		bool G = 1, bool M = 1
+	):
+		p(p), v(v),
+		mass_inv(mass_inv),
+		G(G), M(M),
+		r(r), h(h),
+		rot(0, 0),
+		p_entity_controller(nullptr)
+	{
+		// do nothing
+	}
 
 	bool intersect_cube(Vec3i x);
 
@@ -85,19 +109,24 @@ public:
 		return v;
 	}
 
-	Entity(Vec3f p, Vec3f v, flt r, flt h, flt mass_inv, bool G = 1, bool M = 1) :
-		p(p), v(v), mass_inv(mass_inv), G(G), M(M), r(r), h(h){}
+	const Rotation *getRotation() const {
+		return &rot;
+	}
 
+	void setRotation(flt h_rot, flt v_rot) {
+		rot.setRotation(h_rot, v_rot);
+	}
+	
 	flt operator[](size_t id) const {
 		return p[id];
 	}
 
 	//move to (p[0],p[1],p[2]) directly
-	void move(Vec3f _p){
+	void move(Vec3f _p) {
 		if (M) p = _p;
 	}
 
-	void give_velocity(Vec3f _p, flt len){
+	void give_velocity(Vec3f _p, flt len) {
 		if (M) {
 			Vec3f p_norm, v_p;
 			p_norm = _p.normalize();
@@ -106,22 +135,25 @@ public:
 		}
 	}
 
-	void be_slowed(flt resistance){
+	void be_slowed(flt resistance) {
 		if (M) v = v * resistance;
 	}
 
 	//be given an force of _F
-	void force(Vec3f _F){
+	void force(Vec3f _F) {
 		if (M) v = v + _F * (mass_inv * CLOCK_T);
 	}
 
 	//fall because of gravity
-	void fall(){
+	void fall() {
 		if (M && G) v[1] -= GRAVITY * CLOCK_T;
 	}
 
 	//update to simulate the movement in time seconds
-	void update(){
+	void tick(flt delta_time) {
+		if (p_entity_controller) {
+			p_entity_controller->tick(delta_time);
+		}
 		if (M) {
 			p = p + v;
 			v = v * RESISTANCE;

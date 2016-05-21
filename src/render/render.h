@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <stdafx.h>
 #include <cstdio>
-#include <core/entity.h>
-#include <render/auxiliary.h>
 #include <vector>
+
+#include "game/entity.h"
+#include "render/auxiliary.h"
+
 #define BITMAP_ID 0x4D42
 
 #define VIEW_MODE_FIRST_PERSON 0
@@ -16,7 +18,7 @@
 
 #define VIEW_DISTANCE 80.0f
 
-class View;
+class ViewController;
 
 class Render{
 public:
@@ -25,7 +27,6 @@ public:
 	Vec3f center, eye;
 
 	void init();
-	void setupFBO();
 
 	//render a cube with 6 faces encoded by state
 	void renderCube(int type, int state);
@@ -67,10 +68,10 @@ public:
 	void scale(Vec3f p);
 
 	//render the player at position "observer" with radius r and height h
-	void renderPlayer(Entity observer, flt r, flt h);
+	void renderPlayer(const Entity &observer, flt r, flt h);
 
 	//update the center and eye vector
-	void update_center(View &cursor);
+	void update_center();
 
 	//setup perspective matrices
 	//lightSource toggles the setting
@@ -91,6 +92,8 @@ private:
 	unsigned char tex_check[256][256][3];
 };
 
+extern Render render;
+
 void renderSeenBlock(BlockAndFace seen_block);
 
 GLint genTableList();
@@ -105,7 +108,7 @@ void renderCross();
 
 void renderGUI(Entity);
 
-void renderSceneDynamic(bool bObserver, Entity observer);
+void renderSceneDynamic(const Entity &observer);
 
 void display();
 

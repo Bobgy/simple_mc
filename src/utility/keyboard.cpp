@@ -1,21 +1,19 @@
 #include <stdlib.h>
-#include <utility/keyboard.h>
-#include <core/world.h>
-#include <core/entity.h>
-#include <render/render.h>
-#include <utility/screenshot.h>
-#include <utility/config.h>
-#include <core/view.h>
+
+#include "utility/keyboard.h"
+#include "utility/screenshot.h"
+#include "utility/config.h"
+#include "utility/view.h"
+
+#include "game/world.h"
+#include "game/entity.h"
+#include "game/block.h"
+#include "game/game.h"
+
+#include "render/render.h"
 
 Keyboard keyboard;
-extern void regenTableList(GLint);
-extern int tableList, wWidth, wHeight;
-extern GLuint tex;
-extern void updateView(int, int);
-extern World world;
-extern Entity observer;
 extern Render render;
-extern View main_view;
 extern block_type type;
 extern int screenshot_count;
 bool bDebugDepthMap = false, bWire = false;
@@ -23,7 +21,7 @@ bool bDebugDepthMap = false, bWire = false;
 void KeyDown(unsigned char key, int x, int y)
 {
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
-	keyboard.key_state[key]=true;
+	CurrentGame()->getKeyboard()->key_state[key]=true;
 	switch (key)
 	{
 		case 27:
@@ -31,7 +29,7 @@ void KeyDown(unsigned char key, int x, int y)
 		case 'o': { bWire = !bWire; break; }
 		case '/': {
 			//write world to file
-			world.print();
+			CurrentGame()->getWorld()->print();
 			break;
 		}
 		default:
@@ -43,19 +41,18 @@ void KeyDown(unsigned char key, int x, int y)
 			}
 		}
 	}
-	render.update_center(main_view);
 }
 void KeyUp(unsigned char key, int x, int y)
 {
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
-	keyboard.key_state[key] = false;
+	CurrentGame()->getKeyboard()->key_state[key] = false;
 }
 void SpecialKeyUp(int key, int x, int y){
-	keyboard.special_key_state[key] = false;
+	CurrentGame()->getKeyboard()->special_key_state[key] = false;
 }
 void SpecialKeyDown(int key, int x, int y)
 {
-	keyboard.special_key_state[key] = true;
+	CurrentGame()->getKeyboard()->special_key_state[key] = true;
 	static bool fullscreen = 0;
 	switch (key){
 
@@ -119,7 +116,7 @@ void SpecialKeyDown(int key, int x, int y)
 	}
 }
 
-void Keyboard::init(){
+void Keyboard::setup(){
 	glutKeyboardUpFunc(KeyUp);
 	glutKeyboardFunc(KeyDown);
 	glutSpecialFunc(SpecialKeyDown);

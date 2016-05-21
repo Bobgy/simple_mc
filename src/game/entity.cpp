@@ -2,8 +2,9 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-#include <core/vec.h>
-#include <core/entity.h>
+
+#include "utility/vec.h"
+#include "game/entity.h"
 
 using namespace std;
 
@@ -12,13 +13,13 @@ using namespace std;
 bool Entity::collide_cube_vertically(Vec3i x){
 	if (!test_circle_rectangle_intersect(p[0]-x[0],p[2]-x[2],r,1,1)) return false;
 	// inelastic collision for top and bottom face
-	if (in_range(p[1], x[1]+0.5, x[1]+1, false, true)) { //collide with top face
-		p[1] = x[1] + 1;
-		if (v[1] <= 0) {
-			v[1] = 0;
+	if (in_range((flt)p[1], x[1]+0.5f, x[1]+1.0f, false, true)) { //collide with top face
+		p[1] = x[1] + 1.f;
+		if (v[1] <= 0.f) {
+			v[1] = 0.f;
 			return true;
 		}
-	} else if (in_range(p[1] + h, x[1], x[1]+0.5, true, false)){ //collide with bottom face
+	} else if (in_range(p[1] + h, (flt)x[1], x[1]+0.5f, true, false)){ //collide with bottom face
 		p[1] = x[1] - h;
 		if (v[1] > 0) v[1] = 0;
 	}
@@ -27,7 +28,7 @@ bool Entity::collide_cube_vertically(Vec3i x){
 
 //calculate the collision with a cube with its sides
 void Entity::collide_cube_horizontally(const Vec3i x){
-	flt len = seg_intersect(x[1], x[1] + 1, p[1], p[1] + h);
+	flt len = seg_intersect((flt)x[1], x[1] + 1.f, (flt)p[1], p[1] + h);
 	if (zero(len)) return; //not vertically intersecting
 	Vec3f cx;
 	cx = Vec3f(x) + 0.5;
@@ -46,7 +47,7 @@ void Entity::collide_cube_horizontally(const Vec3i x){
 		Vec3f p_corner;
 		p_corner = x;
 		p_corner[a] += dt;
-		p_corner[b] = p[b] < cx[b] ? x[b] : x[b] + 1;
+		p_corner[b] = p[b] < cx[b] ? x[b] : x[b] + 1.f;
 		Vec3f rel = p_corner - p;
 		// the corner
 		if (!test_point_in_circle(rel[0], rel[2], r)) return;

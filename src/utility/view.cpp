@@ -1,42 +1,43 @@
-#include <core/view.h>
-#include <core/world.h>
-#include <render/render.h>
+#include "render/render.h"
+#include "game/game.h"
+#include "utility/view.h"
+#include "game/block.h"
 
-extern World world;
 extern BlockAndFace seen_block;
-View main_view;
 extern int windowHandle;
 extern block_type type;
-extern Render render;
 
-void process_move(int x, int y){
+void process_move(int x, int y)
+{
 	static int cX, cY, dx, dy;
 	cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
 	cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
 	dx = x - cX;
 	dy = y - cY;
-	if (abs(dx) + abs(dy) > 0 && glutGetWindow() == windowHandle) {
+	if ((dx || dy) && glutGetWindow() == windowHandle) {
 		glutWarpPointer(cX, cY);
-		main_view.handle_cursor_move(dx, dy);
+		ViewController *view_controller = CurrentGame()->getViewController();
+		view_controller->handle_cursor_move(dx, dy);
 	}
 }
 
-void process_click(int button, int state, int x, int y){
-	if (seen_block.second == -1)return;
+void process_click(int button, int state, int x, int y)
+{
+	if (seen_block.second == -1) return;
 	if (button == GLUT_LEFT_BUTTON) {
-		if (state == GLUT_DOWN){
-			world.destroy_block(seen_block.first);
+		if (state == GLUT_DOWN) {
+			CurrentGame()->getWorld()->destroy_block(seen_block.first);
 		}
 	}
 	if (button == GLUT_RIGHT_BUTTON) {
-		if (state == GLUT_DOWN){
-			world.place_block(seen_block, type);
+		if (state == GLUT_DOWN) {
+			CurrentGame()->getWorld()->place_block(seen_block, type);
 		}
 	}
 }
 
 
-void View::update_facing_vector(){
+void ViewController::update_facing_vector(){
 	face_xz[0] = cos(h_ang);
 	face_xz[2] = sin(h_ang);
 	face_xz[1] = 0;
@@ -45,7 +46,7 @@ void View::update_facing_vector(){
 	face[1] = sin(v_ang);
 }
 
-void View::clamp_angles()
+void ViewController::clamp_angles()
 {
 	if (h_ang > PI) h_ang -= 2 * PI;
 	if (h_ang < -PI) h_ang += 2 * PI;
@@ -53,17 +54,16 @@ void View::clamp_angles()
 	if (v_ang - L_EPS < -HALF_PI) v_ang = -HALF_PI + L_EPS;
 }
 
-void View::handle_cursor_move(int dx, int dy)
+void ViewController::handle_cursor_move(int dx, int dy)
 {
 	h_rotation_speed += (flt)dx * h_sen;
 	v_rotation_speed += (flt)dy * v_sen;
 }
 
 
-void View::tick(flt delta_time)
+void ViewController::tick(flt delta_time)
 {
-	if (h_rotation_speed != 0.0f || v_rotation_speed != 0.0f)
-	{
+	if (h_rotation_speed != 0.0f || v_rotation_speed != 0.0f) {
 		h_ang += h_rotation_speed;
 		v_ang += v_rotation_speed;
 		m_need_update = true;
@@ -75,16 +75,9 @@ void View::tick(flt delta_time)
 	v_rotation_speed = sgn(v_rotation_speed) ? v_rotation_speed : 0.0f;
 }
 
-void init_cursor() {
+void init_cursor()
+{
 	glutMotionFunc(process_move);
 	glutPassiveMotionFunc(process_move);
 	glutMouseFunc(process_click);
-}
-
-void tick_view(flt delta_time)
-{
-	main_view.tick(delta_time);
-	if (main_view.need_update()) {
-		render.update_center(main_view);
-	}
 }

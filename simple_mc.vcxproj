@@ -127,12 +127,13 @@
     <Library Include="lib\glew32s.lib" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\block.h" />
-    <ClInclude Include="src\core\entity.h" />
-    <ClInclude Include="src\core\item.h" />
-    <ClInclude Include="src\core\vec.h" />
-    <ClInclude Include="src\core\view.h" />
-    <ClInclude Include="src\core\world.h" />
+    <ClInclude Include="src\game\block.h" />
+    <ClInclude Include="src\game\entity.h" />
+    <ClInclude Include="src\game\entity_controller.h" />
+    <ClInclude Include="src\game\game.h" />
+    <ClInclude Include="src\game\item.h" />
+    <ClInclude Include="src\game\player.h" />
+    <ClInclude Include="src\game\world.h" />
     <ClInclude Include="src\GL\freeglut.h" />
     <ClInclude Include="src\GL\freeglut_ext.h" />
     <ClInclude Include="src\GL\freeglut_std.h" />
@@ -151,11 +152,15 @@
     <ClInclude Include="src\utility\logger.h" />
     <ClInclude Include="src\utility\obj.h" />
     <ClInclude Include="src\utility\screenshot.h" />
+    <ClInclude Include="src\utility\vec.h" />
+    <ClInclude Include="src\utility\view.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\entity.cpp" />
-    <ClCompile Include="src\core\view.cpp" />
-    <ClCompile Include="src\core\world.cpp" />
+    <ClCompile Include="src\game\entity.cpp" />
+    <ClCompile Include="src\game\entity_controller.cpp" />
+    <ClCompile Include="src\game\game.cpp" />
+    <ClCompile Include="src\game\player.cpp" />
+    <ClCompile Include="src\game\world.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\render\auxiliary.cpp" />
     <ClCompile Include="src\render\render.cpp" />
@@ -166,6 +171,7 @@
     <ClCompile Include="src\utility\lodepng.cpp" />
     <ClCompile Include="src\utility\obj.cpp" />
     <ClCompile Include="src\utility\screenshot.cpp" />
+    <ClCompile Include="src\utility\view.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

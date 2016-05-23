@@ -668,7 +668,7 @@ void display(){
 }
 
 void Render::update_center(){
-	const Entity *entity = CurrentGame()->getPlayerEntity();
+	shared_ptr<const Entity> entity = CurrentGame()->getPlayerEntity();
 	Vec3f p_eye = entity->get_pos() + Vec3f(0, h_eye, 0);
 	const Rotation *view = entity->getRotation();
 	switch (view_mode) {

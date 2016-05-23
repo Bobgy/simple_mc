@@ -35,25 +35,21 @@ void PlayerController::tick(flt delta_time)
 
 	// tick keyboard
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
-	static flt ff[3];
 	int df = 0;
 	if (keyboard.get_state('w') ^ keyboard.get_state('s')) {
 		df = keyboard.get_state('w') ? 1 : -1;
-		m_entity->give_velocity(view_controller->face_xz, step*df);
+		m_entity->give_velocity(m_entity->getRotation()->getHorizontalFacingVector(), step*df);
 	}
 	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
 		df = keyboard.get_state('a') ? 1 : -1;
-		ff[0] = view_controller->face_xz[2];
-		ff[1] = 0;
-		ff[2] = -view_controller->face_xz[0];
-		m_entity->give_velocity(ff, step*0.5*df);
+		Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
+		m_entity->give_velocity(Vec3f(face_xz[2], 0, -face_xz[0]), step*0.5*df);
 	}
 	if (bGravity) {
 		if (keyboard.get_state(' ') && m_entity->on_ground) {
 			m_entity->force(Vec3f(0, 13, 0));
 		}
-	}
-	else {
+	} else {
 		if (keyboard.get_state(' '))
 			m_entity->give_velocity(Vec3f(0, 0.5, 0), 1);
 		if (keyboard.get_special_state(GLUT_KEY_SHIFT_L))

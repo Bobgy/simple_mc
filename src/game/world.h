@@ -6,6 +6,7 @@
 #include <stdafx.h>
 #include <set>
 #include <list>
+#include <memory>
 
 #include "game/block.h"
 #include "game/entity.h"
@@ -19,7 +20,7 @@ protected:
 	map<Vec3i, Block*> blocks;
 	vector<Block> block_list;
 	set<block_type> ability;
-	vector<Entity> entity_list;
+	vector<shared_ptr<Entity>> entity_list;
 	Player *p_player = nullptr;
 	void init_ability();
 
@@ -35,7 +36,7 @@ public:
 
 	// spawn an entity into the game world
 	// returns its ID, fails when ID is negative
-	int spawnEntity(const Entity &entity);
+	int spawnEntity(shared_ptr<Entity> entity);
 
 	// clear the world
 	void clear();
@@ -51,7 +52,7 @@ public:
 
 	// get entity with entity_id as its id
 	// returns nullptr when invalid entity_id is given
-	Entity *getEntity(int entity_id);
+	shared_ptr<Entity> getEntity(int entity_id);
 
 	// get the player
 	Player *getPlayer();

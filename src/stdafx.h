@@ -2,6 +2,7 @@
 #define _STDAFX_H_
 
 #include <cstdlib>
+#include <memory>
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>

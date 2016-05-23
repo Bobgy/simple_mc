@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "game/world.h"
 #include "utility/vec.h"
 #include "utility/view.h"
@@ -20,7 +22,7 @@ public:
 	~Game();
 	World *getWorld();
 	Player *getPlayer();
-	Entity *getPlayerEntity();
+	shared_ptr<Entity> getPlayerEntity();
 	ViewController *getViewController();
 	Keyboard *getKeyboard();
 

@@ -12,7 +12,6 @@
 
 #include "render/render.h"
 
-Keyboard keyboard;
 extern Render render;
 extern block_type type;
 extern int screenshot_count;
@@ -52,6 +51,7 @@ void SpecialKeyUp(int key, int x, int y){
 }
 void SpecialKeyDown(int key, int x, int y)
 {
+#ifdef XXX
 	CurrentGame()->getKeyboard()->special_key_state[key] = true;
 	static bool fullscreen = 0;
 	switch (key){
@@ -114,6 +114,7 @@ void SpecialKeyDown(int key, int x, int y)
 			break;
 		}
 	}
+#endif
 }
 
 void Keyboard::setup(){

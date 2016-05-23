@@ -13,30 +13,35 @@ using namespace std;
 
 void World::tick(flt delta_time)
 {
+	for (auto &entity : entity_list) {
+		entity->tick(delta_time);
+	}
+
 	if (bGravity) {
 		for (auto &entity: entity_list) {
-			entity.fall();
+			entity->fall();
 		}
 	}
 
 	int p[3];
-	for (auto &entity : entity_list) {
+	for (auto &entity_ptr : entity_list) {
+		Entity &entity = *entity_ptr;
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(entity[i]);
 		p[1] = floor(entity[1] + 0.5*h);
-		entity.on_ground = false;
+		entity_ptr->on_ground = false;
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dy = -2; dy <= 2; ++dy) {
 				for (int dz = -1; dz <= 1; ++dz) {
 					static map<Vec3i, Block*>::const_iterator it;
 					if ((it = find(Vec3i({ p[0] + dx, p[1] + dy, p[2] + dz }))) != end()) {
-						entity.on_ground |= entity.collide_cube_vertically(it->first);
-						entity.collide_cube_horizontally(it->first);
+						entity_ptr->on_ground |= entity_ptr->collide_cube_vertically(it->first);
+						entity_ptr->collide_cube_horizontally(it->first);
 					}
 				}
 			}
 		}
-		if (entity.on_ground) entity.be_slowed(smoothness_ground);
+		if (entity_ptr->on_ground) entity_ptr->be_slowed(smoothness_ground);
 	}
 	
 }
@@ -48,7 +53,7 @@ World::~World()
 	}
 }
 
-int World::spawnEntity(const Entity &entity) {
+int World::spawnEntity(shared_ptr<Entity> entity) {
 	entity_list.push_back(entity);
 	return entity_list.size() - 1;
 }
@@ -79,16 +84,18 @@ Block* World::get_block(Vec3i p) const {
 	return NULL;
 }
 
-Entity *World::getEntity(int entity_id)
+shared_ptr<Entity> World::getEntity(int entity_id)
 {
 	if (entity_id >= 0 && (size_t)entity_id < entity_list.size()) {
-		return &entity_list[entity_id];
+		return entity_list[entity_id];
 	}
+	assert(0);
 	return nullptr;
 }
 
 Player *World::getPlayer()
 {
+	assert(p_player);
 	return p_player;
 }
 
@@ -118,7 +125,10 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 			if (sign[i] == 0) continue;
 			int ni = next_int(now[i], sign[i]);
 			double t = (ni - now[i]) / dir[i];
-			assert(t >= 0);
+			if (t < 0) {
+				next_time = t;
+			}
+			//assert(t >= 0);
 			if (t < next_time){
 				next_time = t;
 				axis = i;
@@ -132,6 +142,9 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 		if (it != blocks.end() && it->second->test_intersection(p, dir)){
 			return make_pair(p_block, FACE_AXIS[axis][sign[axis]<0]);
 		}
+	}
+	if (MAX_COUNT < 0) {
+		return make_pair(Vec3i(0), 1);
 	}
 	assert(MAX_COUNT >= 0);
 	return make_pair(p_block, -1); //-1 means not found

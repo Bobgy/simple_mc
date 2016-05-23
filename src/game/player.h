@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "utility/logger.h"
 #include "game/entity.h"
 
@@ -22,7 +24,7 @@ public:
 	~Player();
 
 	// get controlled entity
-	Entity *getEntity();
+	shared_ptr<Entity> getEntity();
 
 	void setup();
 };

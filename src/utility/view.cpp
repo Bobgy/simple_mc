@@ -36,24 +36,6 @@ void process_click(int button, int state, int x, int y)
 	}
 }
 
-
-void ViewController::update_facing_vector(){
-	face_xz[0] = cos(h_ang);
-	face_xz[2] = sin(h_ang);
-	face_xz[1] = 0;
-	face[0] = face_xz[0] * cos(v_ang);
-	face[2] = face_xz[2] * cos(v_ang);
-	face[1] = sin(v_ang);
-}
-
-void ViewController::clamp_angles()
-{
-	if (h_ang > PI) h_ang -= 2 * PI;
-	if (h_ang < -PI) h_ang += 2 * PI;
-	if (v_ang + L_EPS > HALF_PI) v_ang = HALF_PI - L_EPS;
-	if (v_ang - L_EPS < -HALF_PI) v_ang = -HALF_PI + L_EPS;
-}
-
 void ViewController::handle_cursor_move(int dx, int dy)
 {
 	h_rotation_speed += (flt)dx * h_sen;
@@ -63,12 +45,6 @@ void ViewController::handle_cursor_move(int dx, int dy)
 
 void ViewController::tick(flt delta_time)
 {
-	if (h_rotation_speed != 0.0f || v_rotation_speed != 0.0f) {
-		h_ang += h_rotation_speed;
-		v_ang += v_rotation_speed;
-		m_need_update = true;
-	}
-	clamp_angles();
 	h_rotation_speed = h_rotation_speed / 2.0;
 	h_rotation_speed = sgn(h_rotation_speed) ? h_rotation_speed : 0.0f;
 	v_rotation_speed = v_rotation_speed / 2.0;

@@ -8,6 +8,12 @@
 
 using namespace std;
 
+void Entity::setup(shared_ptr<EntityController> entity_controller)
+{
+	p_entity_controller = entity_controller;
+	p_entity_controller->setup(this);
+}
+
 //calculate the collision with a cube with its lower coordinates at x
 //returns whether x is exactly on the block
 bool Entity::collide_cube_vertically(Vec3i x){

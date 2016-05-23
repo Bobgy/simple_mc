@@ -40,7 +40,7 @@ Player *Game::getPlayer()
 	return getWorld()->getPlayer();
 }
 
-Entity *Game::getPlayerEntity()
+shared_ptr<Entity> Game::getPlayerEntity()
 {
 	return getPlayer()->getEntity();
 }
@@ -84,6 +84,7 @@ void Game::clear()
 void Game::tick(flt delta_time)
 {
 	// TODO
-	World *world = getWorld();
-	world->tick(delta_time);
+	getWorld()->tick(delta_time);
+
+	getViewController()->tick(delta_time);
 }

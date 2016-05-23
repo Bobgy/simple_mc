@@ -5,6 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #include "utility/vec.h"
 #include "game/entity_controller.h"
@@ -75,7 +76,7 @@ private:
 	Rotation rot; //Rotation of this entity
 
 	// the controller, can be either an AI controller or a Player controller
-	EntityController *p_entity_controller;
+	shared_ptr<EntityController> p_entity_controller;
 	
 public:
 	// constructor
@@ -148,6 +149,9 @@ public:
 	void fall() {
 		if (M && G) v[1] -= GRAVITY * CLOCK_T;
 	}
+
+	// setup components
+	void setup(shared_ptr<EntityController> entity_controller);
 
 	//update to simulate the movement in time seconds
 	void tick(flt delta_time) {

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "obj.h"
 #include <stdafx.h>
 

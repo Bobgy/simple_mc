@@ -1,6 +1,11 @@
-#include "entity_controller.h"
+#include "stdafx.h"
+
+#include "game/entity_controller.h"
+
 #include "game/game.h"
 #include "render/render.h"
+#include "utility/view.h"
+#include "utility/keyboard.h"
 
 EntityController::EntityController(): m_entity(nullptr)
 {
@@ -55,4 +60,19 @@ void PlayerController::tick(flt delta_time)
 		if (keyboard.get_special_state(GLUT_KEY_SHIFT_L))
 			m_entity->give_velocity(Vec3f(0, -0.5, 0), 1);
 	}
+}
+
+AIController::AIController()
+{
+	// do nothing
+}
+
+AIController::~AIController()
+{
+	// do nothing
+}
+
+void AIController::tick(flt delta_time)
+{
+	LOG_INFO(__FUNCTION__, "AI is ticking.\n");
 }

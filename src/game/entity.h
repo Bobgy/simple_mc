@@ -106,6 +106,14 @@ public:
 		return p;
 	}
 
+	flt getRadius() const {
+		return r;
+	}
+
+	flt getHeight() const {
+		return h;
+	}
+
 	Vec3f get_velocity() const {
 		return v;
 	}

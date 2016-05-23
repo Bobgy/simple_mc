@@ -14,9 +14,6 @@
     <Filter Include="src\utility">
       <UniqueIdentifier>{2d598aca-739e-4165-bf69-ddabccfdbc92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\GL">
-      <UniqueIdentifier>{6c6059eb-a8ac-4782-bcde-6a386e4376b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\game">
       <UniqueIdentifier>{e6ecd252-b6df-4c18-b258-3b4865264565}</UniqueIdentifier>
     </Filter>
@@ -74,27 +71,6 @@
     <ClInclude Include="src\render\shadow.h">
       <Filter>src\render</Filter>
     </ClInclude>
-    <ClInclude Include="src\GL\freeglut.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\freeglut_ext.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\freeglut_std.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\glew.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\glut.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\glxew.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GL\wglew.h">
-      <Filter>src\GL</Filter>
-    </ClInclude>
     <ClInclude Include="src\stdafx.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -128,6 +104,7 @@
     <ClInclude Include="src\game\entity_controller.h">
       <Filter>src\game</Filter>
     </ClInclude>
+    <ClInclude Include="src\utility\string_id.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -178,5 +155,6 @@
     <ClCompile Include="src\game\entity_controller.cpp">
       <Filter>src\game</Filter>
     </ClCompile>
+    <ClCompile Include="src\utility\string_id.cpp" />
   </ItemGroup>
 </Project>

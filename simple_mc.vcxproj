@@ -95,6 +95,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>E:\Programming\games\cg\Project\simple_mc\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -135,13 +137,6 @@
     <ClInclude Include="src\game\item.h" />
     <ClInclude Include="src\game\player.h" />
     <ClInclude Include="src\game\world.h" />
-    <ClInclude Include="src\GL\freeglut.h" />
-    <ClInclude Include="src\GL\freeglut_ext.h" />
-    <ClInclude Include="src\GL\freeglut_std.h" />
-    <ClInclude Include="src\GL\glew.h" />
-    <ClInclude Include="src\GL\glut.h" />
-    <ClInclude Include="src\GL\glxew.h" />
-    <ClInclude Include="src\GL\wglew.h" />
     <ClInclude Include="src\render\auxiliary.h" />
     <ClInclude Include="src\render\render.h" />
     <ClInclude Include="src\render\shader.h" />
@@ -153,6 +148,7 @@
     <ClInclude Include="src\utility\logger.h" />
     <ClInclude Include="src\utility\obj.h" />
     <ClInclude Include="src\utility\screenshot.h" />
+    <ClInclude Include="src\utility\string_id.h" />
     <ClInclude Include="src\utility\vec.h" />
     <ClInclude Include="src\utility\view.h" />
   </ItemGroup>
@@ -172,6 +168,7 @@
     <ClCompile Include="src\utility\lodepng.cpp" />
     <ClCompile Include="src\utility\obj.cpp" />
     <ClCompile Include="src\utility\screenshot.cpp" />
+    <ClCompile Include="src\utility\string_id.cpp" />
     <ClCompile Include="src\utility\view.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

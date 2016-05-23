@@ -30,6 +30,7 @@ public:
 	bool get_state(unsigned char key) const {
 		return key_state[key];
 	}
+	//void registerEventCallback();
 };
  
 #endif

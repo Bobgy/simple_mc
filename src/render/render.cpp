@@ -1,5 +1,6 @@
 //#define _SIMPLE_CUBE_
-#include <stdafx.h>
+#include "stdafx.h"
+
 #include <cassert>
 #include <list>
 
@@ -507,10 +508,9 @@ void Render::setTextureState(bool bTex){
 	else glDisable(GL_TEXTURE_2D);
 }
 
-extern flt r, h;
 void renderSceneDynamic(const Entity &observer){
 	if (bObserver) {
-		render.renderPlayer(observer, r, h);
+		render.renderPlayer(observer, observer.getRadius(), observer.getHeight());
 	}
 }
 
@@ -670,7 +670,7 @@ void display(){
 
 void Render::update_center(){
 	shared_ptr<const Entity> entity = CurrentGame()->getPlayerEntity();
-	Vec3f p_eye = entity->get_pos() + Vec3f(0, h_eye, 0);
+	Vec3f p_eye = entity->get_pos() + Vec3f(0, entity->getHeight() * h_eye, 0);
 	const Rotation *view = entity->getRotation();
 	switch (view_mode) {
 	case VIEW_MODE_FIRST_PERSON:

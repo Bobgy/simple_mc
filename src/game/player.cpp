@@ -1,5 +1,9 @@
+#include "stdafx.h"
+
 #include "player.h"
 #include "game/game.h"
+#include "game/world.h"
+#include "game/entity.h"
 #include "game/entity_controller.h"
 
 Player::Player()
@@ -25,7 +29,7 @@ shared_ptr<Entity> Player::getEntity()
 void Player::setup()
 {
 	flt pp[3] = { 5.0f, 3.0f, 0.0f }, vv[3] = { 0.0f, 0.0f, 0.0f };
-	shared_ptr<Entity> observer(new Entity(pp, vv, r, h, 1.0));
+	shared_ptr<Entity> observer(new Entity(pp, vv, 0.45, 1.6, 1.0));
 	auto pt = make_shared<PlayerController>();
 	if (pt) {
 		observer->setup(pt);

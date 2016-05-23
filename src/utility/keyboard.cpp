@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include "stdafx.h"
 
 #include "utility/keyboard.h"
 #include "utility/screenshot.h"
@@ -20,7 +20,7 @@ bool bDebugDepthMap = false, bWire = false;
 void KeyDown(unsigned char key, int x, int y)
 {
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
-	CurrentGame()->getKeyboard()->key_state[key]=true;
+	CurrentGame()->getKeyboard()->key_state[key] = true;
 	switch (key)
 	{
 		case 27:

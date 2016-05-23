@@ -1,4 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
+
+#include "stdafx.h"
+
 #include "shader.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +15,7 @@ char *textFileRead(char *fn) {
 	int count = 0;
 
 	if (fn != NULL) {
-		fp = fopen(fn, "rt");
+		fopen_s(&fp, fn, "rt");
 
 		if (fp != NULL) {
 
@@ -37,7 +40,7 @@ int textFileWrite(char *fn, char *s) {
 	int status = 0;
 
 	if (fn != NULL) {
-		fp = fopen(fn, "w");
+		fopen_s(&fp, fn, "w");
 
 		if (fp != NULL) {
 

@@ -174,6 +174,13 @@ void init(int argc, char *argv[]) {
 
 int main(int argc, char *argv[])
 {
+#ifdef REL
+	LOG_INFO(__FUNCTION__, "This is RELEASE version.\n");
+#elif DEBUG
+	LOG_INFO(__FUNCTION__, "This is DEBUG version.\n");
+#else
+	LOG_INFO(__FUNCTION__, "haha.\n");
+#endif
 	init(argc, argv);
 	glutMainLoop();
 	return 0;

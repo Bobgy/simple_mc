@@ -23,3 +23,12 @@ public:
 	virtual ~PlayerController();
 	virtual void tick(flt delta_time);
 };
+
+class AIController: public EntityController
+{
+protected:
+public:
+	AIController();
+	virtual ~AIController();
+	virtual void tick(flt delta_time);
+};

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <cstring>
 #include <cmath>
 #include <algorithm>

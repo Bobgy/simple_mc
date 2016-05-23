@@ -11,6 +11,8 @@
 #include "utility/config.h"
 #include "utility/logger.h"
 
+#include "game/game.h"
+
 #define RETURN_IF_NULL(obj) if ((obj) == nullptr) return
 
 #endif

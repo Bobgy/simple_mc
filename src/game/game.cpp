@@ -1,7 +1,11 @@
+#include "stdafx.h"
+
 #include <cassert>
 
 #include "game/game.h"
-#include "utility/vec.h"
+#include "game/world.h"
+#include "utility/keyboard.h"
+#include "utility/view.h"
 
 Game *gp_game = nullptr;
 

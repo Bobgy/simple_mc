@@ -1,17 +1,13 @@
+#include "stdafx.h"
+
 #include "render/render.h"
 #include "utility/vec.h"
 
 int view_mode = VIEW_MODE_FIRST_PERSON;
 flt range_touch = 1;
 
-//the collision radius for the observer
-flt r = 0.45;
-
-//the height for the observer
-flt h = 1.6;
-
 //the eye height for the observer
-flt h_eye = h * 0.8;
+flt h_eye = 0.8;
 
 //toggles whether the observer is drawn
 bool bObserver = false;

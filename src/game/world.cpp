@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <map>
 #include <cassert>
 #include <iostream>
@@ -28,7 +30,7 @@ void World::tick(flt delta_time)
 		Entity &entity = *entity_ptr;
 		for (int i = 0; i < 3; ++i)
 			p[i] = floor(entity[i]);
-		p[1] = floor(entity[1] + 0.5*h);
+		p[1] = floor(entity[1] + 0.5*entity.getHeight());
 		entity_ptr->on_ground = false;
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dy = -2; dy <= 2; ++dy) {

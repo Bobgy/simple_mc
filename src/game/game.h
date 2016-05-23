@@ -1,13 +1,14 @@
 #pragma once
 
-#include <memory>
+#include "stdafx.h"
 
-#include "game/world.h"
-#include "utility/vec.h"
-#include "utility/view.h"
-#include "utility/keyboard.h"
-
+class World;
+class Player;
+class Entity;
+class Keyboard;
+class ViewController;
 class Game;
+
 // get current game
 Game *CurrentGame();
 

@@ -1,7 +1,12 @@
-#include "render/render.h"
-#include "game/game.h"
+#include "stdafx.h"
+
 #include "utility/view.h"
+
+#include "game/game.h"
+#include "game/world.h"
 #include "game/block.h"
+#include "render/render.h"
+
 
 extern BlockAndFace seen_block;
 extern int windowHandle;

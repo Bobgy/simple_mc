@@ -558,6 +558,7 @@ void display(){
 			face_xz^Vec3f(light_pos), true, true);
 
 		// Culling switching, rendering only backface, this is done to avoid self-shadowing
+		glEnable(GL_CULL_FACE);
 #ifdef CULL_BACK
 		glCullFace(GL_BACK);
 #else

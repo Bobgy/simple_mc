@@ -374,7 +374,7 @@ void Render::renderPlayer(const Entity &observer) {
 void renderSeenBlock(BlockAndFace seen_block){
 	if (seen_block.second == -1) return;
 	render.beginTransform();
-	render.translate(Vec3f{seen_block.first}+0.5f);
+	render.translate(Vec3f(seen_block.first)+0.5f);
 	glutWireCube(1.01);
 	render.endTransform();
 }

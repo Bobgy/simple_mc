@@ -39,17 +39,36 @@ struct Vec3{
 	Vec3<T> operator + (T r) const {
 		return Vec3{x[0] + r, x[1] + r, x[2] + r};
 	}
+	template <typename TT>
+	Vec3<T> &operator += (TT r) {
+		return *this = *this + r;
+	}
 	Vec3<T> operator - (Vec3 r) const {
 		return Vec3{x[0] - r[0], x[1] - r[1], x[2] - r[2]};
 	}
 	Vec3<T> operator - (T r) const {
 		return Vec3{x[0] - r, x[1] - r, x[2] - r};
 	}
+	template <typename TT>
+	Vec3<T> &operator -= (TT r) {
+		return *this = *this - r;
+	}
 	friend Vec3<T> operator * (Vec3<T> l, T k) {
 		return Vec3{l[0] * k, l[1] * k, l[2] * k};
 	}
 	friend Vec3<T> operator * (T k, Vec3<T> r){
 		return Vec3{r[0] * k, r[1] * k, r[2] * k};
+	}
+	template <typename TT>
+	Vec3<T> &operator *= (TT r) {
+		return *this = *this * r;
+	}
+	Vec3<T> operator | (Vec3 r) const { //product of each axis
+		return Vec3{x[0] * r[0], x[1] * r[1], x[2] * r[2]};
+	}
+	template <typename TT>
+	Vec3<T> &operator |= (TT r) {
+		return *this = *this | r;
 	}
 	T operator * (Vec3<T> r) const { //dot product
 		return x[0] * r[0] + x[1] * r[1] + x[2] * r[2];
@@ -167,17 +186,36 @@ struct Vec2 {
 	Vec2<T> operator + (T r) const {
 		return Vec2{x[0] + r, x[1] + r};
 	}
+	template <typename TT>
+	Vec2<T> &operator += (TT r) {
+		return *this = *this + r;
+	}
 	Vec2<T> operator - (Vec2 r) const {
 		return Vec2{x[0] - r[0], x[1] - r[1]};
 	}
 	Vec2<T> operator - (T r) const {
 		return Vec2{x[0] - r, x[1] - r};
 	}
+	template <typename TT>
+	Vec2<T> &operator -= (TT r) {
+		return *this = *this - r;
+	}
 	friend Vec2<T> operator * (Vec2<T> l, T k) {
 		return Vec2{l[0] * k, l[1] * k};
 	}
 	friend Vec2<T> operator * (T k, Vec2<T> r) {
 		return Vec2{r[0] * k, r[1] * k};
+	}
+	template <typename TT>
+	Vec2<T> &operator *= (TT r) {
+		return *this = *this * r;
+	}
+	Vec2<T> operator | (Vec2 r) const { //product of each axis
+		return Vec2{x[0] * r[0], x[1] * r[1]};
+	}
+	template <typename TT>
+	Vec2<T> &operator |= (TT r) const {
+		return *this = *this | r;
 	}
 	T operator * (Vec2<T> r) const { //dot product
 		return x[0] * r[0] + x[1] * r[1];

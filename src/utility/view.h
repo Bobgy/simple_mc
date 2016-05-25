@@ -15,7 +15,6 @@ protected:
 
 	// sensitivity for horizontal and vertical axes
 	flt h_sen, v_sen;
-	flt h_rot, v_rot;
 	Vec2f m_rotation_sen = {1.0f, 1.0f};
 	
 	// rotation speed for horizontal and vertical axes

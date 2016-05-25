@@ -43,8 +43,7 @@ void process_click(int button, int state, int x, int y)
 
 void ViewController::handle_cursor_move(int dx, int dy)
 {
-	m_rotation_speed[0] += (flt)dx * h_sen;
-	m_rotation_speed[1] += (flt)dy * v_sen;
+	m_rotation_speed += (m_rotation_sen | Vec2f{(flt)dx, (flt)dy});
 }
 
 

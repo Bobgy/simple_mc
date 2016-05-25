@@ -125,6 +125,8 @@ public:
 	flt getHeight() const {	return h; }
 	Vec3f get_velocity() const { return v; }
 	EntityController *getController() {	return p_entity_controller.get(); }
+	Actor *getActor() { return p_actor.get(); }
+	const Actor *getActor() const { return p_actor.get(); }
 	const Rotation *getRotation() const { return &rot; }
 	void setRotation(flt h_rot, flt v_rot) { rot.setRotation(h_rot, v_rot);	}
 	void setRotation(Vec2f rotation) { rot.setRotation(rotation); }
@@ -186,18 +188,23 @@ class ActorHuman : public Actor
 {
 // protected members
 protected:
-	flt ang = 0.0f;      // arm angle
-	flt delta = 0.0f;    // arm swing speed
+	flt arm_ang = 0.0f;      // arm angle
+	flt arm_swing_speed = 0.0f;    // arm swing speed
 
 	flt body_ang = 0.0f;     // body rotate angle
 	flt body_max_ang = 0.0f; // body rotate max angle
-
 // public methods
 public:
 	/*======== constructor and destructor =========*/
 	ActorHuman() = default;
 	virtual ~ActorHuman() = default;
-	
+
+	/*=============== getter methods ==============*/
+	flt getArmAng() const { return arm_ang; }
+	flt getArmSwingSpeed() const { return arm_swing_speed; }
+	flt getBodyAng() const { return body_ang; }
+	flt getBodyMaxAng() const { return body_max_ang; }
+
 	/*============= interface methods =============*/
 	void setup(Entity *parent, flt arm_swing_ang_speed = 4.33f, flt side_walk_body_max_ang = 45.0f);
 	virtual void tick(flt delta_time);

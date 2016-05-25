@@ -298,7 +298,10 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 void Render::renderPlayer(const Entity &observer) {
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
 
-	static flt ang = 0.f, delta = 4.33f, body_ang = 0.f;
+	const Actor *actor = observer.getActor();
+	if (actor == nullptr) return;
+	const ActorHuman *actor_human = dynamic_cast<const ActorHuman *>(actor);
+	if (actor_human == nullptr) return;
 
 	beginTransform();
 	translate(observer);
@@ -316,7 +319,7 @@ void Render::renderPlayer(const Entity &observer) {
 	//end Head
 
 	beginTransform();
-	rotate(body_ang, Vec3f{0.0f, 1.0f, 0.0f});
+	rotate(actor_human->getBodyAng(), Vec3f{0.0f, 1.0f, 0.0f});
 
 	//begin Body
 	beginTransform();
@@ -329,10 +332,10 @@ void Render::renderPlayer(const Entity &observer) {
 
 	static CubeTexCoord armTexCoord(Vec3i{8, 24, 8}, 40, 88, 64, 128);
 	//begin Arm
-	for (int sg : {-1, 1}){
+	for (int sg : {-1, 1}) {
 		beginTransform();
 		translate(Vec3f{0.0f, 1.2f, sg*0.3f});
-		rotate(sg*ang, Vec3f{0.0f, 0.0f, 1.0f});
+		rotate(sg * actor_human->getArmAng(), Vec3f{0.0f, 0.0f, 1.0f});
 		rotate(sg * -5, Vec3f{1.f, 0.f, 0.f});
 		scale(Vec3f{0.15f, 0.7f, 0.15f});
 		translate(Vec3f::Y_AXIS() * -0.5f);
@@ -343,10 +346,10 @@ void Render::renderPlayer(const Entity &observer) {
 
 	static CubeTexCoord legTexCoord(Vec3i{8, 24, 8}, 40, 8, 64, 128);
 	//begin Leg
-	for (int sg : {-1, 1}){
+	for (int sg : {-1, 1}) {
 		beginTransform();
 		translate(Vec3f{0.f, 0.7f, sg*0.11f});
-		rotate(-sg*ang, Vec3f::Z_AXIS());
+		rotate(-sg * actor_human->getArmAng(), Vec3f::Z_AXIS());
 		scale(Vec3f{0.2f, 0.8f, 0.2f});
 		translate(Vec3f::Y_AXIS() * -0.5f);
 		renderCubeTex(texPlayer, legTexCoord);
@@ -355,7 +358,7 @@ void Render::renderPlayer(const Entity &observer) {
 	//end Leg
 
 	endTransform();
-
+	
 	//CollisionBox
 	if (bCollisionBox) {
 		GLUquadricObj *objCylinder = gluNewQuadric();

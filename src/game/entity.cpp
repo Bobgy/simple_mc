@@ -95,8 +95,8 @@ void ActorHuman::setup(Entity *parent, flt arm_swing_ang_speed, flt side_walk_bo
 {
 	Actor::setup(parent);
 
-	ang = 0.0f;
-	delta = arm_swing_ang_speed;
+	arm_ang = 0.0f;
+	arm_swing_speed = arm_swing_ang_speed;
 
 	body_ang = 0.0f;
 	body_max_ang = side_walk_body_ang;
@@ -109,18 +109,18 @@ void ActorHuman::tick(flt delta_time)
 	EntityController *controller = m_parent->getController();
 	const EntityController::MovementIntent &movement_intent = controller->getMovementIntent();
 	if (movement_intent.isWalking()) {
-		ang += delta;
-		if (ang > 45.f) {
-			ang = 45.f;
-			delta = -delta;
+		arm_ang += arm_swing_speed;
+		if (arm_ang > 45.f) {
+			arm_ang = 45.f;
+			arm_swing_speed = -arm_swing_speed;
 		}
-		if (ang < -45.f) {
-			ang = -45.f;
-			delta = -delta;
+		if (arm_ang < -45.f) {
+			arm_ang = -45.f;
+			arm_swing_speed = -arm_swing_speed;
 		}
 	} else {
-		ang *= 0.96f;
-		if (sgn(ang) == 0) ang = 0.0f;
+		arm_ang *= 0.96f;
+		if (sgn(arm_ang) == 0) arm_ang = 0.0f;
 	}
 
 	int32_t side_walk = sgn(movement_intent.walk_intent[1]);

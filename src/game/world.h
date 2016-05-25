@@ -52,7 +52,7 @@ public:
 
 	// get entity with entity_id as its id
 	// returns nullptr when invalid entity_id is given
-	shared_ptr<Entity> getEntity(int entity_id);
+	Entity *getEntity(int entity_id);
 	const vector<shared_ptr<Entity>> &getEntityList() const;
 
 	// get the player

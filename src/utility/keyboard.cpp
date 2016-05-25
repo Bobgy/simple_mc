@@ -86,9 +86,11 @@ void SpecialKeyDown(int key, int x, int y)
 			break;
 
 		//toggle showing the observer
-		case GLUT_KEY_F6:
-			bObserver ^= 1;
+		case GLUT_KEY_F6: {
+			Entity *entity = CurrentGame()->getPlayerEntity();
+			if (entity != nullptr) entity->render_config.is_visible ^= 1;
 			break;
+		}
 
 		//toggle moving sun light
 		case GLUT_KEY_F7:

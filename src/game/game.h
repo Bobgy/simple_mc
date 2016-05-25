@@ -25,7 +25,7 @@ public:
 	~Game();
 	World *getWorld();
 	Player *getPlayer();
-	shared_ptr<Entity> getPlayerEntity();
+	Entity *getPlayerEntity();
 	ViewController *getViewController();
 	Keyboard *getKeyboard();
 	EventManager *getEventManager();

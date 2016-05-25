@@ -24,7 +24,7 @@ public:
 	~Player();
 
 	// get controlled entity
-	shared_ptr<Entity> getEntity();
+	Entity *getEntity();
 
 	void setup();
 };

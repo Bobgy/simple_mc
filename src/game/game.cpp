@@ -46,7 +46,7 @@ Player *Game::getPlayer()
 	return getWorld()->getPlayer();
 }
 
-shared_ptr<Entity> Game::getPlayerEntity()
+Entity *Game::getPlayerEntity()
 {
 	return getPlayer()->getEntity();
 }
@@ -85,7 +85,7 @@ void Game::setup()
 	event_manager = make_shared<EventManager>();
 	event_manager->setup();
 
-	Entity *player_entity = getPlayerEntity().get();
+	Entity *player_entity = getPlayerEntity();
 	auto mob = make_shared<Entity>(
 		player_entity->get_pos() + Vec3f{3.0f, 0.0f, -4.0f},
 		Vec3f::ZERO(),

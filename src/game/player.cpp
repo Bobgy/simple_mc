@@ -17,12 +17,9 @@ Player::~Player()
 
 }
 
-shared_ptr<Entity> Player::getEntity()
+Entity *Player::getEntity()
 {
-	if (m_possessed_entity_index < 0) {
-		assert(0);
-		return nullptr;
-	}
+	if (m_possessed_entity_index < 0) return nullptr;
 	return CurrentGame()->getWorld()->getEntity(m_possessed_entity_index);
 }
 

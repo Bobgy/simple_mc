@@ -86,12 +86,11 @@ Block* World::get_block(Vec3i p) const {
 	return NULL;
 }
 
-shared_ptr<Entity> World::getEntity(int entity_id)
+Entity *World::getEntity(int entity_id)
 {
 	if (entity_id >= 0 && (size_t)entity_id < entity_list.size()) {
-		return entity_list[entity_id];
+		return entity_list[entity_id].get();
 	}
-	assert(0);
 	return nullptr;
 }
 

@@ -603,8 +603,7 @@ void display(){
 	glActiveTextureARB(GL_TEXTURE0);
 
 	render.setupPerspective(render.eye, render.center, Vec3f{0,1,0}, false, false);
-	//render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
-	//							cursor.face_xz^Vec3f{light_pos}, true, true);
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	//glDisable(GL_CULL_FACE);
@@ -669,7 +668,7 @@ void display(){
 }
 
 void Render::update_center(){
-	shared_ptr<const Entity> entity = CurrentGame()->getPlayerEntity();
+	const Entity *entity = CurrentGame()->getPlayerEntity();
 	Vec3f p_eye = entity->get_pos() + Vec3f{0.f, entity->getHeight() * h_eye, 0.f};
 	const Rotation *view = entity->getRotation();
 	switch (view_mode) {

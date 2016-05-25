@@ -17,8 +17,8 @@ private:
 
 // public members
 public:
-	EventBoard<unsigned char> m_key_event_manager;
-	EventBoard<int> m_special_key_event_manager;
+	EventBoard<unsigned char> m_key_event_board;
+	EventBoard<int> m_special_key_event_board;
 
 // public methods
 public:

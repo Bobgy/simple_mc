@@ -2,38 +2,28 @@
 
 #include "stdafx.h"
 
-template <typename T>
-class EventBoard
-{
-// public definitions
-public:
-	typedef function<void(void)> CallBackFunction;
-	enum class EnumEventType : size_t
-	{
-		ON_UP = 0,
-		ON_DOWN = 1,
-		COUNT = 2
-	};
-// protected members
+#include "utility/event_board.h"
+
+class EventManager {
+//protected members
 protected:
-	struct EventInfo {
-		vector<weak_ptr<CallBackFunction>> m_event_type[static_cast<size_t>(EnumEventType::COUNT)];
-	};
-	typename unordered_map<T, EventInfo> m_event_to_call_back_map;
+	EventBoard<StringID> m_event_board;
+	vector<shared_ptr<CallBackFunction>> m_holded_registrations;
 
-// public methods
+// protected methods
+protected:
+	template<typename T>
+	void registerEventTrigger(EventBoard<T> &event_board, T key, StringID event);
+
 public:
-	EventBoard();
-	~EventBoard();
+	// common methods
 
-	void EventBoard::onEvent(T event, EnumEventType event_type);
+	// setup should be done after keyboard
+	void setup();
 
-	// register a call back function to an event
-	// the call back should be passed as a weak_ptr
-	// invalid weak_ptr will be automatically unregistered
 	void registerEventCallback(
-		T event_name,
+		StringID event_name,
 		weak_ptr<CallBackFunction> call_back,
 		EnumEventType event_type = EnumEventType::ON_UP);
+	bool isEventActive(StringID event_name);
 };
-

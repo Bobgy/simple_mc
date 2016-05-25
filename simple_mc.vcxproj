@@ -144,6 +144,7 @@
     <ClInclude Include="src\render\shadow.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\utility\config.h" />
+    <ClInclude Include="src\utility\event_board.h" />
     <ClInclude Include="src\utility\keyboard.h" />
     <ClInclude Include="src\utility\lodepng.h" />
     <ClInclude Include="src\utility\logger.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="src\render\shader.cpp" />
     <ClCompile Include="src\render\shadow.cpp" />
     <ClCompile Include="src\utility\config.cpp" />
+    <ClCompile Include="src\utility\event_board.cpp" />
     <ClCompile Include="src\utility\keyboard.cpp" />
     <ClCompile Include="src\utility\lodepng.cpp" />
     <ClCompile Include="src\utility\obj.cpp" />

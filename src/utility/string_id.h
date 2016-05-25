@@ -29,7 +29,7 @@ namespace
 	{
 		uint64_t ret = 0;
 		for (const char *p = str; *p; ++p) {
-			ret = ret * P2 % P1;
+			ret = (ret * P2 + *p) % P1;
 		}
 #ifdef DEBUG_STRING_ID
 
@@ -43,8 +43,7 @@ namespace
 				"StringID confliction on %u found! \"%s\" and \"%s\".\n",
 				(uint32_t)ret,
 				it->second.c_str(),
-				str
-				);
+				str);
 		}
 
 #endif

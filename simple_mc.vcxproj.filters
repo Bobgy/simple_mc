@@ -105,6 +105,10 @@
       <Filter>src\game</Filter>
     </ClInclude>
     <ClInclude Include="src\utility\string_id.h" />
+    <ClInclude Include="src\game\event_manager.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\event_board.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -156,5 +160,9 @@
       <Filter>src\game</Filter>
     </ClCompile>
     <ClCompile Include="src\utility\string_id.cpp" />
+    <ClCompile Include="src\game\event_manager.cpp">
+      <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utility\event_board.cpp" />
   </ItemGroup>
 </Project>

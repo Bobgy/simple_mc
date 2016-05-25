@@ -130,7 +130,7 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 			if (t < 0) {
 				next_time = t;
 			}
-			//assert(t >= 0);
+			assert(t >= 0);
 			if (t < next_time){
 				next_time = t;
 				axis = i;
@@ -144,9 +144,6 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 		if (it != blocks.end() && it->second->test_intersection(p, dir)){
 			return make_pair(p_block, FACE_AXIS[axis][sign[axis]<0]);
 		}
-	}
-	if (MAX_COUNT < 0) {
-		return make_pair(Vec3i(0), 1);
 	}
 	assert(MAX_COUNT >= 0);
 	return make_pair(p_block, -1); //-1 means not found

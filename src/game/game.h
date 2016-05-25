@@ -8,6 +8,7 @@ class Entity;
 class Keyboard;
 class ViewController;
 class Game;
+class EventManager;
 
 // get current game
 Game *CurrentGame();
@@ -17,6 +18,7 @@ protected:
 	World *p_world;
 	ViewController *p_view_controller;
 	Keyboard *p_keyboard;
+	shared_ptr<EventManager> event_manager;
 
 public:
 	Game();
@@ -26,6 +28,7 @@ public:
 	shared_ptr<Entity> getPlayerEntity();
 	ViewController *getViewController();
 	Keyboard *getKeyboard();
+	EventManager *getEventManager();
 
 	void setup();
 	void clear();

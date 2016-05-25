@@ -40,11 +40,18 @@ void PlayerController::tick(flt delta_time)
 
 	// tick keyboard
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
-	int df = 0;
+	int32_t df = 0;
+	EventManager *event_manager = CurrentGame()->getEventManager();
+	{
+		df = (int32_t)event_manager->isEventActive(STRING_ID("forward")) - (int32_t)event_manager->isEventActive(STRING_ID("backward"));
+		m_entity->give_velocity(m_entity->getRotation()->getHorizontalFacingVector(), step*df);
+	}
+	/*
 	if (keyboard.get_state('w') ^ keyboard.get_state('s')) {
 		df = keyboard.get_state('w') ? 1 : -1;
 		m_entity->give_velocity(m_entity->getRotation()->getHorizontalFacingVector(), step*df);
 	}
+	*/
 	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
 		df = keyboard.get_state('a') ? 1 : -1;
 		Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();

@@ -23,7 +23,7 @@ void KeyDown(unsigned char key, int x, int y)
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
 	Keyboard *keyboard = CurrentGame()->getKeyboard();
 	keyboard->key_state[key] = true;
-	keyboard->m_key_event_manager.onEvent(key, EventBoard<unsigned char>::EnumEventType::ON_DOWN);
+	keyboard->m_key_event_board.onEvent(key, EnumEventType::ON_DOWN);
 
 	// HACK
 	switch (key)
@@ -51,18 +51,18 @@ void KeyUp(unsigned char key, int x, int y)
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
 	Keyboard *keyboard = CurrentGame()->getKeyboard();
 	keyboard->key_state[key] = false;
-	keyboard->m_key_event_manager.onEvent(key, EventBoard<unsigned char>::EnumEventType::ON_UP);
+	keyboard->m_key_event_board.onEvent(key, EnumEventType::ON_UP);
 }
 void SpecialKeyUp(int key, int x, int y){
 	Keyboard *keyboard = CurrentGame()->getKeyboard();
 	keyboard->special_key_state[key] = false;
-	keyboard->m_special_key_event_manager.onEvent(key, EventBoard<int>::EnumEventType::ON_UP);
+	keyboard->m_special_key_event_board.onEvent(key, EnumEventType::ON_UP);
 }
 void SpecialKeyDown(int key, int x, int y)
 {
 	Keyboard *keyboard = CurrentGame()->getKeyboard();
 	keyboard->special_key_state[key] = true;
-	keyboard->m_special_key_event_manager.onEvent(key, EventBoard<int>::EnumEventType::ON_DOWN);
+	keyboard->m_special_key_event_board.onEvent(key, EnumEventType::ON_DOWN);
 
 	// HACK
 	static bool fullscreen = 0;

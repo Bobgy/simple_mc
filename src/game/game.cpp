@@ -4,6 +4,8 @@
 
 #include "game/game.h"
 #include "game/world.h"
+#include "game/event_manager.h"
+
 #include "utility/keyboard.h"
 #include "utility/view.h"
 
@@ -61,6 +63,11 @@ Keyboard *Game::getKeyboard()
 	return p_keyboard;
 }
 
+EventManager *Game::getEventManager()
+{
+	return event_manager.get();
+}
+
 void Game::setup()
 {
 	clear();
@@ -74,6 +81,9 @@ void Game::setup()
 
 	p_keyboard = new Keyboard();
 	p_keyboard->setup();
+
+	event_manager = make_shared<EventManager>();
+	event_manager->setup();
 }
 
 void Game::clear()

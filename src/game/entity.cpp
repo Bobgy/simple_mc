@@ -13,7 +13,7 @@ using namespace std;
 void Entity::setup(shared_ptr<EntityController> entity_controller)
 {
 	p_entity_controller = entity_controller;
-	p_entity_controller->setup(this);
+	if (p_entity_controller != nullptr) p_entity_controller->setup(this);
 
 	p_actor = make_shared<ActorHuman>();
 	p_actor->setup(this);
@@ -107,6 +107,8 @@ void ActorHuman::tick(flt delta_time)
 	if (m_parent == nullptr) return;
 	
 	EntityController *controller = m_parent->getController();
+	if (controller == nullptr) return;
+
 	const EntityController::MovementIntent &movement_intent = controller->getMovementIntent();
 	if (movement_intent.isWalking()) {
 		arm_ang += arm_swing_speed;

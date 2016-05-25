@@ -86,14 +86,16 @@ void Game::setup()
 	event_manager->setup();
 
 	Entity *player_entity = getPlayerEntity().get();
-	p_world->spawnEntity(make_shared<Entity>(
+	auto mob = make_shared<Entity>(
 		player_entity->get_pos() + Vec3f{3.0f, 0.0f, -4.0f},
 		Vec3f::ZERO(),
 		player_entity->getRadius(),
 		player_entity->getHeight(),
 		1.0f,
 		true,
-		true));
+		true);
+	mob->setup(nullptr);
+	p_world->spawnEntity(mob);
 }
 
 void Game::clear()

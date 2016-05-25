@@ -303,6 +303,7 @@ void Render::renderPlayer(const Entity &observer) {
 	const ActorHuman *actor_human = dynamic_cast<const ActorHuman *>(actor);
 	if (actor_human == nullptr) return;
 
+	
 	beginTransform();
 	translate(observer);
 	const Rotation *rotations = observer.getRotation();
@@ -358,7 +359,7 @@ void Render::renderPlayer(const Entity &observer) {
 	//end Leg
 
 	endTransform();
-	
+
 	//CollisionBox
 	if (bCollisionBox) {
 		GLUquadricObj *objCylinder = gluNewQuadric();
@@ -366,6 +367,7 @@ void Render::renderPlayer(const Entity &observer) {
 		glutWireCylinder(observer.getRadius(), observer.getHeight(), 30, 1);
 	}
 	endTransform();
+	
 }
 
 

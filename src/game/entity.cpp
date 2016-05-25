@@ -14,6 +14,19 @@ void Entity::setup(shared_ptr<EntityController> entity_controller)
 {
 	p_entity_controller = entity_controller;
 	p_entity_controller->setup(this);
+
+	p_actor = make_shared<ActorHuman>();
+	p_actor->setup(this);
+}
+
+void Entity::tick(flt delta_time)
+{
+	if (p_entity_controller) p_entity_controller->tick(delta_time);
+	if (p_actor) p_actor->tick(delta_time);
+	if (M) {
+		p = p + v;
+		v = v * RESISTANCE;
+	}
 }
 
 //calculate the collision with a cube with its lower coordinates at x
@@ -39,7 +52,7 @@ void Entity::collide_cube_horizontally(const Vec3i x){
 	flt len = seg_intersect((flt)x[1], x[1] + 1.f, (flt)p[1], p[1] + h);
 	if (zero(len)) return; //not vertically intersecting
 	Vec3f cx;
-	cx = Vec3f(x) + 0.5;
+	cx = Vec3f(x) + 0.5f;
 	if (zero(p[0] - cx[0]) && zero(p[2] - cx[2])) return; //the center coincide, cannot collide
 	int a, b, dt;
 	get_quadrant(p[0] - cx[0], p[2] - cx[2], a, dt);
@@ -71,4 +84,58 @@ bool Entity::intersect_cube(Vec3i x){
 	if (!test_circle_rectangle_intersect(p[0] - x[0], p[2] - x[2], r, 1, 1)) return false;
 	if (zero(seg_intersect(x[1], x[1] + 1, p[1], p[1] + h)))return false;
 	return true;
+}
+
+void Actor::setup(Entity *parent)
+{
+	m_parent = parent;
+}
+
+void ActorHuman::setup(Entity *parent, flt arm_swing_ang_speed, flt side_walk_body_ang)
+{
+	Actor::setup(parent);
+
+	ang = 0.0f;
+	delta = arm_swing_ang_speed;
+
+	body_ang = 0.0f;
+	body_max_ang = side_walk_body_ang;
+}
+
+void ActorHuman::tick(flt delta_time)
+{
+	if (m_parent == nullptr) return;
+	
+	EntityController *controller = m_parent->getController();
+	const EntityController::MovementIntent &movement_intent = controller->getMovementIntent();
+	if (movement_intent.isWalking()) {
+		ang += delta;
+		if (ang > 45.f) {
+			ang = 45.f;
+			delta = -delta;
+		}
+		if (ang < -45.f) {
+			ang = -45.f;
+			delta = -delta;
+		}
+	} else {
+		ang *= 0.96f;
+		if (sgn(ang) == 0) ang = 0.0f;
+	}
+
+	int32_t side_walk = sgn(movement_intent.walk_intent[1]);
+	switch (side_walk) {
+	case 0:
+		body_ang *= 0.96f;
+		if (sgn(body_ang) == 0) body_ang = 0.0f;
+		break;
+	case 1:
+		body_ang = (body_ang + 0.2f * 45.f) / 1.2f;
+		break;
+	case -1:
+		body_ang = (body_ang + 0.2f * -45.f) / 1.2f;
+		break;
+	default:
+		assert(false && "side_walk is unexpected");
+	}
 }

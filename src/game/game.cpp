@@ -77,13 +77,23 @@ void Game::setup()
 	p_world->readFromFile("stage/last_save.txt");
 
 	p_view_controller = new ViewController();
-	p_view_controller->setup(0.005, -0.001f);
+	p_view_controller->setup(0.005f, -0.001f);
 
 	p_keyboard = new Keyboard();
 	p_keyboard->setup();
 
 	event_manager = make_shared<EventManager>();
 	event_manager->setup();
+
+	Entity *player_entity = getPlayerEntity().get();
+	p_world->spawnEntity(make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{3.0f, 0.0f, -4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true));
 }
 
 void Game::clear()

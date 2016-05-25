@@ -95,6 +95,11 @@ shared_ptr<Entity> World::getEntity(int entity_id)
 	return nullptr;
 }
 
+const vector<shared_ptr<Entity>>& World::getEntityList() const
+{
+	return entity_list;
+}
+
 Player *World::getPlayer()
 {
 	assert(p_player);
@@ -174,7 +179,7 @@ void World::randomGenerate(int seed, int range) {
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k) {
 				int t = (1 << (k + 2)) - 1;
-				if (k == 0 || (rand()&t) == t) blocks[Vec3i(i, k, j)] = &block_list[DIRT];
+				if (k == 0 || (rand()&t) == t) blocks[Vec3i{i, k, j}] = &block_list[DIRT];
 				else break;
 			}
 	changed = true;
@@ -233,9 +238,8 @@ bool World::read_from_file(string name)
 	ifstream f(name);
 	if (f.rdstate() & f.failbit) return false;
 	f >> x >> y >> z >> type;
-	while (!f.eof())
-	{
-		Vec3i pos(x, y, z);
+	while (!f.eof()) {
+		Vec3i pos{x, y, z};
 		blocks[pos] = &block_list[block_type(type)];
 		f >> x >> y >> z >> type;
 	}

@@ -28,45 +28,50 @@ PlayerController::~PlayerController()
 {
 }
 
-flt step = 0.3, eps = 1e-8;
+flt step = 0.3f, eps = 1e-8f;
 void PlayerController::tick(flt delta_time)
 {
 	ViewController *view_controller = CurrentGame()->getViewController();
 	if (view_controller->need_update()) {
-		const pair<flt, flt> &rotation_speeds = view_controller->getViewRotationSpeed();
+		const Vec2f &rotation_speeds = view_controller->getViewRotationSpeed();
 		const Rotation *rotations = m_entity->getRotation();
-		m_entity->setRotation(rotation_speeds.first + rotations->getH(), rotation_speeds.second + rotations->getV());
+		m_entity->setRotation(rotation_speeds + rotations->getVec2());
 	}
 
 	// tick keyboard
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
 	int32_t df = 0;
 	EventManager *event_manager = CurrentGame()->getEventManager();
-	{
-		df = (int32_t)event_manager->isEventActive(STRING_ID("forward")) - (int32_t)event_manager->isEventActive(STRING_ID("backward"));
-		m_entity->give_velocity(m_entity->getRotation()->getHorizontalFacingVector(), step*df);
-	}
-	/*
-	if (keyboard.get_state('w') ^ keyboard.get_state('s')) {
-		df = keyboard.get_state('w') ? 1 : -1;
-		m_entity->give_velocity(m_entity->getRotation()->getHorizontalFacingVector(), step*df);
-	}
-	*/
-	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
-		df = keyboard.get_state('a') ? 1 : -1;
-		Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
-		m_entity->give_velocity(Vec3f(face_xz[2], 0, -face_xz[0]), step*0.5*df);
-	}
+	
+	// forward movement intent
+	df = (int32_t)event_manager->isEventActive(STRING_ID("forward")) - (int32_t)event_manager->isEventActive(STRING_ID("backward"));
+	m_movement_intent.walk_intent[0] = step * (flt)df;
+	
+	// left movement intent;
+	df = (int32_t)keyboard.get_state('a') - (int32_t)keyboard.get_state('d');
+	m_movement_intent.walk_intent[1] = step * 0.5f * (flt)df;
+	
 	if (bGravity) {
 		if (keyboard.get_state(' ') && m_entity->on_ground) {
-			m_entity->force(Vec3f(0, 13, 0));
+			m_movement_intent.jump_intent = 13.f;
+		} else {
+			m_movement_intent.jump_intent = 0.0f;
 		}
+		m_entity->force(Vec3f{0.f, m_movement_intent.jump_intent, 0.f});
 	} else {
-		if (keyboard.get_state(' '))
-			m_entity->give_velocity(Vec3f(0, 0.5, 0), 1);
-		if (keyboard.get_special_state(GLUT_KEY_SHIFT_L))
-			m_entity->give_velocity(Vec3f(0, -0.5, 0), 1);
+		df = (int32_t)keyboard.get_state(' ') - (int32_t)keyboard.get_special_state(GLUT_KEY_SHIFT_L);
+		m_movement_intent.jump_intent = 0.5f * (flt)df;
+		m_entity->give_velocity(Vec3f::Y_AXIS(), m_movement_intent.jump_intent);
 	}
+
+	Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
+	m_entity->give_velocity(face_xz, m_movement_intent.walk_intent[0]);
+	m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, m_movement_intent.walk_intent[1]);
+}
+
+const EntityController::MovementIntent &PlayerController::getMovementIntent() const
+{
+	return m_movement_intent;
 }
 
 AIController::AIController()

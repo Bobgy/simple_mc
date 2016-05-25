@@ -68,7 +68,7 @@ public:
 	void scale(Vec3f p);
 
 	//render the player at position "observer" with radius r and height h
-	void renderPlayer(const Entity &observer, flt r, flt h);
+	void renderPlayer(const Entity &observer);
 
 	//update the center and eye vector
 	void update_center();
@@ -108,7 +108,7 @@ void renderCross();
 
 void renderGUI(Entity);
 
-void renderSceneDynamic(const Entity &observer);
+void renderSceneDynamic(const Entity &observer, bool is_shadow_phase = false);
 
 void display();
 

@@ -295,81 +295,60 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 #endif
 }
 
-void Render::renderPlayer(const Entity &observer, flt r, flt h) {
+void Render::renderPlayer(const Entity &observer) {
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
 
 	static flt ang = 0.f, delta = 4.33f, body_ang = 0.f;
-	if (keyboard.is_walking()){
-		ang += delta;
-		if (ang > 45.f) {
-			ang = 45.f;
-			delta = -delta;
-		}
-		if (ang < -45.f) {
-			ang = -45.f;
-			delta = -delta;
-		}
-	}
-	else {
-		ang *= 0.96f;
-	}
 
 	beginTransform();
 	translate(observer);
 	const Rotation *rotations = observer.getRotation();
-	rotate(-rotations->getH() * rad2deg, Vec3f(0, 1, 0));
+	rotate(-rotations->getH() * rad2deg, Vec3f{0.f, 1.f, 0.f});
 
 	//begin Head
 	beginTransform();
-	static CubeTexCoord headTexCoord(Vec3i(16, 16, 16), 16, 16, 64, 128);
-	translate(Vec3f(0, 1.35, 0));
-	scale(Vec3f(0.4, 0.4, 0.4));
-	rotate(rotations->getV() * 0.8 * rad2deg, Vec3f(0, 0, 1));
+	static CubeTexCoord headTexCoord(Vec3i{16, 16, 16}, 16, 16, 64, 128);
+	translate(Vec3f{0.0f, 1.35f, 0.f});
+	scale(Vec3f{0.4f, 0.4f, 0.4f});
+	rotate(rotations->getV() * 0.8f * rad2deg, Vec3f{0.f, 0.f, 1.f});
 	renderCubeTex(texPlayer, headTexCoord);
 	endTransform();
 	//end Head
 
 	beginTransform();
-	if (keyboard.get_state('a') ^ keyboard.get_state('d')) {
-		if (keyboard.get_state('a'))
-			body_ang = (body_ang + 0.2f * 45.f) / 1.2f;
-		else
-			body_ang = (body_ang + 0.2f * -45.f) / 1.2f;
-	}
-	else body_ang *= 0.96f;
-	rotate(body_ang, Vec3f(0.0f, 1.0f, 0.0f));
+	rotate(body_ang, Vec3f{0.0f, 1.0f, 0.0f});
 
 	//begin Body
 	beginTransform();
-	static CubeTexCoord bodyTexCoord(Vec3i(8, 24, 16), 40, 40, 64, 128);
-	translate(Vec3f(0, 0.85, 0));
-	scale(Vec3f(0.3, 0.6, 0.45));
+	static CubeTexCoord bodyTexCoord(Vec3i{8, 24, 16}, 40, 40, 64, 128);
+	translate(Vec3f{0.0f, 0.85f, 0.0f});
+	scale(Vec3f{0.3f, 0.6f, 0.45f});
 	renderCubeTex(texPlayer, bodyTexCoord);
 	endTransform();
 	//end Body
 
-	static CubeTexCoord armTexCoord(Vec3i(8, 24, 8), 40, 88, 64, 128);
+	static CubeTexCoord armTexCoord(Vec3i{8, 24, 8}, 40, 88, 64, 128);
 	//begin Arm
 	for (int sg : {-1, 1}){
 		beginTransform();
-		translate(Vec3f(0, 1.2, sg*0.3));
-		rotate(sg*ang, Vec3f(0, 0, 1));
-		rotate(sg * -5, Vec3f(1, 0, 0));
-		scale(Vec3f(0.15, 0.7, 0.15));
-		translate(Vec3f(0, -0.5, 0));
+		translate(Vec3f{0.0f, 1.2f, sg*0.3f});
+		rotate(sg*ang, Vec3f{0.0f, 0.0f, 1.0f});
+		rotate(sg * -5, Vec3f{1.f, 0.f, 0.f});
+		scale(Vec3f{0.15f, 0.7f, 0.15f});
+		translate(Vec3f::Y_AXIS() * -0.5f);
 		renderCubeTex(texPlayer, armTexCoord);
 		endTransform();
 	}
 	//end Arm
 
-	static CubeTexCoord legTexCoord(Vec3i(8, 24, 8), 40, 8, 64, 128);
+	static CubeTexCoord legTexCoord(Vec3i{8, 24, 8}, 40, 8, 64, 128);
 	//begin Leg
 	for (int sg : {-1, 1}){
 		beginTransform();
-		translate(Vec3f(0, 0.7, sg*0.11));
-		rotate(-sg*ang, Vec3f(0, 0, 1));
-		scale(Vec3f(0.2, 0.8, 0.2));
-		translate(Vec3f(0, -0.5, 0));
+		translate(Vec3f{0.f, 0.7f, sg*0.11f});
+		rotate(-sg*ang, Vec3f::Z_AXIS());
+		scale(Vec3f{0.2f, 0.8f, 0.2f});
+		translate(Vec3f::Y_AXIS() * -0.5f);
 		renderCubeTex(texPlayer, legTexCoord);
 		endTransform();
 	}
@@ -380,8 +359,8 @@ void Render::renderPlayer(const Entity &observer, flt r, flt h) {
 	//CollisionBox
 	if (bCollisionBox) {
 		GLUquadricObj *objCylinder = gluNewQuadric();
-		rotate(-90, Vec3f(1, 0, 0));
-		glutWireCylinder(r, h, 30, 1);
+		rotate(-90, Vec3f::X_AXIS());
+		glutWireCylinder(observer.getRadius(), observer.getHeight(), 30, 1);
 	}
 	endTransform();
 }
@@ -390,7 +369,7 @@ void Render::renderPlayer(const Entity &observer, flt r, flt h) {
 void renderSeenBlock(BlockAndFace seen_block){
 	if (seen_block.second == -1) return;
 	render.beginTransform();
-	render.translate(Vec3f(seen_block.first)+0.5);
+	render.translate(Vec3f{seen_block.first}+0.5f);
 	glutWireCube(1.01);
 	render.endTransform();
 }
@@ -400,7 +379,7 @@ void Render::renderScene(){
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
-		translate(Vec3f(p)+0.5);
+		translate(Vec3f{p}+0.5f);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)	{
 			auto it = world.find(p + FACE[i]);
@@ -508,9 +487,20 @@ void Render::setTextureState(bool bTex){
 	else glDisable(GL_TEXTURE_2D);
 }
 
-void renderSceneDynamic(const Entity &observer){
-	if (bObserver) {
-		render.renderPlayer(observer, observer.getRadius(), observer.getHeight());
+void renderSceneDynamic(const Entity &observer, bool is_shadow_phase){
+	World *world = CurrentGame()->getWorld();
+	auto entity_list = world->getEntityList();
+	for (auto &entity: entity_list) {
+		bool should_render = false;
+		if (is_shadow_phase == false && entity->render_config.is_visible == true) {
+			should_render = true;
+		}
+		if (is_shadow_phase == true && entity->render_config.has_shadow == true) {
+			should_render = true;
+		}
+		if (should_render) {
+			render.renderPlayer(*entity.get());
+		}
 	}
 }
 
@@ -523,8 +513,8 @@ void Render::renderBoxLine(){
 		for (int j = -rg; j <= rg; ++j){
 			for (int k = -rg; k <= rg; ++k){
 				beginTransform();
-				translate(p+Vec3f(i+0.5, j+0.5, k+0.5));
-				glutWireCube(1.0);
+				translate(p+Vec3f{i+0.5f, j+0.5f, k+0.5f});
+				glutWireCube(1.0f);
 				endTransform();
 			}
 		}
@@ -532,7 +522,7 @@ void Render::renderBoxLine(){
 }
 
 extern GLhandleARB shader_id;
-extern flt light_pos[4];
+Vec3f light_pos{1.9f, 1.0f, -2.0f};
 void display(){
 	if (bCustomGLSL) {
 		//First step: Render from the light POV to a FBO, store depth values only
@@ -554,8 +544,12 @@ void display(){
 
 		Vec3f face_xz = CurrentGame()->getPlayerEntity()->getRotation()->getHorizontalFacingVector();
 		// TODO
-		render.setupPerspective(light_pos, render.eye + face_xz*0.4*VIEW_DISTANCE,
-			face_xz^Vec3f(light_pos), true, true);
+		render.setupPerspective(
+			light_pos,
+			render.eye + face_xz*0.4f*VIEW_DISTANCE,
+			face_xz^light_pos,
+			true,
+			true);
 
 		// Culling switching, rendering only backface, this is done to avoid self-shadowing
 		glEnable(GL_CULL_FACE);
@@ -567,7 +561,7 @@ void display(){
 
 		render.setTextureState(false);
 		//render the scene
-		renderSceneDynamic(*CurrentGame()->getPlayerEntity());
+		renderSceneDynamic(*CurrentGame()->getPlayerEntity(), true);
 		renderTableList();
 		render.draw_item();
 		//render.renderScene();
@@ -603,9 +597,9 @@ void display(){
 	//Bind ordinary texture
 	glActiveTextureARB(GL_TEXTURE0);
 
-	render.setupPerspective(render.eye, render.center, Vec3f(0,1,0), false, false);
+	render.setupPerspective(render.eye, render.center, Vec3f{0,1,0}, false, false);
 	//render.setupPerspective(light_pos, render.eye + cursor.face_xz*0.4*VIEW_DISTANCE,
-	//							cursor.face_xz^Vec3f(light_pos), true, true);
+	//							cursor.face_xz^Vec3f{light_pos}, true, true);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	//glDisable(GL_CULL_FACE);
@@ -624,7 +618,8 @@ void display(){
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	flt light[4] = {light_pos[0], light_pos[1], light_pos[2], 0.0f};
+	glLightfv(GL_LIGHT0, GL_POSITION, light);
 	int state = 7;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
@@ -670,7 +665,7 @@ void display(){
 
 void Render::update_center(){
 	shared_ptr<const Entity> entity = CurrentGame()->getPlayerEntity();
-	Vec3f p_eye = entity->get_pos() + Vec3f(0, entity->getHeight() * h_eye, 0);
+	Vec3f p_eye = entity->get_pos() + Vec3f{0.f, entity->getHeight() * h_eye, 0.f};
 	const Rotation *view = entity->getRotation();
 	switch (view_mode) {
 	case VIEW_MODE_FIRST_PERSON:
@@ -724,7 +719,7 @@ void Render::draw_item()
 		if (x.draw) {
 			beginTransform();
 				translate(x.loc);
-				scale(Vec3f(x.scale,x.scale,x.scale));
+				scale(Vec3f{x.scale,x.scale,x.scale});
 				x.obj.call_list();
 			endTransform();
 		}

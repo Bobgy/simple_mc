@@ -30,7 +30,7 @@
 using namespace std;
 
 //The light's position
-flt light_pos[] = { 1.9f, 1.0f, -2.0f, 0.0f };
+extern Vec3f light_pos;
 
 block_type type;
 
@@ -174,14 +174,10 @@ void init(int argc, char *argv[]) {
 
 int main(int argc, char *argv[])
 {
-#ifdef REL
-	LOG_INFO(__FUNCTION__, "This is RELEASE version.\n");
-#elif DEBUG
-	LOG_INFO(__FUNCTION__, "This is DEBUG version.\n");
-#else
-	LOG_INFO(__FUNCTION__, "haha.\n");
-#endif
+	LOG_INFO(__FUNCTION__, "Initializing...\n");
 	init(argc, argv);
+	LOG_INFO(__FUNCTION__, "Initialized\n");
+
 	glutMainLoop();
 	return 0;
 }

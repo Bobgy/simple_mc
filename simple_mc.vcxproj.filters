@@ -104,11 +104,15 @@
     <ClInclude Include="src\game\entity_controller.h">
       <Filter>src\game</Filter>
     </ClInclude>
-    <ClInclude Include="src\utility\string_id.h" />
     <ClInclude Include="src\game\event_manager.h">
       <Filter>src\game</Filter>
     </ClInclude>
-    <ClInclude Include="src\utility\event_board.h" />
+    <ClInclude Include="src\utility\string_id.h">
+      <Filter>src\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\event_board.h">
+      <Filter>src\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -150,19 +154,23 @@
     <ClCompile Include="src\game\world.cpp">
       <Filter>src\game</Filter>
     </ClCompile>
-    <ClCompile Include="src\utility\view.cpp">
-      <Filter>src\utility</Filter>
-    </ClCompile>
     <ClCompile Include="src\game\game.cpp">
       <Filter>src\game</Filter>
     </ClCompile>
     <ClCompile Include="src\game\entity_controller.cpp">
       <Filter>src\game</Filter>
     </ClCompile>
-    <ClCompile Include="src\utility\string_id.cpp" />
     <ClCompile Include="src\game\event_manager.cpp">
       <Filter>src\game</Filter>
     </ClCompile>
-    <ClCompile Include="src\utility\event_board.cpp" />
+    <ClCompile Include="src\utility\string_id.cpp">
+      <Filter>src\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utility\event_board.cpp">
+      <Filter>src\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utility\view.cpp">
+      <Filter>src\utility</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

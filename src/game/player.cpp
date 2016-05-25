@@ -28,11 +28,12 @@ shared_ptr<Entity> Player::getEntity()
 
 void Player::setup()
 {
-	flt pp[3] = { 5.0f, 3.0f, 0.0f }, vv[3] = { 0.0f, 0.0f, 0.0f };
+	Vec3f pp{ 5.0f, 3.0f, 0.0f }, vv{ 0.0f, 0.0f, 0.0f };
 	shared_ptr<Entity> observer(new Entity(pp, vv, 0.45, 1.6, 1.0));
 	auto pt = make_shared<PlayerController>();
 	if (pt) {
 		observer->setup(pt);
+		observer->render_config.is_visible = false;
 	}
 	int index = CurrentGame()->getWorld()->spawnEntity(observer);
 	possessEntity(index);

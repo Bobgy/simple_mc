@@ -43,17 +43,17 @@ void process_click(int button, int state, int x, int y)
 
 void ViewController::handle_cursor_move(int dx, int dy)
 {
-	h_rotation_speed += (flt)dx * h_sen;
-	v_rotation_speed += (flt)dy * v_sen;
+	m_rotation_speed[0] += (flt)dx * h_sen;
+	m_rotation_speed[1] += (flt)dy * v_sen;
 }
 
 
 void ViewController::tick(flt delta_time)
 {
-	h_rotation_speed = h_rotation_speed / 2.0;
-	h_rotation_speed = sgn(h_rotation_speed) ? h_rotation_speed : 0.0f;
-	v_rotation_speed = v_rotation_speed / 2.0;
-	v_rotation_speed = sgn(v_rotation_speed) ? v_rotation_speed : 0.0f;
+	m_rotation_speed[0] /= 2.0f;
+	m_rotation_speed[0] = sgn(m_rotation_speed[0]) ? m_rotation_speed[0] : 0.0f;
+	m_rotation_speed[1] /= 2.0f;
+	m_rotation_speed[1] = sgn(m_rotation_speed[1]) ? m_rotation_speed[1] : 0.0f;
 }
 
 void init_cursor()

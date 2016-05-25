@@ -9,6 +9,7 @@
 #include "game/entity.h"
 #include "game/block.h"
 #include "game/game.h"
+#include "game/event_manager.h"
 
 #include "render/render.h"
 
@@ -20,7 +21,11 @@ bool bDebugDepthMap = false, bWire = false;
 void KeyDown(unsigned char key, int x, int y)
 {
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
-	CurrentGame()->getKeyboard()->key_state[key] = true;
+	Keyboard *keyboard = CurrentGame()->getKeyboard();
+	keyboard->key_state[key] = true;
+	keyboard->m_key_event_manager.onEvent(key, EventBoard<unsigned char>::EnumEventType::ON_DOWN);
+
+	// HACK
 	switch (key)
 	{
 		case 27:
@@ -44,14 +49,22 @@ void KeyDown(unsigned char key, int x, int y)
 void KeyUp(unsigned char key, int x, int y)
 {
 	if (key >= 'A' && key <= 'Z')key += 'a' - 'A';
-	CurrentGame()->getKeyboard()->key_state[key] = false;
+	Keyboard *keyboard = CurrentGame()->getKeyboard();
+	keyboard->key_state[key] = false;
+	keyboard->m_key_event_manager.onEvent(key, EventBoard<unsigned char>::EnumEventType::ON_UP);
 }
 void SpecialKeyUp(int key, int x, int y){
-	CurrentGame()->getKeyboard()->special_key_state[key] = false;
+	Keyboard *keyboard = CurrentGame()->getKeyboard();
+	keyboard->special_key_state[key] = false;
+	keyboard->m_special_key_event_manager.onEvent(key, EventBoard<int>::EnumEventType::ON_UP);
 }
 void SpecialKeyDown(int key, int x, int y)
 {
-	CurrentGame()->getKeyboard()->special_key_state[key] = true;
+	Keyboard *keyboard = CurrentGame()->getKeyboard();
+	keyboard->special_key_state[key] = true;
+	keyboard->m_special_key_event_manager.onEvent(key, EventBoard<int>::EnumEventType::ON_DOWN);
+
+	// HACK
 	static bool fullscreen = 0;
 	switch (key){
 

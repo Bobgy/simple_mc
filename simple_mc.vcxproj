@@ -133,6 +133,7 @@
     <ClInclude Include="src\game\block.h" />
     <ClInclude Include="src\game\entity.h" />
     <ClInclude Include="src\game\entity_controller.h" />
+    <ClInclude Include="src\game\event_manager.h" />
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\item.h" />
     <ClInclude Include="src\game\player.h" />
@@ -155,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\entity.cpp" />
     <ClCompile Include="src\game\entity_controller.cpp" />
+    <ClCompile Include="src\game\event_manager.cpp" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\player.cpp" />
     <ClCompile Include="src\game\world.cpp" />

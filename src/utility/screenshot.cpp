@@ -18,7 +18,6 @@ bool ScreenShot(std::string filename){
 	GLenum image_buffer;
 	GLubyte* image_data = 0;
 	unsigned long image_size;
-	GLint view[4];
 
 	int width = glutGet(GLUT_WINDOW_WIDTH);
 	int height = glutGet(GLUT_WINDOW_HEIGHT);

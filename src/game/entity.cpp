@@ -15,8 +15,9 @@ void Entity::setup(shared_ptr<EntityController> entity_controller)
 	p_entity_controller = entity_controller;
 	if (p_entity_controller != nullptr) p_entity_controller->setup(this);
 
-	p_actor = make_shared<ActorHuman>();
-	p_actor->setup(this);
+	shared_ptr<ActorHuman> actor_human = make_shared<ActorHuman>();
+	actor_human->setup(this);
+	p_actor = actor_human;
 }
 
 void Entity::tick(flt delta_time)

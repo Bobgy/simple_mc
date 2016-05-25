@@ -214,7 +214,7 @@ struct Vec2 {
 		return Vec2{x[0] * r[0], x[1] * r[1]};
 	}
 	template <typename TT>
-	Vec2<T> &operator |= (TT r) const {
+	Vec2<T> &operator |= (TT r) {
 		return *this = *this | r;
 	}
 	T operator * (Vec2<T> r) const { //dot product

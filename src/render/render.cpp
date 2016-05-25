@@ -384,7 +384,7 @@ void Render::renderScene(){
 	for (auto it = world.begin(); it != world.end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
-		translate(Vec3f{p}+0.5f);
+		translate(Vec3f(p)+0.5f);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)	{
 			auto it = world.find(p + FACE[i]);

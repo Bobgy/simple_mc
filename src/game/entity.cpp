@@ -24,66 +24,71 @@ void Entity::tick(flt delta_time)
 {
 	if (p_entity_controller) p_entity_controller->tick(delta_time);
 	if (p_actor) p_actor->tick(delta_time);
-	if (M) {
-		p = p + v;
-		v = v * RESISTANCE;
+	if (m_rigid_body.m_enabled_movement) {
+		m_rigid_body.m_position = m_rigid_body.m_position + m_rigid_body.m_velocity;
+		m_rigid_body.m_velocity = m_rigid_body.m_velocity * RESISTANCE;
 	}
 }
 
 //calculate the collision with a cube with its lower coordinates at x
 //returns whether x is exactly on the block
 bool Entity::collide_cube_vertically(Vec3i x){
-	if (!test_circle_rectangle_intersect(p[0]-x[0],p[2]-x[2],r,1,1)) return false;
+	bool is_circle_rectangle_intersected = test_circle_rectangle_intersect(
+		m_rigid_body.m_position[0] - x[0],
+		m_rigid_body.m_position[2] - x[2],
+		ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r,
+		1, 1);
+	if (!is_circle_rectangle_intersected) return false;
 	// inelastic collision for top and bottom face
-	if (in_range((flt)p[1], x[1]+0.5f, x[1]+1.0f, false, true)) { //collide with top face
-		p[1] = x[1] + 1.f;
-		if (v[1] <= 0.f) {
-			v[1] = 0.f;
+	if (in_range((flt)m_rigid_body.m_position[1], x[1]+0.5f, x[1]+1.0f, false, true)) { //collide with top face
+		m_rigid_body.m_position[1] = x[1] + 1.f;
+		if (m_rigid_body.m_velocity[1] <= 0.f) {
+			m_rigid_body.m_velocity[1] = 0.f;
 			return true;
 		}
-	} else if (in_range(p[1] + h, (flt)x[1], x[1]+0.5f, true, false)){ //collide with bottom face
-		p[1] = x[1] - h;
-		if (v[1] > 0) v[1] = 0;
+	} else if (in_range(m_rigid_body.m_position[1] + ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h, (flt)x[1], x[1]+0.5f, true, false)){ //collide with bottom face
+		m_rigid_body.m_position[1] = x[1] - ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h;
+		if (m_rigid_body.m_velocity[1] > 0) m_rigid_body.m_velocity[1] = 0;
 	}
 	return false;
 }
 
 //calculate the collision with a cube with its sides
 void Entity::collide_cube_horizontally(const Vec3i x){
-	flt len = seg_intersect((flt)x[1], x[1] + 1.f, (flt)p[1], p[1] + h);
+	flt len = seg_intersect((flt)x[1], x[1] + 1.f, (flt)m_rigid_body.m_position[1], m_rigid_body.m_position[1] + ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h);
 	if (zero(len)) return; //not vertically intersecting
 	Vec3f cx;
 	cx = Vec3f(x) + 0.5f;
-	if (zero(p[0] - cx[0]) && zero(p[2] - cx[2])) return; //the center coincide, cannot collide
+	if (zero(m_rigid_body.m_position[0] - cx[0]) && zero(m_rigid_body.m_position[2] - cx[2])) return; //the center coincide, cannot collide
 	int a, b, dt;
-	get_quadrant(p[0] - cx[0], p[2] - cx[2], a, dt);
+	get_quadrant(m_rigid_body.m_position[0] - cx[0], m_rigid_body.m_position[2] - cx[2], a, dt);
 	b = a == 0 ? 2 : 0; //collide along "a" axis;
 	assert(a != b && (a == 0 || a == 2) && (b == 0 || b == 2));
 	int sig = dt ? 1 : -1;
-	if (in_range(p[b], x[b], x[b] + 1, true, true)) {
-		if (in_range(p[a] - sig*r, cx[a], x[a] + dt, false, true)){
-			p[a] = x[a] + dt + sig * r;
-			if ((v[a] > 0) != dt) v[a] = 0;
+	if (in_range(m_rigid_body.m_position[b], x[b], x[b] + 1, true, true)) {
+		if (in_range(m_rigid_body.m_position[a] - sig*ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r, cx[a], x[a] + dt, false, true)){
+			m_rigid_body.m_position[a] = x[a] + dt + sig * ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r;
+			if ((m_rigid_body.m_velocity[a] > 0) != dt) m_rigid_body.m_velocity[a] = 0;
 		}
 	} else { //collide with the corner
 		Vec3f p_corner;
 		p_corner = x;
 		p_corner[a] += dt;
-		p_corner[b] = p[b] < cx[b] ? x[b] : x[b] + 1.f;
-		Vec3f rel = p_corner - p;
+		p_corner[b] = m_rigid_body.m_position[b] < cx[b] ? x[b] : x[b] + 1.f;
+		Vec3f rel = p_corner - m_rigid_body.m_position;
 		// the corner
-		if (!test_point_in_circle(rel[0], rel[2], r)) return;
+		if (!test_point_in_circle(rel[0], rel[2], ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r)) return;
 		rel = rel.normalize();
 		//force((len - r - 1.0)*rel.normalize()); //elastic
-		p = p_corner - rel * r;
-		if (v*rel > 0) v = v - (v*rel)* rel;
+		m_rigid_body.m_position = p_corner - rel * ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r;
+		if (m_rigid_body.m_velocity*rel > 0) m_rigid_body.m_velocity = m_rigid_body.m_velocity - (m_rigid_body.m_velocity*rel)* rel;
 	}
 }
 
 //test intersection
 bool Entity::intersect_cube(Vec3i x){
-	if (!test_circle_rectangle_intersect(p[0] - x[0], p[2] - x[2], r, 1, 1)) return false;
-	if (zero(seg_intersect(x[1], x[1] + 1, p[1], p[1] + h)))return false;
+	if (!test_circle_rectangle_intersect(m_rigid_body.m_position[0] - x[0], m_rigid_body.m_position[2] - x[2], ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r, 1, 1)) return false;
+	if (zero(seg_intersect(x[1], x[1] + 1, m_rigid_body.m_position[1], m_rigid_body.m_position[1] + ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h)))return false;
 	return true;
 }
 

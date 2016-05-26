@@ -145,11 +145,11 @@
     <ClInclude Include="src\render\shadow.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\utility\config.h" />
+    <ClInclude Include="src\utility\def.h" />
     <ClInclude Include="src\utility\event_board.h" />
     <ClInclude Include="src\utility\geo.h" />
     <ClInclude Include="src\utility\keyboard.h" />
     <ClInclude Include="src\utility\lodepng.h" />
-    <ClInclude Include="src\utility\logger.h" />
     <ClInclude Include="src\utility\obj.h" />
     <ClInclude Include="src\utility\screenshot.h" />
     <ClInclude Include="src\utility\string_id.h" />

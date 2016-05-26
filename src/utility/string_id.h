@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "utility/logger.h"
+#include "utility/def.h"
 
 #define DEBUG_STRING_ID
 

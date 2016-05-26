@@ -1,13 +1,12 @@
-#ifndef _LOGGER_H_
-#define _LOGGER_H_
+#pragma once
 
 #include <cstdio>
 
-#include "utility/config.h"
+#define LOG_LEVEL 0
 
-#define LOG(level, func_name, str, ...) do {if (level >= log_level) {fprintf(stderr, "["func_name"] "##str, __VA_ARGS__);}} while(0)
+#define LOG(level, func_name, str, ...) do {if (level >= LOG_LEVEL) {fprintf(stderr, "["func_name"] "##str, __VA_ARGS__);}} while(0)
 #define LOG_INFO(func_name, str, ...) LOG(10, func_name, str, __VA_ARGS__)
 #define LOG_WARNING(func_name, str, ...) LOG(20, func_name, str, __VA_ARGS__)
 #define LOG_ERROR(func_name, str, ...) LOG(30, func_name, str, __VA_ARGS__)
 
-#endif
+#define ASSERT_PTR(ptr) (assert((ptr) != nullptr), (ptr))

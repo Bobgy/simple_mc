@@ -1,6 +1,8 @@
 #ifndef _ENTITY_H
 #define _ENTITY_H
 
+#include "stdafx.h"
+
 #include <cstring>
 #include <cmath>
 #include <algorithm>
@@ -10,6 +12,7 @@
 #include "utility/vec.h"
 #include "utility/geo.h"
 #include "game/entity_controller.h"
+#include "game/rigid_body.h"
 
 class Actor;
 
@@ -23,13 +26,6 @@ public:
 
 // protected members
 protected:
-	Vec3f p;      //Three dimensional coordinates (x, y, z)
-	Vec3f v;      //The speed vector (vx, vy, vz)
-	flt mass_inv; //The inverse of mass: mass_inv = 1 / mass
-	bool G;       //Is this entity affected by gravity?
-	bool M;       //Can this entity move?
-	flt r, h;     //Collision shape as a cylinder with radius r and height h.
-
 	Rotation rot; //Rotation of this entity
 
 	// the controller, can be either an AI controller or a Player controller
@@ -41,6 +37,7 @@ protected:
 // public members
 public:
 	RenderConfig render_config;
+	RigidBody m_rigid_body;
 	bool on_ground;
 
 // protected methods
@@ -58,52 +55,57 @@ public:
 		flt mass_inv,
 		bool G = 1, bool M = 1
 	):
-		p(p), v(v),
-		mass_inv(mass_inv),
-		G(G), M(M),
-		r(r), h(h),
 		rot(0, 0),
 		p_entity_controller(nullptr)
 	{
-		// do nothing
+		m_rigid_body.m_position = p;
+		m_rigid_body.m_velocity = v;
+		m_rigid_body.m_yaw = rot.getH();
+
+		m_rigid_body.m_shape.setCylinder(r, h);
+		m_rigid_body.m_mass = 1.0f / mass_inv;
+		
+
+		m_rigid_body.m_affected_by_gravity = G;
+		m_rigid_body.m_enabled_movement = M;
 	}
 
 	/*****************************************************\
 	|*============ getter and setter methods ============*|
 	\*****************************************************/
-	operator Vec3f() const { return p; }
-	Vec3f get_pos() const { return p; }
-	flt getRadius() const { return r; }
-	flt getHeight() const {	return h; }
-	Vec3f get_velocity() const { return v; }
+	operator Vec3f() const { return m_rigid_body.m_position; }
+	Vec3f get_pos() const { return m_rigid_body.m_position; }
+	flt getRadius() const { return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r; }
+	flt getHeight() const {	return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h; }
+	Vec3f get_velocity() const { return m_rigid_body.m_velocity; }
 	EntityController *getController() {	return p_entity_controller.get(); }
 	Actor *getActor() { return p_actor.get(); }
 	const Actor *getActor() const { return p_actor.get(); }
 	const Rotation *getRotation() const { return &rot; }
 	void setRotation(Vec2f rotation) { rot.setRotation(rotation); }
-	flt operator[](size_t id) const { return p[id]; }
+	flt operator[](size_t id) const { return m_rigid_body.m_position[id]; }
 
 	/*******************************************\
 	|*============ physics methods ============*|
 	\*******************************************/
 	//move to (p[0],p[1],p[2]) directly
-	void move(Vec3f _p) { if (M) p = _p; }
+	void move(Vec3f _p) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_position = _p; }
 
 	void give_velocity(Vec3f _p, flt len) {
-		if (M) {
+		if (m_rigid_body.m_enabled_movement) {
 			Vec3f p_norm, v_p;
 			p_norm = _p.normalize();
-			v_p = (v * p_norm) * p_norm;
-			v = (v - v_p) + ((v_p * 3.0f + _p * len) * 0.25f);
+			v_p = (m_rigid_body.m_velocity * p_norm) * p_norm;
+			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 3.0f + _p * len) * 0.25f);
 		}
 	}
-	void be_slowed(flt resistance) { if (M) v = v * resistance; }
+	void be_slowed(flt resistance) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity * resistance; }
 
 	//be given an force of _F
-	void force(Vec3f _F) { if (M) v = v + _F * (mass_inv * CLOCK_T); }
+	void force(Vec3f _F) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity + _F * (m_rigid_body.m_mass * CLOCK_T); }
 
 	//fall because of gravity
-	void fall() { if (M && G) v[1] -= GRAVITY * CLOCK_T; }
+	void fall() { if (m_rigid_body.m_enabled_movement && m_rigid_body.m_affected_by_gravity) m_rigid_body.m_velocity[1] -= GRAVITY * CLOCK_T; }
 	
 	/***********************************************\
 	|*============ geometry utilities =============*|

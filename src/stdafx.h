@@ -9,7 +9,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include "utility/logger.h"
+#include "utility/def.h"
 #include "utility/config.h"
 
 #include "utility/string_id.h"

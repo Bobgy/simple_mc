@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "utility/logger.h"
+#include "utility/def.h"
 
 using namespace std;
 template <typename T> inline T sqr(T x){ return x*x; }
@@ -92,13 +92,13 @@ struct Vec3{
 		return ZERO();
 	}
 
-	operator bool() const {
-		return x[0] || x[1] || x[2];
-	}
-
 	template <typename TT>
 	operator Vec3<TT>() const {
 		return Vec3<TT>{(TT)x[0], (TT)x[1], (TT)x[2]};
+	}
+
+	operator bool() const {
+		return x[0] || x[1] || x[2];
 	}
 
 // static constants
@@ -239,14 +239,15 @@ struct Vec2 {
 		return ZERO();
 	}
 
-	operator bool() const {
-		return x[0] || x[1];
-	}
-
 	template <typename TT>
 	operator Vec2<TT>() const {
 		return Vec2<TT>((TT)x[0], (TT)x[1]);
 	}
+
+	operator bool() const {
+		return x[0] || x[1];
+	}
+
 	static Vec2<T> ZERO() { return Vec2{(T)0, (T)0}; }
 	static Vec2<T> X_AXIS() { return Vec2{(T)1, (T)0}; }
 	static Vec2<T> Y_AXIS() { return Vec2{(T)0, (T)1}; }

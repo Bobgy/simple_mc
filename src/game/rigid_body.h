@@ -30,6 +30,10 @@ struct Shape
 		if (m_type != Type::CYLINDER) return nullptr;
 		return &m_cylinder;
 	}
+	const Cylinder *getCylinder() const {
+		if (m_type != Type::CYLINDER) return nullptr;
+		return &m_cylinder;
+	}
 
 	void setCube(flt x, flt y, flt z) {
 		m_type = Type::CUBE;
@@ -38,6 +42,10 @@ struct Shape
 		m_cube.z = z;
 	}
 	Cube *getCube() {
+		if (m_type != Type::CUBE) return nullptr;
+		return &m_cube;
+	}
+	const Cube *getCube() const {
 		if (m_type != Type::CUBE) return nullptr;
 		return &m_cube;
 	}

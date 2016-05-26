@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "utility/logger.h"
+#include "utility/def.h"
 #include "game/entity.h"
 
 class Player

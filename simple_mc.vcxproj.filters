@@ -116,6 +116,9 @@
     <ClInclude Include="src\utility\geo.h">
       <Filter>src\utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\game\rigid_body.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -174,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="src\utility\view.cpp">
       <Filter>src\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\rigid_body.cpp">
+      <Filter>src\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

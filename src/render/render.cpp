@@ -301,8 +301,10 @@ void Render::renderPlayer(const Entity &observer) {
 	const Actor *actor = observer.getActor();
 	if (actor == nullptr) return;
 	const ActorHuman *actor_human = dynamic_cast<const ActorHuman *>(actor);
-	if (actor_human == nullptr) return;
-
+	if (actor_human == nullptr) {
+		LOG_WARNING(__FUNCTION__, "The entity is not human.\n");
+		return;
+	}
 	
 	beginTransform();
 	translate(observer);

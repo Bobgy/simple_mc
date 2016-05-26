@@ -137,6 +137,7 @@
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\item.h" />
     <ClInclude Include="src\game\player.h" />
+    <ClInclude Include="src\game\rigid_body.h" />
     <ClInclude Include="src\game\world.h" />
     <ClInclude Include="src\render\auxiliary.h" />
     <ClInclude Include="src\render\render.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="src\game\event_manager.cpp" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\player.cpp" />
+    <ClCompile Include="src\game\rigid_body.cpp" />
     <ClCompile Include="src\game\world.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\render\auxiliary.cpp" />

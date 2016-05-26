@@ -144,6 +144,7 @@ public:
 	virtual void tick(flt delta_time) = 0;
 };
 
+// a human actor
 class ActorHuman : public Actor
 {
 // protected members

@@ -15,24 +15,36 @@
 using namespace std;
 
 class World{
-
+// protected members
 protected:
 	map<Vec3i, Block*> blocks;
+	map<Vec3i, weak_ptr<Entity>> m_entity_map;
+
 	vector<Block> block_list;
 	set<block_type> ability;
 	vector<shared_ptr<Entity>> entity_list;
 	Player *p_player = nullptr;
-	void init_ability();
 
+// protected methods;
+protected:
+	void init_ability();
+	void refreshEntityMap();
+
+// public members
 public:
 	//indicates whether this world is changed (requires regenerating tablelist)
 	bool changed;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
+// public methods
 public:
-	// deconstruction
+
+	/*========= constructor and destructor =======*/
+	World();
 	~World();
+
+	/*======== interface methods ========*/
 
 	// spawn an entity into the game world
 	// returns its ID, fails when ID is negative
@@ -47,6 +59,8 @@ public:
 	// tick
 	void tick(flt delta_time);
 	
+	/*========= getter and setter methods =======*/
+
 	//get the block at (p[0],p[1],p[2]), NULL means AIR block
 	Block* get_block(Vec3i p) const;
 
@@ -55,6 +69,8 @@ public:
 	Entity *getEntity(int entity_id);
 	const vector<shared_ptr<Entity>> &getEntityList() const;
 
+	const map<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
+
 	// get the player
 	Player *getPlayer();
 
@@ -62,9 +78,6 @@ public:
 	//at p looking at the direction vector dir
 	//returns -1 in face to indicate no block is found
 	BlockAndFace look_at_block(Vec3fd p, Vec3fd dir, double r) const;
-
-	// default constructor
-	World();
 
 	// read the world data from stage_file_path
 	void readFromFile(string stage_file_path);

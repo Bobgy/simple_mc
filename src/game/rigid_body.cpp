@@ -56,6 +56,22 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 void RigidBodyController::tick_dynamic_collision(flt delta_time)
 {
 	RETURN_AND_WARN_IF(!isValid());
+	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
+	RigidBody &body1 = m_entity->m_rigid_body;
+	for (auto &ptr: entity_map) {
+		auto entity = ptr.second.lock();
+		if (!entity) continue;
+		RigidBody &body2 = entity->m_rigid_body;
+		flt len = body1.intersect(body2);
+		if (sgn(len)) {
+			Vec2f dir_vec =
+				horizontal_projection(body1.m_position) -
+				horizontal_projection(body2.m_position);
+			Vec3f p = as_horizontal_projection(dir_vec.normalize() * len * delta_time * 10.0f);
+			body1.force(p);
+			body2.force(-1.0f * p);
+		}
+	}
 }
 
 void RigidBodyController::tick_static_collision(flt delta_time)
@@ -82,4 +98,63 @@ void RigidBodyController::tick_static_collision(flt delta_time)
 		}
 	}
 	if (m_entity->on_ground) m_entity->be_slowed(smoothness_ground);
+}
+
+flt RigidBody::intersect(const RigidBody & r) const
+{
+	const RigidBody *a = this, *b = &r;
+	if ((uint8_t)a->m_shape.m_type > (uint8_t)b->m_shape.m_type) swap(a, b);
+	typedef Shape::Type Enum;
+	switch (a->m_shape.m_type)
+	{
+		case Enum::CYLINDER:
+		{
+			const Shape::Cylinder *a_cyl = a->m_shape.getCylinder();
+			assert(a_cyl);
+			switch (b->m_shape.m_type)
+			{
+				case Enum::CYLINDER:
+				{
+					const Shape::Cylinder *b_cyl = b->m_shape.getCylinder();
+					assert(b_cyl);
+					const Vec3f &ap = a->m_position, &bp = b->m_position;
+					if (sgn(seg_intersect(ap[1], ap[1] + a_cyl->h, bp[1], bp[1] + b_cyl->h))) {
+						Vec2f au = horizontal_projection(ap), bu = horizontal_projection(bp);
+						flt len = !(au - bu);
+						return max(a_cyl->r + b_cyl->r - len, 0.0f);
+					}
+					return 0.0f;
+				}
+				case Enum::CUBE:
+				{
+					LOG_WARNING(__FUNCTION__, "intersection between CYLINDER and CUBE is not implemented!\n");
+					return 0.0f; // TODO
+				}
+				default:
+				{
+					LOG_WARNING(__FUNCTION__, "r has unknown shape type.\n");
+				}
+			}
+		}
+
+		case Enum::CUBE:
+		{
+			switch (b->m_shape.m_type) {
+			case Enum::CUBE:
+			{
+				LOG_WARNING(__FUNCTION__, "intersection between CUBEs is not implemented!\n");
+				return 0.0f; // TODO
+			}
+			default:
+			{
+				LOG_WARNING(__FUNCTION__, "r has unknown shape type.\n");
+			}
+			}
+		}
+		default:
+		{
+			LOG_WARNING(__FUNCTION__, "this has unknown shape type.\n");
+		}
+	}
+	return 0.0f;
 }

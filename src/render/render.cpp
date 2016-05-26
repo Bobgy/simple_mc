@@ -259,13 +259,12 @@ void Render::renderCube(int type,int state)
 		glBindTexture(GL_TEXTURE_2D, texture[type]);
 	}
 	glBegin(GL_QUADS);
-	for (int i = 0; i<6; i++)if (state>>i&1){
+	for (int i = 0; i < 6; i++) if (state>>i & 1) {
 		glNormal3f(FACE[i][0], FACE[i][1], FACE[i][2]);
-		for(int j=0;j<4;j++)
-		{
+		for(int j = 0; j < 4; j++) {
 			int p=face[i][j];
-			glTexCoord2i(t_point[j][0],t_point[j][1]);
-			glVertex3f(point[p][0]-0.5,point[p][1]-0.5,point[p][2]-0.5);
+			glTexCoord2i(t_point[j][0], t_point[j][1]);
+			glVertex3f(point[p][0] - 0.5f, point[p][1] - 0.5f, point[p][2] - 0.5f);
 		}
 	}
 	glEnd();

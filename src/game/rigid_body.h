@@ -74,6 +74,11 @@ public:
 	Vec3f getFacingVector() const {
 		return facing_vector(m_yaw, m_pitch);
 	}
+	Vec3i getCenterCoord() const {
+		return round(m_position);
+	}
+	flt intersect(const RigidBody &r) const;
+	void force(Vec3f F) { if (m_enabled_movement) m_velocity += F * (1.0f / m_mass); }
 };
 
 class RigidBodyController

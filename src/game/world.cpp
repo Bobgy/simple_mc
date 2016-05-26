@@ -29,9 +29,14 @@ void World::tick(flt delta_time)
 		}
 	}
 
+	refreshEntityMap();
+
 	for (auto &entity : entity_list) {
 		RigidBodyController *controller = entity->getRigidBodyController();
-		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
+		if (controller != nullptr) {
+			controller->tick_dynamic_collision(delta_time);
+			m_entity_map[entity->m_rigid_body.getCenterCoord()] = entity;
+		}
 	}
 
 	// tick RigidBodyController movement_intent
@@ -97,6 +102,11 @@ const vector<shared_ptr<Entity>>& World::getEntityList() const
 	return entity_list;
 }
 
+const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
+{
+	return m_entity_map;
+}
+
 Player *World::getPlayer()
 {
 	assert(p_player);
@@ -111,6 +121,16 @@ void World::init_ability()
 {
 	ability.clear();
 	ability.insert(TREASURE);
+}
+
+void World::refreshEntityMap()
+{
+	m_entity_map.clear();
+	/*
+	for (auto &entity : entity_list) {
+		m_entity_map[round(entity->m_rigid_body.m_position)] = entity;
+	}
+	*/
 }
 
 BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {

@@ -260,6 +260,18 @@ typedef Vec2<int> Vec2i;
 typedef Vec2<flt> Vec2f;
 typedef Vec2<double> Vec2fd;
 
+inline Vec2i floor(Vec2f x) {
+	return Vec2i{(int)floor(x[0]), (int)floor(x[1])};
+}
+
+inline Vec2i floor(Vec2fd x) {
+	return Vec2i{(int)floor(x[0]), (int)floor(x[1])};
+}
+
+inline Vec2i round(Vec2f x) {
+	return Vec2i{(int)round(x[0]), (int)round(x[1])};
+}
+
 template <typename T>
 Vec2<T> horizontal_projection(Vec3<T> v) {
 	return Vec2<T>{v[0], v[2]};

@@ -116,7 +116,7 @@ void ActorHuman::tick(flt delta_time)
 	if (controller == nullptr) return;
 
 	const EntityController::MovementIntent &movement_intent = controller->getMovementIntent();
-	if (movement_intent.isWalking()) {
+	if (movement_intent.isWalking(m_parent->m_rigid_body.m_yaw)) {
 		arm_ang += arm_swing_speed;
 		if (arm_ang > 45.f) {
 			arm_ang = 45.f;

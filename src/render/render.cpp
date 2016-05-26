@@ -308,15 +308,15 @@ void Render::renderPlayer(const Entity &observer) {
 	
 	beginTransform();
 	translate(observer);
-	const Rotation *rotations = observer.getRotation();
-	rotate(-rotations->getH() * rad2deg, Vec3f{0.f, 1.f, 0.f});
+	const RigidBody &rigid_body = observer.m_rigid_body;
+	rotate(-rigid_body.m_yaw * rad2deg, Vec3f{0.f, 1.f, 0.f});
 
 	//begin Head
 	beginTransform();
 	static CubeTexCoord headTexCoord(Vec3i{16, 16, 16}, 16, 16, 64, 128);
 	translate(Vec3f{0.0f, 1.35f, 0.f});
 	scale(Vec3f{0.4f, 0.4f, 0.4f});
-	rotate(rotations->getV() * 0.8f * rad2deg, Vec3f{0.f, 0.f, 1.f});
+	rotate(rigid_body.m_pitch * 0.8f * rad2deg, Vec3f{0.f, 0.f, 1.f});
 	renderCubeTex(texPlayer, headTexCoord);
 	endTransform();
 	//end Head
@@ -549,8 +549,7 @@ void display(){
 		//Disable color rendering, we only want to write to the Z-Buffer
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-		Vec3f face_xz = CurrentGame()->getPlayerEntity()->getRotation()->getHorizontalFacingVector();
-		// TODO
+		Vec3f face_xz = horizontal_facing_vector(CurrentGame()->getPlayerEntity()->m_rigid_body.m_yaw);
 		render.setupPerspective(
 			light_pos,
 			render.eye + face_xz*0.4f*VIEW_DISTANCE,
@@ -672,24 +671,24 @@ void display(){
 void Render::update_center(){
 	const Entity *entity = CurrentGame()->getPlayerEntity();
 	Vec3f p_eye = entity->get_pos() + Vec3f{0.f, entity->getHeight() * h_eye, 0.f};
-	const Rotation *view = entity->getRotation();
+	Vec3f facing_vector = entity->m_rigid_body.getFacingVector();
 	switch (view_mode) {
 	case VIEW_MODE_FIRST_PERSON:
 		eye = p_eye;
-		center = eye + view->getFacingVector();
+		center = eye + facing_vector;
 		break;
 	case VIEW_MODE_THIRD_PERSON_FRONT:
 		center = p_eye;
-		eye = p_eye + view->getFacingVector() * observer_dist;
+		eye = p_eye + facing_vector * observer_dist;
 		break;
 	case VIEW_MODE_THIRD_PERSON_BACK:
 		center = p_eye;
-		eye = p_eye - view->getFacingVector() * observer_dist;
+		eye = p_eye - facing_vector * observer_dist;
 		break;
 	default:
 		LOG_WARNING(__FUNCTION__, "unknown view_mode %d\n", view_mode);
 	}
-	seen_block = CurrentGame()->getWorld()->look_at_block(p_eye, view->getFacingVector(), 10.0);
+	seen_block = CurrentGame()->getWorld()->look_at_block(p_eye, facing_vector, 10.0);
 }
 
 void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool lightSource, bool parallel)

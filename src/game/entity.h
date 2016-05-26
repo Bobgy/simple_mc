@@ -26,8 +26,6 @@ public:
 
 // protected members
 protected:
-	Rotation rot; //Rotation of this entity
-
 	// the controller, can be either an AI controller or a Player controller
 	shared_ptr<EntityController> m_entity_controller;
 
@@ -58,12 +56,12 @@ public:
 		flt mass_inv,
 		bool G = 1, bool M = 1
 	):
-		rot(0, 0),
 		m_entity_controller(nullptr)
 	{
 		m_rigid_body.m_position = p;
 		m_rigid_body.m_velocity = v;
-		m_rigid_body.m_yaw = rot.getH();
+		m_rigid_body.m_yaw = 0.0f;
+		m_rigid_body.m_pitch = 0.0f;
 
 		m_rigid_body.m_shape.setCylinder(r, h);
 		m_rigid_body.m_mass = 1.0f / mass_inv;
@@ -86,8 +84,6 @@ public:
 	const Actor *getActor() const { return m_actor.get(); }
 	RigidBodyController *getRigidBodyController() { return m_rigid_body_controller.get(); };
 	const RigidBodyController *getRigidBodyController() const { return m_rigid_body_controller.get(); }
-	const Rotation *getRotation() const { return &rot; }
-	void setRotation(Vec2f rotation) { rot.setRotation(rotation); }
 	flt operator[](size_t id) const { return m_rigid_body.m_position[id]; }
 
 	/*******************************************\

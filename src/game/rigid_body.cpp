@@ -27,7 +27,10 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 		const EntityController::MovementIntent &movement_intent =
 			controller->getMovementIntent();
 
-		Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
+		m_entity->m_rigid_body.m_yaw = movement_intent.yaw_intent;
+		m_entity->m_rigid_body.m_pitch = movement_intent.pitch_intent;
+		
+		Vec3f face_xz = m_entity->m_rigid_body.getHorizontalFacingVector();
 
 		if (movement_intent.walk_intent[0]) {
 			m_entity->give_velocity(face_xz, movement_intent.walk_intent[0]);

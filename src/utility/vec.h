@@ -6,6 +6,8 @@
 #include <utility>
 #include <iostream>
 #include <cmath>
+#include <cassert>
+#include <algorithm>
 
 #include "utility/def.h"
 
@@ -268,35 +270,14 @@ Vec3<T> as_horizontal_projection(Vec2<T> v) {
 	return Vec3<T>(v[0], (T)0, v[2]);
 }
 
-struct Rotation {
-	// horizontal and vertical angle
-	Vec2f ang = {0.0f, 0.0f};
-	Rotation() = default;
-	Rotation(flt h, flt v) : ang{h, v} {}
-	void setRotation(Vec2f rotation) {
-		ang = rotation;
-	}
-	void setRotation(flt h, flt v) {
-		ang = {h, v};
-	}
-	flt getH() const {
-		return ang[0];
-	}
-	flt getV() const {
-		return ang[1];
-	}
-	Vec2f getVec2() const {
-		return ang;
-	}
-	Vec3f getFacingVector() const {
-		const flt h = ang[0], v = ang[1];
-		return Vec3f{cos(h) * cos(v), sin(v), sin(h) * cos(v)};
-	}
-	Vec3f getHorizontalFacingVector() const {
-		const flt h = ang[0], v = ang[1];
-		return Vec3f{cos(h), 0.0f, sin(h)};
-	}
-};
+inline Vec3f horizontal_facing_vector(flt yaw) {
+	return Vec3f{cos(yaw), 0.0f, sin(yaw)};
+}
+
+inline Vec3f facing_vector(flt yaw, flt pitch) {
+	const flt h = yaw, v = pitch;
+	return Vec3f{cos(h) * cos(v), sin(v), sin(h) * cos(v)};
+}
 
 inline flt clamp(flt x, flt low, flt high) {
 	if (x > high) return high;
@@ -311,6 +292,34 @@ inline flt normalize_angle(flt x) {
 		return x + ceil((-PI - x) / (PI * 2.0f)) * (PI * 2.0f);
 	}
 	return x;
+}
+
+inline bool is_normalized(flt x) {
+	return x >= -PI && x <= PI;
+}
+
+// ensure x and y are normalized
+inline flt delta_angle(flt x, flt y) {
+	assert(is_normalized(x));
+	assert(is_normalized(y));
+	
+	flt inv = 1.0f;
+	if (x > y) {
+		swap(x, y);
+		inv = -1.0f;
+	}
+	if ((y - x) < (x + 2.f * PI - y)) {
+		return inv * (y - x);
+	} else {
+		return inv * (y - x - 2.f * PI);
+	}
+}
+
+inline flt abs_delta_angle(flt x, flt y) {
+	assert(is_normalized(x));
+	assert(is_normalized(y));
+
+	return min(fabs(x - y), 2.0f * PI - fabs(x - y));
 }
 
 #endif

@@ -61,12 +61,19 @@ public:
 	Vec3f  m_position;      // Three dimensional coordinates (x, y, z)
 	Vec3f  m_velocity;      // The velocity vector (vx, vy, vz)
 	flt    m_yaw;           // horizontal rotation
+	flt    m_pitch;         // vertical rotation
 	flt    m_mass;
 	Shape  m_shape;
 
 	bool    m_affected_by_gravity;
 	bool    m_enabled_movement;
 	uint8_t m_collision_group;
+	Vec3f getHorizontalFacingVector() const {
+		return horizontal_facing_vector(m_yaw);
+	}
+	Vec3f getFacingVector() const {
+		return facing_vector(m_yaw, m_pitch);
+	}
 };
 
 class RigidBodyController

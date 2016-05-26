@@ -5,6 +5,7 @@
 #include "game/game.h"
 #include "game/world.h"
 #include "game/event_manager.h"
+#include "game/entity_controller.h"
 
 #include "utility/keyboard.h"
 #include "utility/view.h"
@@ -94,7 +95,8 @@ void Game::setup()
 		1.0f,
 		true,
 		true);
-	mob->setup(nullptr);
+	shared_ptr<AIController> controller = make_shared<AIController>();
+	mob->setup(controller);
 	p_world->spawnEntity(mob);
 }
 

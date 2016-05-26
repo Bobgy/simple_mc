@@ -4,8 +4,6 @@
 
 #include <cassert>
 
-#include "game/entity_controller.h"
-
 struct Shape
 {
 	enum class Type: uint8_t {
@@ -75,8 +73,7 @@ class RigidBodyController
 {
 // protected members
 protected:
-	RigidBody *m_rigid_body = nullptr;
-	const EntityController::MovementIntent *m_movement_intent = nullptr;
+	Entity *m_entity;
 
 // protected methods
 protected:
@@ -86,7 +83,7 @@ protected:
 public:
 
 	// interface methods
-	void setup(RigidBody *rigid_body, const EntityController::MovementIntent *movement_intent);
+	void setup(Entity *parent);
 
 	void tick_movement_intent(flt delta_time);
 

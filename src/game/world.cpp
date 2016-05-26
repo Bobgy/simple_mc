@@ -23,6 +23,17 @@ void World::tick(flt delta_time)
 		entity->tick(delta_time);
 	}
 
+	if (bGravity) {
+		for (auto &entity : entity_list) {
+			entity->fall();
+		}
+	}
+
+	for (auto &entity : entity_list) {
+		RigidBodyController *controller = entity->getRigidBodyController();
+		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
+	}
+
 	// tick RigidBodyController movement_intent
 	for (auto &entity : entity_list) {
 		RigidBodyController *controller = entity->getRigidBodyController();
@@ -31,18 +42,7 @@ void World::tick(flt delta_time)
 
 	for (auto &entity : entity_list) {
 		RigidBodyController *controller = entity->getRigidBodyController();
-		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
-	}
-
-	for (auto &entity : entity_list) {
-		RigidBodyController *controller = entity->getRigidBodyController();
-		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
-	}
-
-	if (bGravity) {
-		for (auto &entity: entity_list) {
-			entity->fall();
-		}
+		if (controller != nullptr) controller->tick_static_collision(delta_time);
 	}
 
 	int p[3];

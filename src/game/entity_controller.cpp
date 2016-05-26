@@ -40,7 +40,9 @@ void PlayerController::tick(flt delta_time)
 	if (view_controller->need_update()) {
 		const Vec2f &rotation_speeds = view_controller->getViewRotationSpeed();
 		const Rotation *rotations = m_entity->getRotation();
-		m_entity->setRotation(rotation_speeds + rotations->getVec2());
+		Vec2f rot = rotation_speeds + rotations->getVec2();
+		rot[1] = clamp(rot[1], -PI*0.49f, PI*0.3f);
+		m_entity->setRotation(rot);
 	}
 
 	// tick keyboard
@@ -66,12 +68,13 @@ void PlayerController::tick(flt delta_time)
 	} else {
 		df = (int32_t)keyboard.get_state(' ') - (int32_t)keyboard.get_special_state(GLUT_KEY_SHIFT_L);
 		m_movement_intent.jump_intent = 0.5f * (flt)df;
-		m_entity->give_velocity(Vec3f::Y_AXIS(), m_movement_intent.jump_intent);
 	}
-
+	/*
 	Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
 	m_entity->give_velocity(face_xz, m_movement_intent.walk_intent[0]);
 	m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, m_movement_intent.walk_intent[1]);
+	m_entity->give_velocity(Vec3f::Y_AXIS(), m_movement_intent.jump_intent);
+	*/
 }
 
 AIController::AIController()
@@ -86,5 +89,5 @@ AIController::~AIController()
 
 void AIController::tick(flt delta_time)
 {
-	LOG_INFO(__FUNCTION__, "AI is ticking.\n");
+	// LOG_INFO(__FUNCTION__, "AI is ticking.\n");
 }

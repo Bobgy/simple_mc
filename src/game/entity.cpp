@@ -13,10 +13,11 @@ using namespace std;
 void Entity::setup(shared_ptr<EntityController> entity_controller)
 {
 	m_entity_controller = entity_controller;
-	if (m_entity_controller != nullptr) m_entity_controller->setup(this);
+	if (m_entity_controller) m_entity_controller->setup(this);
 
 	shared_ptr<RigidBodyController> rigid_body_controller = make_shared<RigidBodyController>();
-	rigid_body_controller->setup(&m_rigid_body, &m_entity_controller->getMovementIntent());
+	rigid_body_controller->setup(this);
+	m_rigid_body_controller = rigid_body_controller;
 
 	shared_ptr<ActorHuman> actor_human = make_shared<ActorHuman>();
 	actor_human->setup(this);
@@ -27,10 +28,6 @@ void Entity::tick(flt delta_time)
 {
 	if (m_entity_controller) m_entity_controller->tick(delta_time);
 	if (m_actor) m_actor->tick(delta_time);
-	if (m_rigid_body.m_enabled_movement) {
-		m_rigid_body.m_position = m_rigid_body.m_position + m_rigid_body.m_velocity;
-		m_rigid_body.m_velocity = m_rigid_body.m_velocity * RESISTANCE;
-	}
 }
 
 //calculate the collision with a cube with its lower coordinates at x

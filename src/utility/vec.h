@@ -298,4 +298,10 @@ struct Rotation {
 	}
 };
 
+inline flt clamp(flt x, flt low, flt high) {
+	if (x > high) return high;
+	if (x < low) return low;
+	return x;
+}
+
 #endif

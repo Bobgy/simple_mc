@@ -10,4 +10,10 @@
 #define LOG_ERROR(func_name, str, ...) LOG(30, func_name, str, __VA_ARGS__)
 
 #define ASSERT_PTR(ptr) (assert((ptr) != nullptr), (ptr))
-#define RETURN_AND_WARN_IF(pred) do {if (pred) {LOG_WARNING(__FUNCTION__, #pred" is true!");return;} } while(0)
+#define RETURN_AND_WARN_IF(pred) \
+	do {\
+		if (pred) {\
+			LOG_WARNING(__FUNCTION__, "( "#pred" ) is true!\n");\
+			return;\
+		}\
+	} while(0)

@@ -20,6 +20,11 @@ void EntityController::setup(Entity *controlled_entity)
 	m_entity = controlled_entity;
 }
 
+const EntityController::MovementIntent &EntityController::getMovementIntent() const
+{
+	return m_movement_intent;
+}
+
 PlayerController::PlayerController()
 {
 }
@@ -67,11 +72,6 @@ void PlayerController::tick(flt delta_time)
 	Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
 	m_entity->give_velocity(face_xz, m_movement_intent.walk_intent[0]);
 	m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, m_movement_intent.walk_intent[1]);
-}
-
-const EntityController::MovementIntent &PlayerController::getMovementIntent() const
-{
-	return m_movement_intent;
 }
 
 AIController::AIController()

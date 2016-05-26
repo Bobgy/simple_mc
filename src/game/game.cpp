@@ -38,7 +38,7 @@ Game::~Game()
 World *Game::getWorld()
 {
 	assert(p_world);
-	return p_world;
+	return p_world.get();
 }
 
 Player *Game::getPlayer()
@@ -54,13 +54,13 @@ Entity *Game::getPlayerEntity()
 ViewController *Game::getViewController()
 {
 	assert(p_view_controller);
-	return p_view_controller;
+	return p_view_controller.get();
 }
 
 Keyboard *Game::getKeyboard()
 {
 	assert(p_keyboard);
-	return p_keyboard;
+	return p_keyboard.get();
 }
 
 EventManager *Game::getEventManager()
@@ -72,14 +72,14 @@ void Game::setup()
 {
 	clear();
 	
-	p_world = new World();
+	p_world = make_shared<World>();
 	p_world->setup();
 	p_world->readFromFile("stage/last_save.txt");
 
-	p_view_controller = new ViewController();
+	p_view_controller = make_shared<ViewController>();
 	p_view_controller->setup(0.005f, -0.001f);
 
-	p_keyboard = new Keyboard();
+	p_keyboard = make_shared<Keyboard>();
 	p_keyboard->setup();
 
 	event_manager = make_shared<EventManager>();
@@ -100,11 +100,6 @@ void Game::setup()
 
 void Game::clear()
 {
-	if (p_world) delete p_world;
-	if (p_view_controller) delete p_view_controller;
-	if (p_keyboard) delete p_keyboard;
-
-	assert(p_world == 0);
 }
 
 void Game::tick(flt delta_time)

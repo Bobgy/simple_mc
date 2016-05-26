@@ -145,6 +145,7 @@
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\utility\config.h" />
     <ClInclude Include="src\utility\event_board.h" />
+    <ClInclude Include="src\utility\geo.h" />
     <ClInclude Include="src\utility\keyboard.h" />
     <ClInclude Include="src\utility\lodepng.h" />
     <ClInclude Include="src\utility\logger.h" />

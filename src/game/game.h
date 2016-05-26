@@ -15,9 +15,9 @@ Game *CurrentGame();
 
 class Game {
 protected:
-	World *p_world;
-	ViewController *p_view_controller;
-	Keyboard *p_keyboard;
+	shared_ptr<World> p_world;
+	shared_ptr<ViewController> p_view_controller;
+	shared_ptr<Keyboard> p_keyboard;
 	shared_ptr<EventManager> event_manager;
 
 public:

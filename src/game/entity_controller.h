@@ -17,30 +17,39 @@ public:
 			return walk_intent || turn_intent[0];
 		}
 	};
+
+// protected members
 protected:
 	Entity *m_entity;
+	MovementIntent m_movement_intent;
+
+// public methods
 public:
 	EntityController();
 	virtual ~EntityController();
 	virtual void setup(Entity *controlled_entity);
 	virtual void tick(flt delta_time) = 0;
-	virtual const MovementIntent &getMovementIntent() const = 0;
+	const MovementIntent &getMovementIntent() const;
 };
 
 class PlayerController: public EntityController
 {
+// protected members
 protected:
-	MovementIntent m_movement_intent;
+
+// public methods
 public:
 	PlayerController();
 	virtual ~PlayerController();
 	virtual void tick(flt delta_time);
-	virtual const EntityController::MovementIntent &getMovementIntent() const;
 };
 
 class AIController: public EntityController
 {
+// protected members
 protected:
+
+// public methods
 public:
 	AIController();
 	virtual ~AIController();

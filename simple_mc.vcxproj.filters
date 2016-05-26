@@ -113,6 +113,9 @@
     <ClInclude Include="src\utility\event_board.h">
       <Filter>src\utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\utility\geo.h">
+      <Filter>src\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">

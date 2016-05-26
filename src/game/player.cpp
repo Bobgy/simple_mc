@@ -25,7 +25,7 @@ Entity *Player::getEntity()
 
 void Player::setup()
 {
-	Vec3f pp{ 5.0f, 3.0f, 0.0f }, vv{ 0.0f, 0.0f, 0.0f };
+	Vec3f pp{ 5.0f, 1.0f, 0.0f }, vv{ 0.0f, 0.0f, 0.0f };
 	shared_ptr<Entity> observer(new Entity(pp, vv, 0.45, 1.6, 1.0));
 	auto pt = make_shared<PlayerController>();
 	if (pt) {

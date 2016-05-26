@@ -41,6 +41,7 @@ void PlayerController::tick(flt delta_time)
 		const Vec2f &rotation_speeds = view_controller->getViewRotationSpeed();
 		const Rotation *rotations = m_entity->getRotation();
 		Vec2f rot = rotation_speeds + rotations->getVec2();
+		rot[0] = normalize_angle(rot[0]);
 		rot[1] = clamp(rot[1], -PI*0.49f, PI*0.3f);
 		m_entity->setRotation(rot);
 	}
@@ -60,21 +61,16 @@ void PlayerController::tick(flt delta_time)
 	
 	if (bGravity) {
 		if (keyboard.get_state(' ') && m_entity->on_ground) {
-			m_movement_intent.jump_intent = 13.f;
+			m_movement_intent.jump_intent = 25.f;
 		} else {
 			m_movement_intent.jump_intent = 0.0f;
 		}
-		m_entity->force(Vec3f{0.f, m_movement_intent.jump_intent, 0.f});
+		m_movement_intent.float_intent = 0.0f;
 	} else {
+		m_movement_intent.jump_intent = 0.0f;
 		df = (int32_t)keyboard.get_state(' ') - (int32_t)keyboard.get_special_state(GLUT_KEY_SHIFT_L);
-		m_movement_intent.jump_intent = 0.5f * (flt)df;
+		m_movement_intent.float_intent = 0.5f * (flt)df;
 	}
-	/*
-	Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
-	m_entity->give_velocity(face_xz, m_movement_intent.walk_intent[0]);
-	m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, m_movement_intent.walk_intent[1]);
-	m_entity->give_velocity(Vec3f::Y_AXIS(), m_movement_intent.jump_intent);
-	*/
 }
 
 AIController::AIController()

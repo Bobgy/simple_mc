@@ -32,10 +32,10 @@ int texPlayer = 19;
 bool bCustomGLSL = true;
 
 //whether the player is in creative mode
-bool bCreative = true;
+bool bCreative = false;
 
 //whether gravity works on player
-bool bGravity = false;
+bool bGravity = true;
 
 //whether sun light is moving
 bool bMovingLight = false;

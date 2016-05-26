@@ -28,13 +28,19 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 			controller->getMovementIntent();
 
 		Vec3f face_xz = m_entity->getRotation()->getHorizontalFacingVector();
-		m_entity->give_velocity(face_xz, movement_intent.walk_intent[0]);
-		m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, movement_intent.walk_intent[1]);
 
-		if (bGravity) {
+		if (movement_intent.walk_intent[0]) {
+			m_entity->give_velocity(face_xz, movement_intent.walk_intent[0]);
+		}
+		if (movement_intent.walk_intent[1]) {
+			m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, movement_intent.walk_intent[1]);
+		}
+		
+		if (movement_intent.jump_intent) {
 			m_entity->force(Vec3f{0.f, movement_intent.jump_intent, 0.f});
-		} else {
-			m_entity->give_velocity(Vec3f::Y_AXIS(), movement_intent.jump_intent);
+		}
+		if (movement_intent.float_intent) {
+			m_entity->give_velocity(Vec3f::Y_AXIS(), movement_intent.float_intent);
 		}
 	}
 
@@ -65,7 +71,7 @@ void RigidBodyController::tick_static_collision(flt delta_time)
 		for (int dy = -2; dy <= 2; ++dy) {
 			for (int dz = -1; dz <= 1; ++dz) {
 				map<Vec3i, Block*>::const_iterator it;
-				if ((it = world->find(Vec3i({p[0] + dx, p[1] + dy, p[2] + dz}))) != world->end()) {
+				if ((it = world->find(Vec3i{p[0] + dx, p[1] + dy, p[2] + dz})) != world->end()) {
 					m_entity->on_ground |= m_entity->collide_cube_vertically(it->first);
 					m_entity->collide_cube_horizontally(it->first);
 				}

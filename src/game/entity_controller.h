@@ -11,10 +11,11 @@ public:
 	struct MovementIntent {
 		bool is_on_ground = false;
 		Vec2f walk_intent = { 0.0f, 0.0f };
-		Vec2f turn_intent = { 0.0f, 0.0f };
+		flt turn_intent = 0.0f;
 		flt jump_intent = 0.0f;
+		flt float_intent = 0.0f;
 		bool isWalking() const {
-			return walk_intent || turn_intent[0];
+			return walk_intent || turn_intent;
 		}
 	};
 

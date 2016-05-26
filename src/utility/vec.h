@@ -304,4 +304,13 @@ inline flt clamp(flt x, flt low, flt high) {
 	return x;
 }
 
+inline flt normalize_angle(flt x) {
+	if (x > PI) {
+		return x - ceil((x - PI) / (PI * 2.0f)) * (PI * 2.0f);
+	} else if (x < -PI) {
+		return x + ceil((-PI - x) / (PI * 2.0f)) * (PI * 2.0f);
+	}
+	return x;
+}
+
 #endif

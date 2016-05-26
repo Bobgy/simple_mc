@@ -80,7 +80,29 @@ AIController::~AIController()
 	// do nothing
 }
 
+void AIController::setup(Vec3f destination)
+{
+	m_destination = destination;
+}
+
 void AIController::tick(flt delta_time)
 {
-	// LOG_INFO(__FUNCTION__, "AI is ticking.\n");
+	Entity *player = CurrentGame()->getPlayerEntity();
+	if (player) {
+		m_destination = player->m_rigid_body.m_position;
+	}
+
+	RETURN_IF_NULL(m_entity);
+	RigidBody &rigid_body = m_entity->m_rigid_body;
+	Vec2f goal_vector = horizontal_projection(m_destination - rigid_body.m_position);
+	if (!goal_vector < 1e-1f) {
+		m_movement_intent.walk_intent = Vec2f::ZERO();
+	} else {
+		flt yaw = get_yaw_from_direction(goal_vector);
+		if (abs_delta_angle(yaw, rigid_body.m_yaw) < 1e-2f) {
+			m_movement_intent.walk_intent[0] = 0.2f;
+		} else {
+			m_movement_intent.yaw_intent = yaw;
+		}
+	}
 }

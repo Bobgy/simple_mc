@@ -262,12 +262,12 @@ typedef Vec2<double> Vec2fd;
 
 template <typename T>
 Vec2<T> horizontal_projection(Vec3<T> v) {
-	return Vec2<T>(v[0], v[2]);
+	return Vec2<T>{v[0], v[2]};
 }
 
 template <typename T>
 Vec3<T> as_horizontal_projection(Vec2<T> v) {
-	return Vec3<T>(v[0], (T)0, v[2]);
+	return Vec3<T>{v[0], (T)0, v[2]};
 }
 
 inline Vec3f horizontal_facing_vector(flt yaw) {
@@ -320,6 +320,10 @@ inline flt abs_delta_angle(flt x, flt y) {
 	assert(is_normalized(y));
 
 	return min(fabs(x - y), 2.0f * PI - fabs(x - y));
+}
+
+inline flt get_yaw_from_direction(Vec2f v) {
+	return atan2(v[1], v[0]);
 }
 
 #endif

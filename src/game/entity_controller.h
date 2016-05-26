@@ -50,10 +50,12 @@ class AIController: public EntityController
 {
 // protected members
 protected:
+	Vec3f m_destination, m_stay_position;
 
 // public methods
 public:
 	AIController();
 	virtual ~AIController();
+	void setup(Vec3f destination);
 	virtual void tick(flt delta_time);
 };

@@ -44,28 +44,6 @@ void World::tick(flt delta_time)
 		RigidBodyController *controller = entity->getRigidBodyController();
 		if (controller != nullptr) controller->tick_static_collision(delta_time);
 	}
-
-	int p[3];
-	for (auto &entity_ptr : entity_list) {
-		Entity &entity = *entity_ptr;
-		for (int i = 0; i < 3; ++i)
-			p[i] = floor(entity[i]);
-		p[1] = floor(entity[1] + 0.5*entity.getHeight());
-		entity_ptr->on_ground = false;
-		for (int dx = -1; dx <= 1; ++dx) {
-			for (int dy = -2; dy <= 2; ++dy) {
-				for (int dz = -1; dz <= 1; ++dz) {
-					static map<Vec3i, Block*>::const_iterator it;
-					if ((it = find(Vec3i({ p[0] + dx, p[1] + dy, p[2] + dz }))) != end()) {
-						entity_ptr->on_ground |= entity_ptr->collide_cube_vertically(it->first);
-						entity_ptr->collide_cube_horizontally(it->first);
-					}
-				}
-			}
-		}
-		if (entity_ptr->on_ground) entity_ptr->be_slowed(smoothness_ground);
-	}
-	
 }
 
 World::~World()

@@ -6,17 +6,37 @@
 #include <fstream>
 
 #include "utility/vec.h"
+#include "utility/config.h"
+
 #include "game/game.h"
 #include "game/block.h"
 #include "game/world.h"
-#include "utility/config.h"
+#include "game/rigid_body.h"
+#include "game/entity.h"
 
 using namespace std;
 
 void World::tick(flt delta_time)
 {
+	// tick EntityController logic
 	for (auto &entity : entity_list) {
 		entity->tick(delta_time);
+	}
+
+	// tick RigidBodyController movement_intent
+	for (auto &entity : entity_list) {
+		RigidBodyController *controller = entity->getRigidBodyController();
+		if (controller != nullptr) controller->tick_movement_intent(delta_time);
+	}
+
+	for (auto &entity : entity_list) {
+		RigidBodyController *controller = entity->getRigidBodyController();
+		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
+	}
+
+	for (auto &entity : entity_list) {
+		RigidBodyController *controller = entity->getRigidBodyController();
+		if (controller != nullptr) controller->tick_dynamic_collision(delta_time);
 	}
 
 	if (bGravity) {

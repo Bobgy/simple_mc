@@ -12,18 +12,21 @@ using namespace std;
 
 void Entity::setup(shared_ptr<EntityController> entity_controller)
 {
-	p_entity_controller = entity_controller;
-	if (p_entity_controller != nullptr) p_entity_controller->setup(this);
+	m_entity_controller = entity_controller;
+	if (m_entity_controller != nullptr) m_entity_controller->setup(this);
+
+	shared_ptr<RigidBodyController> rigid_body_controller = make_shared<RigidBodyController>();
+	rigid_body_controller->setup(&m_rigid_body, &m_entity_controller->getMovementIntent());
 
 	shared_ptr<ActorHuman> actor_human = make_shared<ActorHuman>();
 	actor_human->setup(this);
-	p_actor = actor_human;
+	m_actor = actor_human;
 }
 
 void Entity::tick(flt delta_time)
 {
-	if (p_entity_controller) p_entity_controller->tick(delta_time);
-	if (p_actor) p_actor->tick(delta_time);
+	if (m_entity_controller) m_entity_controller->tick(delta_time);
+	if (m_actor) m_actor->tick(delta_time);
 	if (m_rigid_body.m_enabled_movement) {
 		m_rigid_body.m_position = m_rigid_body.m_position + m_rigid_body.m_velocity;
 		m_rigid_body.m_velocity = m_rigid_body.m_velocity * RESISTANCE;

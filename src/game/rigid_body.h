@@ -1,6 +1,11 @@
 #pragma once
 
 #include "stdafx.h"
+
+#include <cassert>
+
+#include "game/entity_controller.h"
+
 struct Shape
 {
 	enum class Type: uint8_t {
@@ -64,4 +69,28 @@ public:
 	bool    m_affected_by_gravity;
 	bool    m_enabled_movement;
 	uint8_t m_collision_group;
+};
+
+class RigidBodyController
+{
+// protected members
+protected:
+	RigidBody *m_rigid_body = nullptr;
+	const EntityController::MovementIntent *m_movement_intent = nullptr;
+
+// protected methods
+protected:
+	bool isValid() const;
+
+// public methods
+public:
+
+	// interface methods
+	void setup(RigidBody *rigid_body, const EntityController::MovementIntent *movement_intent);
+
+	void tick_movement_intent(flt delta_time);
+
+	void tick_dynamic_collision(flt delta_time);
+
+	void tick_static_collision(flt delta_time);
 };

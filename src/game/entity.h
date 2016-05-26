@@ -29,10 +29,13 @@ protected:
 	Rotation rot; //Rotation of this entity
 
 	// the controller, can be either an AI controller or a Player controller
-	shared_ptr<EntityController> p_entity_controller;
+	shared_ptr<EntityController> m_entity_controller;
+
+	// the rigid body controller
+	shared_ptr<RigidBodyController> m_rigid_body_controller;
 
 	// the actor, may be null
-	shared_ptr<Actor> p_actor;
+	shared_ptr<Actor> m_actor;
 
 // public members
 public:
@@ -56,7 +59,7 @@ public:
 		bool G = 1, bool M = 1
 	):
 		rot(0, 0),
-		p_entity_controller(nullptr)
+		m_entity_controller(nullptr)
 	{
 		m_rigid_body.m_position = p;
 		m_rigid_body.m_velocity = v;
@@ -78,9 +81,11 @@ public:
 	flt getRadius() const { return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r; }
 	flt getHeight() const {	return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h; }
 	Vec3f get_velocity() const { return m_rigid_body.m_velocity; }
-	EntityController *getController() {	return p_entity_controller.get(); }
-	Actor *getActor() { return p_actor.get(); }
-	const Actor *getActor() const { return p_actor.get(); }
+	EntityController *getController() {	return m_entity_controller.get(); }
+	Actor *getActor() { return m_actor.get(); }
+	const Actor *getActor() const { return m_actor.get(); }
+	RigidBodyController *getRigidBodyController() { return m_rigid_body_controller.get(); };
+	const RigidBodyController *getRigidBodyController() const { return m_rigid_body_controller.get(); }
 	const Rotation *getRotation() const { return &rot; }
 	void setRotation(Vec2f rotation) { rot.setRotation(rotation); }
 	flt operator[](size_t id) const { return m_rigid_body.m_position[id]; }

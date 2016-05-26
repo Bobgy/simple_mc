@@ -41,6 +41,7 @@ protected:
 // public members
 public:
 	RenderConfig render_config;
+	bool on_ground;
 
 // protected methods
 protected:
@@ -50,7 +51,7 @@ protected:
 
 // public methods
 public:
-	// constructor
+	/*======== constructor and destructor =========*/
 	Entity(
 		Vec3f p, Vec3f v,
 		flt r, flt h,
@@ -67,10 +68,9 @@ public:
 		// do nothing
 	}
 
-	bool intersect_cube(Vec3i x);
-
-	bool on_ground;  //Is this entity on the ground?
-
+	/*****************************************************\
+	|*============ getter and setter methods ============*|
+	\*****************************************************/
 	operator Vec3f() const { return p; }
 	Vec3f get_pos() const { return p; }
 	flt getRadius() const { return r; }
@@ -80,9 +80,12 @@ public:
 	Actor *getActor() { return p_actor.get(); }
 	const Actor *getActor() const { return p_actor.get(); }
 	const Rotation *getRotation() const { return &rot; }
-	void setRotation(flt h_rot, flt v_rot) { rot.setRotation(h_rot, v_rot);	}
 	void setRotation(Vec2f rotation) { rot.setRotation(rotation); }
 	flt operator[](size_t id) const { return p[id]; }
+
+	/*******************************************\
+	|*============ physics methods ============*|
+	\*******************************************/
 	//move to (p[0],p[1],p[2]) directly
 	void move(Vec3f _p) { if (M) p = _p; }
 
@@ -101,15 +104,20 @@ public:
 
 	//fall because of gravity
 	void fall() { if (M && G) v[1] -= GRAVITY * CLOCK_T; }
+	
+	/***********************************************\
+	|*============ geometry utilities =============*|
+	\***********************************************/
+	bool intersect_cube(Vec3i x);
 
 	//calculate the collision with a cube with its lower coordinates at x
 	//returns whether x is exactly on the block
 	bool collide_cube_vertically(const Vec3i x);
-
 	void collide_cube_horizontally(const Vec3i x);
-
-	/*============= interface methods =============*/
 	
+	/***********************************************\
+	|*============= interface methods =============*|
+	\***********************************************/
 	// setup components
 	void setup(shared_ptr<EntityController> entity_controller);
 

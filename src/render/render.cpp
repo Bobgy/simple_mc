@@ -1,4 +1,3 @@
-//#define _SIMPLE_CUBE_
 #include "stdafx.h"
 
 #include <cassert>
@@ -54,50 +53,42 @@ GLuint tex=1;
 unsigned char *Render::LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
 {
 	FILE *filePtr;
-	BITMAPFILEHEADER bitmapFileHeader; // bitmap文件头
-	unsigned char	*bitmapImage;	   // bitmap图像数据
-	int	imageIdx = 0;		// 图像位置索引
-	unsigned char	tempRGB;	// 交换变量
+	BITMAPFILEHEADER bitmapFileHeader;
+	unsigned char *bitmapImage;
+	int	imageIdx = 0;
+	unsigned char tempRGB;
 
-	// 以“二进制+读”模式打开文件filename
 	fopen_s(&filePtr, filename, "rb");
 	if (filePtr == NULL) return NULL;
-	// 读入bitmap文件图
+
 	fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
-	// 验证是否为bitmap文件
+
 	if (bitmapFileHeader.bfType != BITMAP_ID) {
 		fprintf(stderr, "Error in LoadBitmapFile: the file is not a bitmap file\n");
 		return NULL;
 	}
 
-	// 读入bitmap信息头
 	fread(bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
-	// 将文件指针移至bitmap数据
 	fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
-	// 为装载图像数据创建足够的内存
 	bitmapImage = new unsigned char[bitmapInfoHeader->biSizeImage];
-	// 验证内存是否创建成功
 	if (!bitmapImage) {
 		fprintf(stderr, "Error in LoadBitmapFile: memory error\n");
 		return NULL;
 	}
 
-	// 读入bitmap图像数据
 	fread(bitmapImage, 1, bitmapInfoHeader->biSizeImage, filePtr);
-	// 确认读入成功
 	if (bitmapImage == NULL) {
 		fprintf(stderr, "Error in LoadBitmapFile: memory error\n");
 		return NULL;
 	}
 
-	//由于bitmap中保存的格式是BGR，下面交换R和B的值，得到RGB格式
-	for (imageIdx = 0;
-	 imageIdx < bitmapInfoHeader->biSizeImage; imageIdx+=3) {
+	// BGR -> RGB
+	for (imageIdx = 0; imageIdx < bitmapInfoHeader->biSizeImage; imageIdx+=3) {
 		tempRGB = bitmapImage[imageIdx];
 		bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
 		bitmapImage[imageIdx + 2] = tempRGB;
 	}
-	// 关闭bitmap图像文件
+	
 	fclose(filePtr);
 	return bitmapImage;
 }
@@ -117,14 +108,14 @@ void Render::texLoadPNG(int i, const char *filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D,
-		0, 			//mipmap层次(通常为，表示最上层)
+		0, 			//mipmap layer
 		GL_RGBA,	//RGBA
-		width, //纹理宽带，必须是n，若有边框+2
-		height, //纹理高度，必须是n，若有边框+2
-		0, //边框(0=无边框, 1=有边框)
-		GL_RGBA,	//bitmap数据的格式
-		GL_UNSIGNED_BYTE, //每个颜色数据的类型
-		image);	//bitmap数据指针
+		width,      //texture width
+		height,     //texture height
+		0,          //has_border
+		GL_RGBA,	//data format
+		GL_UNSIGNED_BYTE, //color tunnel size
+		image);	    //pointer
 	//free(image);
 }
 
@@ -274,6 +265,7 @@ void Render::renderCube(int type,int state)
 void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 {
 #ifdef _SIMPLE_CUBE_
+	glColor3f(1.f, 0.f, 1.f);
 	glutSolidCube(1.0);
 #else
 	if (bTexture) {
@@ -392,6 +384,16 @@ void Render::renderScene(){
 			if (it == world.end() || !it->second->is_opaque())
 				msk |= 1 << i;
 		}
+#ifdef _SIMPLE_CUBE_
+		if (msk) {
+			if ((p[0] ^ p[1] ^ p[2]) & 1) {
+				glColor3f(1.f, 1.f, 1.f);
+			} else {
+				glColor3f(0.f, 0.f, 0.f);
+			}
+			render.renderCube(0, msk);
+		}
+#else
 		block_type b = it->second->get_block_type();
 		use_material(white, white, black, black, 1);
 		if (b == LOG) {
@@ -409,6 +411,7 @@ void Render::renderScene(){
 			use_material(golden, golden, white, black, 10);
 			render.renderCube(b, msk);
 		} else render.renderCube(b, msk);
+#endif
 		endTransform();
 	}
 }
@@ -422,7 +425,9 @@ GLint genTableList(){
 }
 void regenTableList(GLint lid){
 	glNewList(lid, GL_COMPILE);
+#ifndef _SIMPLE_CUBE_
 	render.setTextureState(true);
+#endif
 	render.renderScene();
 	glEndList();
 }
@@ -512,8 +517,8 @@ void renderSceneDynamic(const Entity &observer, bool is_shadow_phase){
 
 void Render::renderBoxLine(){
 	Vec3f p = floor(CurrentGame()->getPlayerEntity()->get_pos());
-	glLineWidth(2.0);
-	glColor3d(1, 1, 1);
+	glLineWidth(2.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	const int rg = 5;
 	for (int i = -rg; i <= rg; ++i){
 		for (int j = -rg; j <= rg; ++j){
@@ -597,6 +602,8 @@ void display(){
 		//Bind shadow depth as texture
 		glActiveTextureARB(GL_TEXTURE7);
 		glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+	} else {
+		glUseProgramObjectARB(0);
 	}
 
 	//Bind ordinary texture
@@ -608,11 +615,15 @@ void display(){
 	glCullFace(GL_BACK);
 	//glDisable(GL_CULL_FACE);
 
-	extern bool bWire;
 	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+#ifndef _SIMPLE_CUBE_
 	render.setTextureState(true);
+#else
+	render.setTextureState(false);
+#endif
+
 	//render the scene
 	renderSceneDynamic(*CurrentGame()->getPlayerEntity());
 	renderTableList();
@@ -637,14 +648,14 @@ void display(){
 	glUseProgramObjectARB(0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
-	glColor3f(0, 0, 0);
+
+	glColor3f(0.f, 0.f, 0.f);
 	renderGUI(*CurrentGame()->getPlayerEntity());
 	if (bBoxLine) render.renderBoxLine();
 	renderSeenBlock(seen_block);
 
-	extern bool bDebugDepthMap;
 	// DEBUG only. this piece of code draw the depth buffer onscreen
-	if (bDebugDepthMap) {
+	if (bCustomGLSL && bDebugDepthMap) {
 		glUseProgramObjectARB(0);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();

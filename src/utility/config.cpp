@@ -29,13 +29,13 @@ bool bCollisionBox = false;
 int texPlayer = 19;
 
 //toggles whether we use the custom GLSL that supports shadow
-bool bCustomGLSL = true;
+bool bCustomGLSL = false;
 
 //whether the player is in creative mode
 bool bCreative = false;
 
 //whether gravity works on player
-bool bGravity = true;
+bool bGravity = false;
 
 //whether sun light is moving
 bool bMovingLight = false;
@@ -55,5 +55,5 @@ GLint tableList;
 //desired frame rate
 flt FRAME_RATE = 60.0f;
 
-//current log level, logs with a larger level will be outputed
-int log_level = 0;
+bool bDebugDepthMap = false;
+bool bWire = false;

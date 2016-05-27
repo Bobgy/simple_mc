@@ -195,8 +195,9 @@ void World::randomGenerate(int seed, int range) {
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k) {
 				int t = (1 << (k + 2)) - 1;
-				if (k == 0 || (rand()&t) == t) blocks[Vec3i{i, k, j}] = &block_list[DIRT];
-				else break;
+				if (abs(i) == range || abs(j) == range || k == 0 || (rand()&t) == t) {
+					blocks[Vec3i{i, k, j}] = &block_list[ENDSTONE];
+				} else break;
 			}
 	changed = true;
 }

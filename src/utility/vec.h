@@ -31,8 +31,8 @@ struct Vec3{
 		return x[id];
 	}
 	bool operator < (Vec3 r) const {
-		if (x[0] != r[0]) return x[0] < r[0];
 		if (x[1] != r[1]) return x[1] < r[1];
+		if (x[0] != r[0]) return x[0] < r[0];
 		return x[2] < r[2];
 	}
 	Vec3<T> operator + (Vec3 r) const {
@@ -279,7 +279,7 @@ Vec2<T> horizontal_projection(Vec3<T> v) {
 
 template <typename T>
 Vec3<T> as_horizontal_projection(Vec2<T> v) {
-	return Vec3<T>{v[0], (T)0, v[2]};
+	return Vec3<T>{v[0], (T)0, v[1]};
 }
 
 inline Vec3f horizontal_facing_vector(flt yaw) {

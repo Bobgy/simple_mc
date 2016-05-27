@@ -1,9 +1,12 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <random>
+
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include "vec.h"
+
+#include "utility/vec.h"
 
 extern int view_mode;
 
@@ -56,4 +59,7 @@ extern flt FRAME_RATE;
 
 extern bool bDebugDepthMap;
 extern bool bWire;
+
+extern random_device k_random_device;
+extern mt19937 k_pseudo_gen;
 #endif

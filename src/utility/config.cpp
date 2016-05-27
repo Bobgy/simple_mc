@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <random>
+
 #include "render/render.h"
 #include "utility/vec.h"
 
@@ -57,3 +59,6 @@ flt FRAME_RATE = 60.0f;
 
 bool bDebugDepthMap = false;
 bool bWire = false;
+
+random_device k_random_device;
+mt19937 k_pseudo_gen(k_random_device());

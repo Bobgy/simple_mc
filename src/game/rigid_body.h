@@ -82,8 +82,9 @@ public:
 	void collision_force(Vec3f d, flt F) {
 		if (m_enabled_movement) {
 			d = d.normalize();
-			if ((m_velocity * d) < 2.f) {
-				force(d * F);
+			flt len = m_velocity * d;
+			if (len < 2.f) {
+				force(d * min(F, (2.f - len) * m_mass));
 			}
 		}
 	}

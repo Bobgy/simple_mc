@@ -23,7 +23,7 @@ class World{
 // protected members
 protected:
 	map<Vec3i, Block*> blocks;
-	map<Vec3i, weak_ptr<Entity>> m_entity_map;
+	multimap<Vec3i, weak_ptr<Entity>> m_entity_map;
 
 	vector<Block> block_list;
 	set<block_type> ability;
@@ -84,7 +84,7 @@ public:
 	// iterate over the entity list and do something on them
 	void iterateEntityList(function<void(Entity *)> do_sth);
 
-	const map<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
+	const multimap<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
 
 	// get the player
 	Player *getPlayer();

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <cassert>
+#include <random>
 
 #include "game/rigid_body.h"
 #include "game/entity.h"
@@ -58,6 +59,9 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 	RETURN_AND_WARN_IF(!isValid());
 	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
 	RigidBody &body1 = m_entity->m_rigid_body;
+	//Vec3i ip = body1.getCenterCoord();
+	//auto it = entity_map.lower_bound(Vec3i{INT32_MIN, ip[1], INT32_MIN});
+	//Vec3i ub = Vec3i{INT32_MIN, ip[1] + 1, INT32_MIN};
 	for (auto &ptr: entity_map) {
 		auto entity = ptr.second.lock();
 		if (!entity) continue;
@@ -67,8 +71,13 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 			Vec2f dir_vec =
 				horizontal_projection(body1.m_position) -
 				horizontal_projection(body2.m_position);
+			if (sgn(sqr(dir_vec)) == 0) {
+				uniform_real_distribution<> dis(-PI, PI);
+				flt ang = dis(k_pseudo_gen);
+				dir_vec = {cos(ang), sin(ang)};
+			}
 			Vec3f d = as_horizontal_projection(dir_vec.normalize());
-			flt F = min(5.0f, (len + 0.5f) * 3.0f) * delta_time;
+			flt F = min(3.0f, (len + 0.2f) * 3.0f) * delta_time;
 			body1.collision_force(d, F);
 			body2.collision_force(-1.0f * d, F);
 		}

@@ -41,7 +41,7 @@ void World::tick(flt delta_time)
 		RigidBodyController *controller = entity->getRigidBodyController();
 		if (controller != nullptr) {
 			controller->tick_dynamic_collision(delta_time);
-			m_entity_map[entity->m_rigid_body.getCenterCoord()] = entity;
+			m_entity_map.insert(make_pair(entity->m_rigid_body.getCenterCoord(), entity));
 		}
 	}
 
@@ -117,7 +117,7 @@ void World::iterateEntityList(function<void(Entity*)> do_sth)
 	}
 }
 
-const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
+const multimap<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 {
 	return m_entity_map;
 }
@@ -186,15 +186,12 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	return make_pair(p_block, -1); //-1 means not found
 }
 
-random_device rd;
-mt19937 gen(rd());
-
 Vec3f World::getRandomPosition() const
 {
 	Vec3f ret;
 	for (size_t i = 0; i < 3; ++i) {
 		uniform_int_distribution<> dis(m_game_play_range.m_min[i], m_game_play_range.m_max[i]);
-		ret[i] = dis(gen);
+		ret[i] = dis(k_pseudo_gen);
 	}
 	return ret;
 }

@@ -533,7 +533,7 @@ void Render::renderBoxLine(){
 }
 
 extern GLhandleARB shader_id;
-Vec3f light_pos{1.9f, 1.0f, -2.0f};
+Vec3f light_pos{19.0f, 10.f, -20.f};
 void display(){
 	if (bCustomGLSL) {
 		//First step: Render from the light POV to a FBO, store depth values only
@@ -556,14 +556,15 @@ void display(){
 		Vec3f face_xz = horizontal_facing_vector(CurrentGame()->getPlayerEntity()->m_rigid_body.m_yaw);
 		render.setupPerspective(
 			light_pos,
-			render.eye + face_xz*0.4f*VIEW_DISTANCE,
-			face_xz^light_pos,
+			Vec3f::ZERO(), // render.eye + face_xz * SHADOW_MAP_CENTER_DISTANCE
+			Vec3f::Y_AXIS(), //(face_xz^light_pos).normalize(),
 			true,
 			true);
 
 		// Culling switching, rendering only backface, this is done to avoid self-shadowing
 		glEnable(GL_CULL_FACE);
-#ifdef CULL_BACK
+#define SHADOW_CULL_BACK
+#ifdef SHADOW_CULL_BACK
 		glCullFace(GL_BACK);
 #else
 		glCullFace(GL_FRONT);
@@ -709,20 +710,19 @@ void Render::setupPerspective(const Vec3f eye, Vec3f center, Vec3f up, bool ligh
 	if (lightSource) {
 		width = SHADOW_MAP_WIDTH;
 		height = SHADOW_MAP_HEIGHT;
-	}
-	else {
+	} else {
 		extern int wWidth, wHeight;
 		width = wWidth;
 		height = wHeight;
 	}
-	int sz = lightSource ? VIEW_DISTANCE*0.8 : 10;
+	flt sz = lightSource ? VIEW_DISTANCE*0.3 : 10.f;
 	if (!parallel) gluPerspective(45, width / flt(height), 0.1, VIEW_DISTANCE);
-	else glOrtho(-sz, sz, -sz, sz, 0.1, 200);
+	else glOrtho(-sz, sz, -sz, sz, 0.0f, VIEW_DISTANCE * 2.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	Vec3f neye = eye;
-	if (parallel) neye = center + neye.normalize() * 50.0f;
+	if (parallel) neye = center + eye.normalize() * 100.0f;
 	gluLookAt(neye[0], neye[1], neye[2], center[0], center[1], center[2], up[0], up[1], up[2]);
 }
 

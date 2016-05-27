@@ -29,7 +29,7 @@ bool bCollisionBox = false;
 int texPlayer = 19;
 
 //toggles whether we use the custom GLSL that supports shadow
-bool bCustomGLSL = false;
+bool bCustomGLSL = true;
 
 //whether the player is in creative mode
 bool bCreative = false;
@@ -42,10 +42,10 @@ bool bMovingLight = false;
 
 //the size of the shadow map and the function to update shadow_map_size
 double shadow_map_ratio = 2.0;
-int SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
+int SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 int SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 void update_shadow_map_size(){
-	SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
+	SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 	SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 }
 

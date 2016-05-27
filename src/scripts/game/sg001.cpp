@@ -51,7 +51,7 @@ void scripts::SG001::setup_game()
 
 	view_controller->setup(0.005f, -0.001f);
 
-	world->randomGenerate(0, 50);
+	world->randomGenerate(0, 30);
 	//world->readFromFile("stage/last_save.txt");
 
 	shared_ptr<Player> player = make_shared<Player>();

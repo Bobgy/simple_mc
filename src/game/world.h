@@ -42,6 +42,12 @@ public:
 	//indicates whether this world is changed (requires regenerating tablelist)
 	bool changed = false;
 
+	// helper members
+	struct GamePlayRange {
+		Vec3i m_min;
+		Vec3i m_max;
+	} m_game_play_range;
+
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
 // public methods
@@ -50,24 +56,20 @@ public:
 	/*========= constructor and destructor =======*/
 	World() = default;
 	~World() = default;
+	// read the world data from stage_file_path
+	void readFromFile(string stage_file_path);
+	// generate a world randomly by seed: seed and range: range
+	void randomGenerate(int seed, int range);
 
 	/*======== interface methods ========*/
 
-	// spawn an entity into the game world
+	void clear();
+	void setup(shared_ptr<scripts::ScriptLevel> level_script);
+	void tick(flt delta_time);
+	bool addPlayer(shared_ptr<Player> player);
+
 	// returns its ID, fails when ID is negative
 	int spawnEntity(shared_ptr<Entity> entity);
-
-	// clear the world
-	void clear();
-
-	// setup the world, propagates to components
-	void setup(shared_ptr<scripts::ScriptLevel> level_script);
-
-	// tick
-	void tick(flt delta_time);
-
-	// add an player to the game
-	bool addPlayer(shared_ptr<Player> player);
 	
 	/*========= getter and setter methods =======*/
 
@@ -79,6 +81,9 @@ public:
 	Entity *getEntity(int entity_id);
 	const vector<shared_ptr<Entity>> &getEntityList() const;
 
+	// iterate over the entity list and do something on them
+	void iterateEntityList(function<void(Entity *)> do_sth);
+
 	const map<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
 
 	// get the player
@@ -89,11 +94,9 @@ public:
 	//returns -1 in face to indicate no block is found
 	BlockAndFace look_at_block(Vec3fd p, Vec3fd dir, double r) const;
 
-	// read the world data from stage_file_path
-	void readFromFile(string stage_file_path);
+	Vec3f getRandomPosition() const;
 
-	// generate a world randomly by seed: seed and range: range
-	void randomGenerate(int seed, int range);
+	/* block related methods*/
 
 	//place a block at p of type tp
 	bool place_block(BlockAndFace p, block_type tp);

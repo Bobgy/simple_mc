@@ -44,6 +44,9 @@ void scripts::SG001::setup_game()
 
 	auto level_script = make_shared<SL001>();
 	level_script->setup();
+	world->randomGenerate(0, 30);
+	world->m_game_play_range.m_min = Vec3i{-29, 1, -29};
+	world->m_game_play_range.m_max = Vec3i{29, 1, 29};
 	world->setup(level_script);
 
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'w', STRING_ID("forward"));
@@ -51,7 +54,6 @@ void scripts::SG001::setup_game()
 
 	view_controller->setup(0.005f, -0.001f);
 
-	world->randomGenerate(0, 30);
 	//world->readFromFile("stage/last_save.txt");
 
 	shared_ptr<Player> player = make_shared<Player>();

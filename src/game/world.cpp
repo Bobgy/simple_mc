@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #include "utility/vec.h"
 #include "utility/config.h"
@@ -20,6 +21,9 @@ using namespace std;
 
 void World::tick(flt delta_time)
 {
+	// tick level script
+	m_script->tick(delta_time);
+
 	// tick EntityController logic
 	for (auto &entity : entity_list) {
 		entity->tick(delta_time);
@@ -80,9 +84,7 @@ void World::setup(shared_ptr<scripts::ScriptLevel> level_script)
 {
 	if (!level_script) return;
 
-	clear();
 	m_script = level_script;
-
 	m_script->setup_level();
 }
 
@@ -104,6 +106,15 @@ Entity *World::getEntity(int entity_id)
 const vector<shared_ptr<Entity>>& World::getEntityList() const
 {
 	return entity_list;
+}
+
+void World::iterateEntityList(function<void(Entity*)> do_sth)
+{
+	for (auto &entity_ptr : entity_list) {
+		if (entity_ptr) {
+			do_sth(entity_ptr.get());
+		}
+	}
 }
 
 const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
@@ -148,7 +159,7 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	while(MAX_COUNT--){
 		int axis = -1;
 		double next_time = 1e20; //infinite
-		//find the next intersection point with an interger face
+		//find the next intersection point with an integer face
 		for (i = 0; i < 3; ++i) {
 			if (sign[i] == 0) continue;
 			int ni = next_int(now[i], sign[i]);
@@ -175,6 +186,19 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	return make_pair(p_block, -1); //-1 means not found
 }
 
+random_device rd;
+mt19937 gen(rd());
+
+Vec3f World::getRandomPosition() const
+{
+	Vec3f ret;
+	for (size_t i = 0; i < 3; ++i) {
+		uniform_int_distribution<> dis(m_game_play_range.m_min[i], m_game_play_range.m_max[i]);
+		ret[i] = dis(gen);
+	}
+	return ret;
+}
+
 void World::readFromFile(string stage_file_path) {
 	init_ability();
 	for (int i = 0; i < 10; i++)
@@ -194,8 +218,7 @@ void World::randomGenerate(int seed, int range) {
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k) {
-				int t = (1 << (k + 2)) - 1;
-				if (abs(i) == range || abs(j) == range || k == 0 || (rand()&t) == t) {
+				if (abs(i) == range || abs(j) == range || k == 0 || (rand() % 100 > 95)) {
 					blocks[Vec3i{i, k, j}] = &block_list[ENDSTONE];
 				} else break;
 			}

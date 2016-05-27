@@ -17,3 +17,11 @@
 			return;\
 		}\
 	} while(0)
+
+#define RETURN_IF_NULL(obj) if ((obj) == nullptr) return
+
+#ifndef _DEBUG
+	#define ASSERT_CAST static_cast
+#else
+	#define ASSERT_CAST dynamic_cast
+#endif

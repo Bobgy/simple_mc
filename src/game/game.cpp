@@ -75,16 +75,14 @@ void Game::setup(shared_ptr<scripts::ScriptGame> script_game)
 	m_script = script_game;
 
 	p_world = make_shared<World>();
-	p_world->setup(nullptr);
-
 	p_view_controller = make_shared<ViewController>();
-	p_view_controller->setup(1.f, -1.f);
-
 	p_keyboard = make_shared<Keyboard>();
-	p_keyboard->setup();
-
 	event_manager = make_shared<EventManager>();
+
+	p_keyboard->setup();
 	event_manager->setup();
+	p_view_controller->setup(1.f, -1.f);
+	p_world->setup(nullptr);
 
 	m_script->setup_game();
 

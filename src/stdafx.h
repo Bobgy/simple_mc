@@ -17,8 +17,6 @@
 
 #include "game/game.h"
 
-#define RETURN_IF_NULL(obj) if ((obj) == nullptr) return
-
 using namespace std;
 
 #endif

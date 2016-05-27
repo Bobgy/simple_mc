@@ -51,8 +51,12 @@ void World::tick(flt delta_time)
 	}
 }
 
-World::~World()
+bool World::addPlayer(shared_ptr<Player> player)
 {
+	if (p_player) return false;
+	p_player = player;
+	p_player->setup();
+	return true;
 }
 
 int World::spawnEntity(shared_ptr<Entity> entity) {
@@ -72,9 +76,6 @@ void World::clear()
 void World::setup()
 {
 	clear();
-
-	p_player = make_shared<Player>();
-	p_player->setup();
 }
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -164,10 +165,6 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	}
 	assert(MAX_COUNT >= 0);
 	return make_pair(p_block, -1); //-1 means not found
-}
-
-World::World() {
-	changed = false;
 }
 
 void World::readFromFile(string stage_file_path) {

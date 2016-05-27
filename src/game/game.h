@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 
+//#include "scripts/script.h"
 class World;
 class Player;
 class Entity;
@@ -9,6 +10,11 @@ class Keyboard;
 class ViewController;
 class Game;
 class EventManager;
+
+namespace scripts
+{
+	class ScriptGame;
+};
 
 // get current game
 Game *CurrentGame();
@@ -20,8 +26,10 @@ protected:
 	shared_ptr<Keyboard> p_keyboard;
 	shared_ptr<EventManager> event_manager;
 
+	shared_ptr<scripts::ScriptGame> m_script;
+
 public:
-	Game();
+	Game() = default;
 	~Game();
 	World *getWorld();
 	Player *getPlayer();
@@ -30,7 +38,7 @@ public:
 	Keyboard *getKeyboard();
 	EventManager *getEventManager();
 
-	void setup();
+	void setup(shared_ptr<scripts::ScriptGame> script_game);
 	void clear();
 	void tick(flt delta_time);
 };

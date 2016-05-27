@@ -33,7 +33,7 @@ protected:
 // public members
 public:
 	//indicates whether this world is changed (requires regenerating tablelist)
-	bool changed;
+	bool changed = false;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
@@ -41,8 +41,8 @@ public:
 public:
 
 	/*========= constructor and destructor =======*/
-	World();
-	~World();
+	World() = default;
+	~World() = default;
 
 	/*======== interface methods ========*/
 
@@ -58,6 +58,9 @@ public:
 
 	// tick
 	void tick(flt delta_time);
+
+	// add an player to the game
+	bool addPlayer(shared_ptr<Player> player);
 	
 	/*========= getter and setter methods =======*/
 

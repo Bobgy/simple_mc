@@ -95,7 +95,7 @@ void AIController::tick(flt delta_time)
 	RETURN_IF_NULL(m_entity);
 	RigidBody &rigid_body = m_entity->m_rigid_body;
 	Vec2f goal_vector = horizontal_projection(m_destination - rigid_body.m_position);
-	if (!goal_vector < 1e-1f) {
+	if (!goal_vector < 3.f) {
 		m_movement_intent.walk_intent = Vec2f::ZERO();
 	} else {
 		flt yaw = get_yaw_from_direction(goal_vector);

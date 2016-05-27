@@ -23,7 +23,7 @@ protected:
 	vector<Block> block_list;
 	set<block_type> ability;
 	vector<shared_ptr<Entity>> entity_list;
-	Player *p_player = nullptr;
+	shared_ptr<Player> p_player;
 
 // protected methods;
 protected:

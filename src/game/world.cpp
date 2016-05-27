@@ -53,9 +53,6 @@ void World::tick(flt delta_time)
 
 World::~World()
 {
-	if (p_player != nullptr) {
-		delete p_player;
-	}
 }
 
 int World::spawnEntity(shared_ptr<Entity> entity) {
@@ -65,9 +62,7 @@ int World::spawnEntity(shared_ptr<Entity> entity) {
 
 void World::clear()
 {
-	if (p_player != nullptr) {
-		delete p_player;
-	}
+	p_player.reset();
 	blocks.clear();
 	block_list.clear();
 	ability.clear();
@@ -78,7 +73,7 @@ void World::setup()
 {
 	clear();
 
-	p_player = new Player();
+	p_player = make_shared<Player>();
 	p_player->setup();
 }
 
@@ -110,7 +105,7 @@ const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 Player *World::getPlayer()
 {
 	assert(p_player);
-	return p_player;
+	return p_player.get();
 }
 
 //returns the first block within radius r that is seen by an eye
@@ -153,7 +148,7 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 				next_time = t;
 			}
 			assert(t >= 0);
-			if (t < next_time){
+			if (t < next_time) {
 				next_time = t;
 				axis = i;
 			}
@@ -172,7 +167,6 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 }
 
 World::World() {
-	p_player = nullptr;
 	changed = false;
 }
 

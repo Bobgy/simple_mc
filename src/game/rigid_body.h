@@ -79,6 +79,14 @@ public:
 	}
 	flt intersect(const RigidBody &r) const;
 	void force(Vec3f F) { if (m_enabled_movement) m_velocity += F * (1.0f / m_mass); }
+	void collision_force(Vec3f d, flt F) {
+		if (m_enabled_movement) {
+			d = d.normalize();
+			if ((m_velocity * d) < 2.f) {
+				force(d * F);
+			}
+		}
+	}
 };
 
 class RigidBodyController

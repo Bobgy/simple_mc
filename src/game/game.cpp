@@ -98,6 +98,67 @@ void Game::setup()
 	shared_ptr<AIController> controller = make_shared<AIController>();
 	mob->setup(controller);
 	p_world->spawnEntity(mob);
+
+	mob = make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true);
+	controller = make_shared<AIController>();
+	mob->setup(controller);
+	p_world->spawnEntity(mob);
+
+	mob = make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true);
+	controller = make_shared<AIController>();
+	mob->setup(controller);
+	p_world->spawnEntity(mob);
+
+	mob = make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true);
+	controller = make_shared<AIController>();
+	mob->setup(controller);
+	p_world->spawnEntity(mob);
+
+	mob = make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true);
+	controller = make_shared<AIController>();
+	mob->setup(controller);
+	p_world->spawnEntity(mob);
+
+	mob = make_shared<Entity>(
+		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
+		Vec3f::ZERO(),
+		player_entity->getRadius(),
+		player_entity->getHeight(),
+		1.0f,
+		true,
+		true);
+	controller = make_shared<AIController>();
+	mob->setup(controller);
+	p_world->spawnEntity(mob);
+	
 }
 
 void Game::clear()

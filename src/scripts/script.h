@@ -24,6 +24,11 @@ namespace scripts
 
 		/* common interface */
 		// inherits
+		void setup() {}
+		virtual void tick(flt delta_time) = 0;
+
+		// initializes the level
+		virtual void setup_level() = 0;
 	};
 
 	class ScriptGame : public Script
@@ -33,6 +38,8 @@ namespace scripts
 
 		/* common interface */
 		// inherits
+		void setup() {}
+		virtual void tick(flt delta_time) = 0;
 
 		// initializes the game
 		virtual void setup_game() = 0;

@@ -9,6 +9,8 @@
 #include "game/world.h"
 #include "game/player.h"
 
+#include "scripts/level/sl001.h"
+
 scripts::SG001::~SG001()
 {
 	// do nothing
@@ -39,6 +41,10 @@ void scripts::SG001::setup_game()
 		event_manager == nullptr) {
 		return;
 	}
+
+	auto level_script = make_shared<SL001>();
+	level_script->setup();
+	world->setup(level_script);
 
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'w', STRING_ID("forward"));
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'s', STRING_ID("backward"));

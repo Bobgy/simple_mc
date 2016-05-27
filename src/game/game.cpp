@@ -17,7 +17,7 @@ Game *g_game = nullptr;
 
 Game *CurrentGame()
 {
-	if (!g_game) {
+	if (g_game == nullptr) {
 		g_game = new Game;
 	}
 	return g_game;
@@ -45,7 +45,9 @@ Player *Game::getPlayer()
 
 Entity *Game::getPlayerEntity()
 {
-	return getPlayer()->getEntity();
+	Player *player = getPlayer();
+	if (player) return player->getEntity();
+	return nullptr;
 }
 
 ViewController *Game::getViewController()
@@ -73,7 +75,7 @@ void Game::setup(shared_ptr<scripts::ScriptGame> script_game)
 	m_script = script_game;
 
 	p_world = make_shared<World>();
-	p_world->setup();
+	p_world->setup(nullptr);
 
 	p_view_controller = make_shared<ViewController>();
 	p_view_controller->setup(1.f, -1.f);
@@ -86,30 +88,6 @@ void Game::setup(shared_ptr<scripts::ScriptGame> script_game)
 
 	m_script->setup_game();
 
-	Entity *player_entity = getPlayerEntity();
-	auto mob = make_shared<Entity>(
-		player_entity->get_pos() + Vec3f{3.0f, 0.0f, -4.0f},
-		Vec3f::ZERO(),
-		player_entity->getRadius(),
-		player_entity->getHeight(),
-		1.0f,
-		true,
-		true);
-	shared_ptr<AIController> controller = make_shared<AIController>();
-	mob->setup(controller);
-	p_world->spawnEntity(mob);
-
-	mob = make_shared<Entity>(
-		player_entity->get_pos() + Vec3f{-3.0f, 0.0f, 4.0f},
-		Vec3f::ZERO(),
-		player_entity->getRadius(),
-		player_entity->getHeight(),
-		1.0f,
-		true,
-		true);
-	controller = make_shared<AIController>();
-	mob->setup(controller);
-	p_world->spawnEntity(mob);
 }
 
 void Game::clear()

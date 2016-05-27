@@ -14,6 +14,8 @@
 #include "game/rigid_body.h"
 #include "game/entity.h"
 
+#include "scripts/script.h"
+
 using namespace std;
 
 void World::tick(flt delta_time)
@@ -71,11 +73,17 @@ void World::clear()
 	block_list.clear();
 	ability.clear();
 	entity_list.clear();
+	m_entity_map.clear();
 }
 
-void World::setup()
+void World::setup(shared_ptr<scripts::ScriptLevel> level_script)
 {
+	if (!level_script) return;
+
 	clear();
+	m_script = level_script;
+
+	m_script->setup_level();
 }
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -105,8 +113,8 @@ const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 
 Player *World::getPlayer()
 {
-	assert(p_player);
-	return p_player.get();
+	if (p_player) return p_player.get();
+	return nullptr;
 }
 
 //returns the first block within radius r that is seen by an eye

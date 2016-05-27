@@ -14,6 +14,11 @@
 
 using namespace std;
 
+namespace scripts
+{
+	class ScriptLevel;
+}
+
 class World{
 // protected members
 protected:
@@ -24,6 +29,8 @@ protected:
 	set<block_type> ability;
 	vector<shared_ptr<Entity>> entity_list;
 	shared_ptr<Player> p_player;
+
+	shared_ptr<scripts::ScriptLevel> m_script;
 
 // protected methods;
 protected:
@@ -54,7 +61,7 @@ public:
 	void clear();
 
 	// setup the world, propagates to components
-	void setup();
+	void setup(shared_ptr<scripts::ScriptLevel> level_script);
 
 	// tick
 	void tick(flt delta_time);

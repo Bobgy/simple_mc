@@ -17,6 +17,15 @@
     <Filter Include="src\game">
       <UniqueIdentifier>{e6ecd252-b6df-4c18-b258-3b4865264565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\scripts">
+      <UniqueIdentifier>{faaa18cf-9c32-4e41-9453-e0e98032f7d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scripts\game">
+      <UniqueIdentifier>{3bdc379a-49dc-4721-8e5f-06e6a681b791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scripts\level">
+      <UniqueIdentifier>{ee18058d-44ca-4bdf-98d5-27decc55057c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_vertex.glsl">
@@ -119,6 +128,15 @@
     <ClInclude Include="src\utility\def.h">
       <Filter>src\utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\scripts\script.h">
+      <Filter>src\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scripts\game\sg001.h">
+      <Filter>src\scripts\game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scripts\level\sl001.h">
+      <Filter>src\scripts\level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -180,6 +198,15 @@
     </ClCompile>
     <ClCompile Include="src\game\rigid_body.cpp">
       <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripts\game\sg001.cpp">
+      <Filter>src\scripts\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripts\script.cpp">
+      <Filter>src\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripts\level\sl001.cpp">
+      <Filter>src\scripts\level</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

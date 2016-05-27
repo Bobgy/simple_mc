@@ -20,6 +20,11 @@ void EntityController::setup(Entity *controlled_entity)
 	m_entity = controlled_entity;
 }
 
+bool EntityController::isAI() const
+{
+	return false;
+}
+
 const EntityController::MovementIntent &EntityController::getMovementIntent() const
 {
 	return m_movement_intent;
@@ -85,24 +90,51 @@ void AIController::setup(Vec3f destination)
 	m_destination = destination;
 }
 
+const flt destination_torlerance = 2.0f;
+
 void AIController::tick(flt delta_time)
 {
+	/*
 	Entity *player = CurrentGame()->getPlayerEntity();
 	if (player) {
 		m_destination = player->m_rigid_body.m_position;
 	}
+	*/
 
 	RETURN_IF_NULL(m_entity);
 	RigidBody &rigid_body = m_entity->m_rigid_body;
 	Vec2f goal_vector = horizontal_projection(m_destination - rigid_body.m_position);
-	if (!goal_vector < 3.f) {
+	flt yaw = get_yaw_from_direction(goal_vector);
+	if (sqr(goal_vector) < sqr(destination_torlerance)) {
 		m_movement_intent.walk_intent = Vec2f::ZERO();
+		m_movement_intent.yaw_intent = yaw;
 	} else {
-		flt yaw = get_yaw_from_direction(goal_vector);
 		if (abs_delta_angle(yaw, rigid_body.m_yaw) < 1e-2f) {
 			m_movement_intent.walk_intent[0] = 0.2f;
 		} else {
 			m_movement_intent.yaw_intent = yaw;
 		}
 	}
+}
+
+bool AIController::isAI() const
+{
+	return true;
+}
+
+bool AIController::hasArrivedDestination(const RigidBody & rigid_body, Vec3f destination)
+{
+	Vec3f dis = rigid_body.m_position - destination;
+	dis[1] = 0;
+	return (sqr(dis) < sqr(destination_torlerance));
+}
+
+Vec3f AIController::getDestination() const
+{
+	return m_destination;
+}
+
+void AIController::setDestination(Vec3f destination)
+{
+	m_destination = destination;
 }

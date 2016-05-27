@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define CULL_BACK
+//#define CULL_BACK
 
 #include "stdafx.h"
 
@@ -25,6 +25,8 @@
 #include <utility/keyboard.h>
 #include <utility/lodepng.h>
 #include <utility/obj.h>
+
+#include "scripts/game/sg001.h"
 
 
 using namespace std;
@@ -153,7 +155,11 @@ void init(int argc, char *argv[]) {
 	}
 	generateShadowFBO();
 	
-	CurrentGame()->setup();
+	// setup the game using sg001 script
+	auto sg001 = make_shared<scripts::SG001>();
+	sg001->setup();
+	CurrentGame()->setup(sg001);
+	
 	render.init();
 	tableList = genTableList();
 

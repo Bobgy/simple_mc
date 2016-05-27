@@ -4,8 +4,8 @@ varying vec4 diffuse,amb_global,ambient,frag_pos,shadow_coord;
 varying vec3 normal;
 uniform sampler2D tex;
 uniform sampler2D ShadowMap;
-uniform int rg = 1;			 //determines the sampling numbers
-uniform float offset = 4e-4; //determines the sampling distance
+uniform int rg = 3;			 //determines the sampling numbers
+uniform float offset = 2e-4; //determines the sampling distance
 
 vec3 toVec3(vec4 x){
 	return x.rgb/x.w;
@@ -35,8 +35,8 @@ float pcf(vec4 sc){
 			for(y=-rg;y<=rg;++y){
 				dist = texture2D(ShadowMap,vec2(sc.s+float(x)*offset,sc.t+float(y)*offset)).z;
  				shadow = 1.0;
-				if (abs(dist-sc.z) > 2e-6 && dist < sc.z)
-					shadow = 0.3;
+				if (abs(dist-sc.z) > 1e-4 && dist < sc.z)
+					shadow = 0.2;
 				sum += shadow;
 			}
 	}

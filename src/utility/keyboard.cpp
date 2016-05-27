@@ -16,7 +16,6 @@
 extern Render render;
 extern block_type type;
 extern int screenshot_count;
-bool bDebugDepthMap = false, bWire = false;
 
 void KeyDown(unsigned char key, int x, int y)
 {

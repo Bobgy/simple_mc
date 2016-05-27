@@ -35,17 +35,17 @@ bool bCustomGLSL = true;
 bool bCreative = false;
 
 //whether gravity works on player
-bool bGravity = true;
+bool bGravity = false;
 
 //whether sun light is moving
 bool bMovingLight = false;
 
 //the size of the shadow map and the function to update shadow_map_size
 double shadow_map_ratio = 2.0;
-int SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
+int SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 int SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 void update_shadow_map_size(){
-	SHADOW_MAP_WIDTH = 1024 * shadow_map_ratio;
+	SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 	SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 }
 
@@ -55,5 +55,5 @@ GLint tableList;
 //desired frame rate
 flt FRAME_RATE = 60.0f;
 
-//current log level, logs with a larger level will be outputed
-int log_level = 0;
+bool bDebugDepthMap = false;
+bool bWire = false;

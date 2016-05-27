@@ -54,6 +54,6 @@ extern GLint tableList;
 //desired frame rate
 extern flt FRAME_RATE;
 
-//current log level, logs with a larger level will be outputed
-extern int log_level;
+extern bool bDebugDepthMap;
+extern bool bWire;
 #endif

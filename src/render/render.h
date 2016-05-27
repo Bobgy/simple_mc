@@ -1,6 +1,8 @@
 #ifndef _RENDER_H
 #define _RENDER_H
 
+//#define _SIMPLE_CUBE_
+
 #include <stdlib.h>
 #include <stdafx.h>
 #include <cstdio>
@@ -16,7 +18,8 @@
 #define VIEW_MODE_THIRD_PERSON_FRONT 2
 #define VIEW_MODE_TOTAL_NUMBER 3
 
-#define VIEW_DISTANCE 80.0f
+#define VIEW_DISTANCE 200.0f
+#define SHADOW_MAP_CENTER_DISTANCE 50.0f
 
 class ViewController;
 

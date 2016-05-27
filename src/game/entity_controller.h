@@ -3,6 +3,7 @@
 #include "utility/vec.h"
 
 class Entity;
+class RigidBody;
 
 class EntityController
 {
@@ -31,6 +32,7 @@ public:
 	virtual ~EntityController();
 	virtual void setup(Entity *controlled_entity);
 	virtual void tick(flt delta_time) = 0;
+	virtual bool isAI() const;
 	const MovementIntent &getMovementIntent() const;
 };
 
@@ -54,8 +56,19 @@ protected:
 
 // public methods
 public:
+	/* constructor and destructor */
 	AIController();
 	virtual ~AIController();
+
+	/* common interface */
 	void setup(Vec3f destination);
 	virtual void tick(flt delta_time);
+	virtual bool isAI() const;
+
+	/* static helper */
+	static bool hasArrivedDestination(const RigidBody &rigid_body, Vec3f destination);
+
+	/* getter and setter methods */
+	Vec3f getDestination() const;
+	void setDestination(Vec3f destination);
 };

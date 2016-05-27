@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #include "utility/vec.h"
 #include "utility/config.h"
@@ -14,10 +15,15 @@
 #include "game/rigid_body.h"
 #include "game/entity.h"
 
+#include "scripts/script.h"
+
 using namespace std;
 
 void World::tick(flt delta_time)
 {
+	// tick level script
+	m_script->tick(delta_time);
+
 	// tick EntityController logic
 	for (auto &entity : entity_list) {
 		entity->tick(delta_time);
@@ -51,8 +57,12 @@ void World::tick(flt delta_time)
 	}
 }
 
-World::~World()
+bool World::addPlayer(shared_ptr<Player> player)
 {
+	if (p_player) return false;
+	p_player = player;
+	p_player->setup();
+	return true;
 }
 
 int World::spawnEntity(shared_ptr<Entity> entity) {
@@ -67,14 +77,15 @@ void World::clear()
 	block_list.clear();
 	ability.clear();
 	entity_list.clear();
+	m_entity_map.clear();
 }
 
-void World::setup()
+void World::setup(shared_ptr<scripts::ScriptLevel> level_script)
 {
-	clear();
+	if (!level_script) return;
 
-	p_player = make_shared<Player>();
-	p_player->setup();
+	m_script = level_script;
+	m_script->setup_level();
 }
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -97,6 +108,15 @@ const vector<shared_ptr<Entity>>& World::getEntityList() const
 	return entity_list;
 }
 
+void World::iterateEntityList(function<void(Entity*)> do_sth)
+{
+	for (auto &entity_ptr : entity_list) {
+		if (entity_ptr) {
+			do_sth(entity_ptr.get());
+		}
+	}
+}
+
 const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 {
 	return m_entity_map;
@@ -104,8 +124,8 @@ const map<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 
 Player *World::getPlayer()
 {
-	assert(p_player);
-	return p_player.get();
+	if (p_player) return p_player.get();
+	return nullptr;
 }
 
 //returns the first block within radius r that is seen by an eye
@@ -139,7 +159,7 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	while(MAX_COUNT--){
 		int axis = -1;
 		double next_time = 1e20; //infinite
-		//find the next intersection point with an interger face
+		//find the next intersection point with an integer face
 		for (i = 0; i < 3; ++i) {
 			if (sign[i] == 0) continue;
 			int ni = next_int(now[i], sign[i]);
@@ -166,8 +186,17 @@ BlockAndFace World::look_at_block(Vec3fd p, Vec3fd dir, double r) const {
 	return make_pair(p_block, -1); //-1 means not found
 }
 
-World::World() {
-	changed = false;
+random_device rd;
+mt19937 gen(rd());
+
+Vec3f World::getRandomPosition() const
+{
+	Vec3f ret;
+	for (size_t i = 0; i < 3; ++i) {
+		uniform_int_distribution<> dis(m_game_play_range.m_min[i], m_game_play_range.m_max[i]);
+		ret[i] = dis(gen);
+	}
+	return ret;
 }
 
 void World::readFromFile(string stage_file_path) {
@@ -189,9 +218,9 @@ void World::randomGenerate(int seed, int range) {
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k) {
-				int t = (1 << (k + 2)) - 1;
-				if (k == 0 || (rand()&t) == t) blocks[Vec3i{i, k, j}] = &block_list[DIRT];
-				else break;
+				if (abs(i) == range || abs(j) == range || k == 0 || (rand() % 100 > 95)) {
+					blocks[Vec3i{i, k, j}] = &block_list[ENDSTONE];
+				} else break;
 			}
 	changed = true;
 }

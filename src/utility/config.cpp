@@ -62,3 +62,6 @@ bool bWire = false;
 
 random_device k_random_device;
 mt19937 k_pseudo_gen(k_random_device());
+
+bool bDisplay = true;
+bool bSimpleCube = false;

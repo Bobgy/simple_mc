@@ -62,4 +62,8 @@ extern bool bWire;
 
 extern random_device k_random_device;
 extern mt19937 k_pseudo_gen;
+
+extern bool bDisplay;
+extern bool bSimpleCube;
+
 #endif

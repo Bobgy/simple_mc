@@ -22,12 +22,23 @@ namespace scripts
 class GridMap;
 
 class World{
+// public typedef
+public:
+	template <typename T>
+	struct GamePlayRange {
+		T m_min;
+		T m_max;
+		bool isInside(T p) {
+			return !((p << m_min) || (m_max << p));
+		}
+	};
 // protected members
 protected:
 	map<Vec3i, Block*> blocks;
 	multimap<Vec3i, weak_ptr<Entity>> m_entity_map;
 
 	vector<Block> block_list;
+	shared_ptr<GridMap> m_grid_map;
 	set<block_type> ability;
 	vector<shared_ptr<Entity>> entity_list;
 	shared_ptr<Player> p_player;
@@ -45,14 +56,6 @@ public:
 	bool changed = false;
 
 	// helper members
-	template <typename T>
-	struct GamePlayRange {
-		T m_min;
-		T m_max;
-		bool isInside(T p) {
-			return !((p << m_min) || (m_max << p));
-		}
-	};
 	GamePlayRange<Vec3i> m_game_play_range;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
@@ -92,6 +95,7 @@ public:
 	void iterateEntityList(function<void(Entity *)> do_sth);
 
 	const multimap<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
+	GridMap *getGridMap();
 
 	// get the player
 	Player *getPlayer();

@@ -14,6 +14,7 @@
 #include "game/world.h"
 #include "game/rigid_body.h"
 #include "game/entity.h"
+#include "game/gridmap.h"
 
 #include "scripts/script.h"
 
@@ -23,6 +24,8 @@ void World::tick(flt delta_time)
 {
 	// tick level script
 	m_script->tick(delta_time);
+
+	m_grid_map->refreshEntities(this);
 
 	// tick EntityController logic
 	for (auto &entity : entity_list) {
@@ -35,6 +38,7 @@ void World::tick(flt delta_time)
 		}
 	}
 
+#ifdef _USE_ENTITY_MAP
 	refreshEntityMap();
 
 	for (auto &entity : entity_list) {
@@ -44,6 +48,15 @@ void World::tick(flt delta_time)
 			m_entity_map.insert(make_pair(entity->m_rigid_body.getCenterCoord(), entity));
 		}
 	}
+#else
+	for (auto &entity : entity_list) {
+		RigidBodyController *controller = entity->getRigidBodyController();
+		if (controller != nullptr) {
+			controller->tick_dynamic_collision(delta_time);
+		}
+	}
+#endif
+
 
 	// tick RigidBodyController movement_intent
 	for (auto &entity : entity_list) {
@@ -78,6 +91,7 @@ void World::clear()
 	ability.clear();
 	entity_list.clear();
 	m_entity_map.clear();
+	m_grid_map.reset();
 }
 
 void World::setup(shared_ptr<scripts::ScriptLevel> level_script)
@@ -86,6 +100,14 @@ void World::setup(shared_ptr<scripts::ScriptLevel> level_script)
 
 	m_script = level_script;
 	m_script->setup_level();
+
+	auto grid_map = make_shared<GridMap>();
+	if (grid_map) {
+		m_grid_map = grid_map;
+		m_grid_map->setupWorld(this);
+	} else {
+		LOG_ERROR(__FUNCTION__, "grid_map failed initialization.\n");
+	}
 }
 
 //get the block at (p[0],p[1],p[2]), NULL means AIR block
@@ -120,6 +142,11 @@ void World::iterateEntityList(function<void(Entity*)> do_sth)
 const multimap<Vec3i, weak_ptr<Entity>>& World::getEntityMap() const
 {
 	return m_entity_map;
+}
+
+GridMap *World::getGridMap()
+{
+	return m_grid_map.get();
 }
 
 Player *World::getPlayer()

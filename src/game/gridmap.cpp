@@ -4,6 +4,12 @@
 
 #include "game/world.h"
 
+void GridMap::clear()
+{
+	m_salt = 0;
+	m_grids.clear();
+}
+
 void GridMap::setup(size_t w, size_t h)
 {
 	m_size = {w, h};
@@ -20,17 +26,18 @@ void GridMap::setupWorld(World * world)
 	m_range.m_min = horizontal_projection(world_range.m_min);
 	m_range.m_max = horizontal_projection(world_range.m_max);
 
-	setup(m_range.m_max[0] - m_range.m_min[0] + 1, m_range.m_max[2] - m_range.m_min[2] + 1);
+	setup(m_range.m_max[0] - m_range.m_min[0] + 1, m_range.m_max[1] - m_range.m_min[1] + 1);
 	iterateGrids([](Grid *grid){
 		grid->m_clearance = 1;
 	});
 	for (auto it = world->blocks_begin(); it != world->blocks_end(); ++it) {
 		Vec3i pos = it->first;
 		Block *block = it->second;
-		if (!world_range.isInside(pos)) {
+		if (world_range.isInside(pos)) {
 			Vec2i p2 = horizontal_projection(pos);
 			p2 -= m_range.m_min;
 			Grid *grid = getGrid(p2);
+			assert(grid);
 			grid->m_clearance = 0;
 		}
 	}
@@ -38,15 +45,19 @@ void GridMap::setupWorld(World * world)
 
 void GridMap::refreshEntities(World *world)
 {
-	RETURN_AND_WARN_IF(world = nullptr);
+	RETURN_AND_WARN_IF(world == nullptr);
 
 	refresh();
 	auto entity_list = world->getEntityList();
 	for (auto &entity_ptr: entity_list) {
 		if (entity_ptr) {
 			Vec2i p2 = horizontal_projection(entity_ptr->m_rigid_body.getCenterCoord());
-			Grid *grid = getGrid(p2);
-			grid->m_entities.push_back(entity_ptr.get());
+			Grid *grid = getGridByWorldCoord(p2);
+			if (grid == nullptr) {
+				LOG_ERROR(__FUNCTION__, "refreshing entity which is at (%d, %d).\n", p2[0], p2[1]);
+			} else {
+				grid->m_entities.push_back(entity_ptr.get());
+			}
 		}
 	}
 }

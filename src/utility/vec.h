@@ -265,6 +265,7 @@ struct Vec2 {
 };
 
 typedef Vec2<int> Vec2i;
+typedef Vec2<size_t> Vec2ui;
 typedef Vec2<flt> Vec2f;
 typedef Vec2<double> Vec2fd;
 

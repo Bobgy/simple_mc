@@ -33,6 +33,7 @@ protected:
 // public methods
 public:
 	// common interface
+	void clear();
 	void setup(size_t w, size_t h);
 	void setupWorld(World *world);
 	void refresh();
@@ -40,7 +41,9 @@ public:
 
 	Grid *getGrid(size_t i, size_t j);
 	Grid *getGrid(Vec2i p);
+	Grid *getGridByWorldCoord(Vec2i p);
 	void iterateGrids(function<void(Grid*)> do_sth);
+	void iterateGridsInRange(Vec2i low, Vec2i high, function<void(Vec2i, Grid*)> do_sth);
 	
 };
 
@@ -61,6 +64,11 @@ inline Grid *GridMap::getGrid(Vec2i p)
 	return getGrid(p[0], p[1]);
 }
 
+inline Grid *GridMap::getGridByWorldCoord(Vec2i p)
+{
+	return getGrid(p - m_range.m_min);
+}
+
 inline void GridMap::refresh()
 {
 	++m_salt;
@@ -74,5 +82,25 @@ inline void GridMap::iterateGrids(function<void(Grid*)> do_sth)
 			container.m_salt = m_salt;
 		}
 		do_sth(&container.m_grid);
+	}
+}
+
+inline void GridMap::iterateGridsInRange(Vec2i low, Vec2i high, function<void(Vec2i, Grid*)> do_sth)
+{
+	low -= m_range.m_min;
+	high -= m_range.m_min;
+	low[0] = max(0, low[0]);
+	low[1] = max(0, low[1]);
+	high[0] = min((int)m_size[0] - 1, high[0]);
+	high[1] = min((int)m_size[1] - 1, high[1]);
+	for (int i = low[0]; i <= high[0]; ++i) {
+		for (int j = low[1]; j <= high[1]; ++j) {
+			Grid *grid = getGrid(i, j);
+			if (grid) {
+				do_sth(Vec2i{i, j} + m_range.m_min, grid);
+			} else {
+				LOG_WARNING(__FUNCTION__, "iterating over grid (%u, %u) which is invalid.\n", i, j);
+			}
+		}
 	}
 }

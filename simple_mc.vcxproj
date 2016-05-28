@@ -130,12 +130,12 @@
     <Library Include="lib\glew32s.lib" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\gridmap.h" />
     <ClInclude Include="src\game\block.h" />
     <ClInclude Include="src\game\entity.h" />
     <ClInclude Include="src\game\entity_controller.h" />
     <ClInclude Include="src\game\event_manager.h" />
     <ClInclude Include="src\game\game.h" />
+    <ClInclude Include="src\game\gridmap.h" />
     <ClInclude Include="src\game\item.h" />
     <ClInclude Include="src\game\player.h" />
     <ClInclude Include="src\game\rigid_body.h" />
@@ -161,11 +161,11 @@
     <ClInclude Include="src\utility\view.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="game\gridmap.cpp" />
     <ClCompile Include="src\game\entity.cpp" />
     <ClCompile Include="src\game\entity_controller.cpp" />
     <ClCompile Include="src\game\event_manager.cpp" />
     <ClCompile Include="src\game\game.cpp" />
+    <ClCompile Include="src\game\gridmap.cpp" />
     <ClCompile Include="src\game\player.cpp" />
     <ClCompile Include="src\game\rigid_body.cpp" />
     <ClCompile Include="src\game\world.cpp" />

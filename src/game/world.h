@@ -28,7 +28,7 @@ public:
 	struct GamePlayRange {
 		T m_min;
 		T m_max;
-		bool isInside(T p) {
+		bool isInside(T p) const {
 			return !((p << m_min) || (m_max << p));
 		}
 	};
@@ -96,6 +96,7 @@ public:
 
 	const multimap<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
 	GridMap *getGridMap();
+	weak_ptr<GridMap> getGridMapWeakPtr() const;
 
 	// get the player
 	Player *getPlayer();

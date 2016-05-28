@@ -39,9 +39,13 @@ public:
 	void refresh();
 	void refreshEntities(World *world);
 
+	// getter and setter
+	const World::GamePlayRange<Vec2i> *getRange() const { return &m_range; }
+	Vec2ui getSize() const { return m_size; }
 	Grid *getGrid(size_t i, size_t j);
 	Grid *getGrid(Vec2i p);
 	Grid *getGridByWorldCoord(Vec2i p);
+	Grid *getGridDirectly(size_t p);
 	void iterateGrids(function<void(Grid*)> do_sth);
 	void iterateGridsInRange(Vec2i low, Vec2i high, function<void(Vec2i, Grid*)> do_sth);
 	
@@ -67,6 +71,14 @@ inline Grid *GridMap::getGrid(Vec2i p)
 inline Grid *GridMap::getGridByWorldCoord(Vec2i p)
 {
 	return getGrid(p - m_range.m_min);
+}
+
+inline Grid *GridMap::getGridDirectly(size_t p)
+{
+	size_t offset = p;
+	if (offset >= m_grids.size()) return nullptr;
+	GridContainer &container = m_grids[offset];
+	return &container.m_grid;
 }
 
 inline void GridMap::refresh()

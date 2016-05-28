@@ -247,7 +247,7 @@ struct Vec2 {
 
 	template <typename TT>
 	operator Vec2<TT>() const {
-		return Vec2<TT>((TT)x[0], (TT)x[1]);
+		return Vec2<TT>{(TT)x[0], (TT)x[1]};
 	}
 
 	operator bool() const {

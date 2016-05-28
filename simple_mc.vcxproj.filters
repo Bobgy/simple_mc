@@ -26,6 +26,9 @@
     <Filter Include="src\scripts\level">
       <UniqueIdentifier>{ee18058d-44ca-4bdf-98d5-27decc55057c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\nav">
+      <UniqueIdentifier>{ca83446d-cfe5-4940-aa06-f50fe9a0d60d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_vertex.glsl">
@@ -140,6 +143,12 @@
     <ClInclude Include="src\game\gridmap.h">
       <Filter>src\game</Filter>
     </ClInclude>
+    <ClInclude Include="src\nav\a_star_solver.h">
+      <Filter>src\nav</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nav\nav.h">
+      <Filter>src\nav</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -213,6 +222,12 @@
     </ClCompile>
     <ClCompile Include="src\game\gridmap.cpp">
       <Filter>src\game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nav\a_star_solver.cpp">
+      <Filter>src\nav</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nav\nav.cpp">
+      <Filter>src\nav</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -149,6 +149,11 @@ GridMap *World::getGridMap()
 	return m_grid_map.get();
 }
 
+weak_ptr<GridMap> World::getGridMapWeakPtr() const
+{
+	return m_grid_map;
+}
+
 Player *World::getPlayer()
 {
 	if (p_player) return p_player.get();

@@ -103,6 +103,10 @@ struct Vec3{
 		return x[0] || x[1] || x[2];
 	}
 
+	uint8_t operator<<(Vec3<T> r) const {
+		return (x[0] < r[0]) | ((x[1] < r[1]) * 2) | ((x[2] < r[2]) * 4);
+	}
+
 // static constants
 	static Vec3<T> ZERO() { return Vec3{(T)0, (T)0, (T)0}; }
 	static Vec3<T> X_AXIS() { return Vec3{(T)1, (T)0, (T)0}; }
@@ -248,6 +252,10 @@ struct Vec2 {
 
 	operator bool() const {
 		return x[0] || x[1];
+	}
+
+	uint8_t operator<<(Vec2<T> r) const {
+		return (x[0] < r[0]) | ((x[1] < r[1]) * 2);
 	}
 
 	static Vec2<T> ZERO() { return Vec2{(T)0, (T)0}; }

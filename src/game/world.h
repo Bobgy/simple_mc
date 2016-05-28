@@ -19,6 +19,8 @@ namespace scripts
 	class ScriptLevel;
 }
 
+class GridMap;
+
 class World{
 // protected members
 protected:
@@ -43,10 +45,15 @@ public:
 	bool changed = false;
 
 	// helper members
+	template <typename T>
 	struct GamePlayRange {
-		Vec3i m_min;
-		Vec3i m_max;
-	} m_game_play_range;
+		T m_min;
+		T m_max;
+		bool isInside(T p) {
+			return !((p << m_min) || (m_max << p));
+		}
+	};
+	GamePlayRange<Vec3i> m_game_play_range;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
@@ -104,10 +111,10 @@ public:
 	//destroy a block at p
 	bool destroy_block(Vec3i p);
 
-	map<Vec3i, Block*>::const_iterator begin() const {
+	map<Vec3i, Block*>::const_iterator blocks_begin() const {
 		return blocks.begin();
 	}
-	map<Vec3i, Block*>::const_iterator end() const {
+	map<Vec3i, Block*>::const_iterator blocks_end() const {
 		return blocks.end();
 	}
 	map<Vec3i, Block*>::const_iterator find(Vec3i p) const {

@@ -374,14 +374,14 @@ void renderSeenBlock(BlockAndFace seen_block){
 
 void Render::renderScene(){
 	const World &world = *CurrentGame()->getWorld();
-	for (auto it = world.begin(); it != world.end(); ++it){
+	for (auto it = world.blocks_begin(); it != world.blocks_end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
 		translate(Vec3f(p)+0.5f);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)	{
 			auto it = world.find(p + FACE[i]);
-			if (it == world.end() || !it->second->is_opaque())
+			if (it == world.blocks_end() || !it->second->is_opaque())
 				msk |= 1 << i;
 		}
 #ifdef _SIMPLE_CUBE_

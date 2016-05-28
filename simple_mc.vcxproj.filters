@@ -137,6 +137,9 @@
     <ClInclude Include="src\scripts\level\sl001.h">
       <Filter>src\scripts\level</Filter>
     </ClInclude>
+    <ClInclude Include="game\gridmap.h">
+      <Filter>src\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="src\scripts\level\sl001.cpp">
       <Filter>src\scripts\level</Filter>
+    </ClCompile>
+    <ClCompile Include="game\gridmap.cpp">
+      <Filter>src\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

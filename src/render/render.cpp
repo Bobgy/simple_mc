@@ -160,9 +160,6 @@ void Render::set(int k)
 
 void Render::init()
 {
-	setTextureState(false);
-#ifndef _SIMPLE_CUBE_
-	setTextureState(true);
 	glGenTextures(20, texture);
 	texLoad(0, "texture/white.bmp");
 	texLoad(1, "texture/3.bmp");
@@ -178,7 +175,6 @@ void Render::init()
 	texLoadPNG(12, "texture/0.png");
 	texLoadPNG(13, "texture/1.png");
 	texLoadPNG(14, "texture/2.png");
-#endif
 }
 
 //use this function to start a series of transformation
@@ -242,9 +238,11 @@ void Render::scale(Vec3f p){
 
 void Render::renderCube(int type,int state)
 {
-#ifdef _SIMPLE_CUBE_
-	glutSolidCube(1.0);
-#else
+	if (bSimpleCube) {
+		glutSolidCube(1.0);
+		return;
+	}
+	
 	if (bTexture) {
 		glActiveTextureARB(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[type]);
@@ -259,15 +257,16 @@ void Render::renderCube(int type,int state)
 		}
 	}
 	glEnd();
-#endif
 }
 
 void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 {
-#ifdef _SIMPLE_CUBE_
-	glColor3f(1.f, 0.f, 1.f);
-	glutSolidCube(1.0);
-#else
+	if (bSimpleCube) {
+		glColor3f(1.f, 0.f, 1.f);
+		glutSolidCube(1.0);
+		return;
+	}
+
 	if (bTexture) {
 		glActiveTextureARB(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[type]);
@@ -283,7 +282,6 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 		}
 	}
 	glEnd();
-#endif
 }
 
 void Render::renderPlayer(const Entity &observer) {
@@ -374,44 +372,44 @@ void renderSeenBlock(BlockAndFace seen_block){
 
 void Render::renderScene(){
 	const World &world = *CurrentGame()->getWorld();
-	for (auto it = world.begin(); it != world.end(); ++it){
+	for (auto it = world.blocks_begin(); it != world.blocks_end(); ++it){
 		Vec3i p = it->first;
 		beginTransform();
 		translate(Vec3f(p)+0.5f);
 		int msk = 0;
 		for (int i = 0; i < 6; ++i)	{
 			auto it = world.find(p + FACE[i]);
-			if (it == world.end() || !it->second->is_opaque())
+			if (it == world.blocks_end() || !it->second->is_opaque())
 				msk |= 1 << i;
 		}
-#ifdef _SIMPLE_CUBE_
-		if (msk) {
-			if ((p[0] ^ p[1] ^ p[2]) & 1) {
-				glColor3f(1.f, 1.f, 1.f);
-			} else {
-				glColor3f(0.f, 0.f, 0.f);
+		if (bSimpleCube) {
+			if (msk) {
+				if ((p[0] ^ p[1] ^ p[2]) & 1) {
+					glColor3f(1.f, 1.f, 1.f);
+				} else {
+					glColor3f(0.f, 0.f, 0.f);
+				}
+				render.renderCube(0, msk);
 			}
-			render.renderCube(0, msk);
+		} else {
+			block_type b = it->second->get_block_type();
+			use_material(white, white, black, black, 1);
+			if (b == LOG) {
+				render.renderCube(10, 0x3c & msk);
+				render.renderCube(11, 3 & msk);
+			} else if (b == LEAVES) {
+				int mask[3] = {0};
+				srand(((it->first[0] * 13) + it->first[1] * 13) + it->first[2]);
+				for (int i = 0; i < 6; ++i)
+					mask[rand() % 3] |= 1 << i;
+				use_material(green, green, black, black, 1);
+				for (int i = 0; i < 3; ++i)
+					render.renderCube(12 + i, mask[i] & msk);
+			} else if (b == GOLD) {
+				use_material(golden, golden, white, black, 10);
+				render.renderCube(b, msk);
+			} else render.renderCube(b, msk);
 		}
-#else
-		block_type b = it->second->get_block_type();
-		use_material(white, white, black, black, 1);
-		if (b == LOG) {
-			render.renderCube(10, 0x3c & msk);
-			render.renderCube(11, 3 & msk);
-		} else if (b == LEAVES) {
-			int mask[3] = { 0 };
-			srand(((it->first[0] * 13) + it->first[1] * 13) + it->first[2]);
-			for (int i = 0; i < 6; ++i)
-				mask[rand() % 3] |= 1 << i;
-			use_material(green, green, black, black, 1);
-			for (int i = 0; i < 3; ++i)
-				render.renderCube(12+i, mask[i] & msk);
-		} else if (b == GOLD){
-			use_material(golden, golden, white, black, 10);
-			render.renderCube(b, msk);
-		} else render.renderCube(b, msk);
-#endif
 		endTransform();
 	}
 }
@@ -425,9 +423,7 @@ GLint genTableList(){
 }
 void regenTableList(GLint lid){
 	glNewList(lid, GL_COMPILE);
-#ifndef _SIMPLE_CUBE_
-	render.setTextureState(true);
-#endif
+	render.setTextureState(!bSimpleCube);
 	render.renderScene();
 	glEndList();
 }
@@ -535,7 +531,7 @@ void Render::renderBoxLine(){
 extern GLhandleARB shader_id;
 Vec3f light_pos{19.0f, 10.f, -20.f};
 void display(){
-	if (bCustomGLSL) {
+	if (bDisplay && bCustomGLSL) {
 		//First step: Render from the light POV to a FBO, store depth values only
 		extern GLuint fboId;
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
@@ -570,12 +566,14 @@ void display(){
 		glCullFace(GL_FRONT);
 #endif
 
-		render.setTextureState(false);
-		//render the scene
-		renderSceneDynamic(*CurrentGame()->getPlayerEntity(), true);
-		renderTableList();
-		render.draw_item();
-		//render.renderScene();
+		if (bDisplay) {
+			render.setTextureState(false);
+			//render the scene
+			renderSceneDynamic(*CurrentGame()->getPlayerEntity(), true);
+			renderTableList();
+			render.draw_item();
+			//render.renderScene();
+		}
 
 		//Save modelview/projection matrice into texture7, also add a biais
 		setTextureMatrix();
@@ -619,31 +617,30 @@ void display(){
 	if (bWire) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-#ifndef _SIMPLE_CUBE_
-	render.setTextureState(true);
-#else
-	render.setTextureState(false);
-#endif
+	if (bDisplay) {
 
-	//render the scene
-	renderSceneDynamic(*CurrentGame()->getPlayerEntity());
-	renderTableList();
-	render.draw_item();
-	//render.renderScene();
+		render.setTextureState(!bSimpleCube);
 
-	glEnable(GL_LIGHTING);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
+		//render the scene
+		renderSceneDynamic(*CurrentGame()->getPlayerEntity());
+		renderTableList();
+		render.draw_item();
+		//render.renderScene();
 
-	flt light[4] = {light_pos[0], light_pos[1], light_pos[2], 0.0f};
-	glLightfv(GL_LIGHT0, GL_POSITION, light);
-	int state = 7;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
-	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
-	glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHTING);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, dark_grey);
+
+		flt light[4] = {light_pos[0], light_pos[1], light_pos[2], 0.0f};
+		glLightfv(GL_LIGHT0, GL_POSITION, light);
+		int state = 7;
+		glLightfv(GL_LIGHT0, GL_AMBIENT, (state & 1) ? grey : black);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, (state & 2) ? white : black);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, (state & 4) ? white : black);
+		glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.00);
+		glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00);
+		glEnable(GL_LIGHT0);
+	}
 
 	//Draw the GUI
 	glUseProgramObjectARB(0);
@@ -652,30 +649,32 @@ void display(){
 
 	glColor3f(0.f, 0.f, 0.f);
 	renderGUI(*CurrentGame()->getPlayerEntity());
-	if (bBoxLine) render.renderBoxLine();
-	renderSeenBlock(seen_block);
-
-	// DEBUG only. this piece of code draw the depth buffer onscreen
-	if (bCustomGLSL && bDebugDepthMap) {
-		glUseProgramObjectARB(0);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, wWidth, 0, wHeight, 1, 200);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glColor4f(1, 1, 1, 1);
-		glActiveTextureARB(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depth_texture_id);
-		glEnable(GL_TEXTURE_2D);
-		glTranslated(0, 0, -1);
-		glBegin(GL_QUADS);
-		glTexCoord2d(0, 0); glVertex3f(wWidth / 2.0, wHeight / 2.0, 0);
-		glTexCoord2d(1, 0); glVertex3f(wWidth, wHeight / 2.0, 0);
-		glTexCoord2d(1, 1); glVertex3f(wWidth, wHeight, 0);
-		glTexCoord2d(0, 1); glVertex3f(wWidth / 2.0, wHeight, 0);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
+	if (bDisplay) {
+		if (bBoxLine) render.renderBoxLine();
+		renderSeenBlock(seen_block);
+		// DEBUG only. this piece of code draw the depth buffer onscreen
+		if (bCustomGLSL && bDebugDepthMap) {
+			glUseProgramObjectARB(0);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glOrtho(0, wWidth, 0, wHeight, 1, 200);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glColor4f(1, 1, 1, 1);
+			glActiveTextureARB(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, depth_texture_id);
+			glEnable(GL_TEXTURE_2D);
+			glTranslated(0, 0, -1);
+			glBegin(GL_QUADS);
+			glTexCoord2d(0, 0); glVertex3f(wWidth / 2.0, wHeight / 2.0, 0);
+			glTexCoord2d(1, 0); glVertex3f(wWidth, wHeight / 2.0, 0);
+			glTexCoord2d(1, 1); glVertex3f(wWidth, wHeight, 0);
+			glTexCoord2d(0, 1); glVertex3f(wWidth / 2.0, wHeight, 0);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		}
 	}
+
 	glutSwapBuffers();
 }
 

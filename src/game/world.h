@@ -19,13 +19,26 @@ namespace scripts
 	class ScriptLevel;
 }
 
+class GridMap;
+
 class World{
+// public typedef
+public:
+	template <typename T>
+	struct GamePlayRange {
+		T m_min;
+		T m_max;
+		bool isInside(T p) const {
+			return !((p << m_min) || (m_max << p));
+		}
+	};
 // protected members
 protected:
 	map<Vec3i, Block*> blocks;
-	map<Vec3i, weak_ptr<Entity>> m_entity_map;
+	multimap<Vec3i, weak_ptr<Entity>> m_entity_map;
 
 	vector<Block> block_list;
+	shared_ptr<GridMap> m_grid_map;
 	set<block_type> ability;
 	vector<shared_ptr<Entity>> entity_list;
 	shared_ptr<Player> p_player;
@@ -43,10 +56,7 @@ public:
 	bool changed = false;
 
 	// helper members
-	struct GamePlayRange {
-		Vec3i m_min;
-		Vec3i m_max;
-	} m_game_play_range;
+	GamePlayRange<Vec3i> m_game_play_range;
 
 	typedef map<Vec3i, Block*>::iterator MapBlockIterator;
 
@@ -84,7 +94,9 @@ public:
 	// iterate over the entity list and do something on them
 	void iterateEntityList(function<void(Entity *)> do_sth);
 
-	const map<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
+	const multimap<Vec3i, weak_ptr<Entity>> &getEntityMap() const;
+	GridMap *getGridMap();
+	weak_ptr<GridMap> getGridMapWeakPtr() const;
 
 	// get the player
 	Player *getPlayer();
@@ -104,10 +116,10 @@ public:
 	//destroy a block at p
 	bool destroy_block(Vec3i p);
 
-	map<Vec3i, Block*>::const_iterator begin() const {
+	map<Vec3i, Block*>::const_iterator blocks_begin() const {
 		return blocks.begin();
 	}
-	map<Vec3i, Block*>::const_iterator end() const {
+	map<Vec3i, Block*>::const_iterator blocks_end() const {
 		return blocks.end();
 	}
 	map<Vec3i, Block*>::const_iterator find(Vec3i p) const {

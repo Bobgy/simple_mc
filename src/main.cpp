@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 //#define CULL_BACK
 
 #include "stdafx.h"

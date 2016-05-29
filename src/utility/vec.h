@@ -31,8 +31,8 @@ struct Vec3{
 		return x[id];
 	}
 	bool operator < (Vec3 r) const {
-		if (x[0] != r[0]) return x[0] < r[0];
 		if (x[1] != r[1]) return x[1] < r[1];
+		if (x[0] != r[0]) return x[0] < r[0];
 		return x[2] < r[2];
 	}
 	Vec3<T> operator + (Vec3 r) const {
@@ -101,6 +101,10 @@ struct Vec3{
 
 	operator bool() const {
 		return x[0] || x[1] || x[2];
+	}
+
+	uint8_t operator<<(Vec3<T> r) const {
+		return (x[0] < r[0]) | ((x[1] < r[1]) * 2) | ((x[2] < r[2]) * 4);
 	}
 
 // static constants
@@ -243,11 +247,15 @@ struct Vec2 {
 
 	template <typename TT>
 	operator Vec2<TT>() const {
-		return Vec2<TT>((TT)x[0], (TT)x[1]);
+		return Vec2<TT>{(TT)x[0], (TT)x[1]};
 	}
 
 	operator bool() const {
 		return x[0] || x[1];
+	}
+
+	uint8_t operator<<(Vec2<T> r) const {
+		return (x[0] < r[0]) | ((x[1] < r[1]) * 2);
 	}
 
 	static Vec2<T> ZERO() { return Vec2{(T)0, (T)0}; }
@@ -257,6 +265,7 @@ struct Vec2 {
 };
 
 typedef Vec2<int> Vec2i;
+typedef Vec2<size_t> Vec2ui;
 typedef Vec2<flt> Vec2f;
 typedef Vec2<double> Vec2fd;
 
@@ -279,7 +288,7 @@ Vec2<T> horizontal_projection(Vec3<T> v) {
 
 template <typename T>
 Vec3<T> as_horizontal_projection(Vec2<T> v) {
-	return Vec3<T>{v[0], (T)0, v[2]};
+	return Vec3<T>{v[0], (T)0, v[1]};
 }
 
 inline Vec3f horizontal_facing_vector(flt yaw) {

@@ -71,7 +71,7 @@ void PlayerController::tick(flt delta_time)
 	} else {
 		m_movement_intent.jump_intent = 0.0f;
 		df = (int32_t)keyboard.get_state(' ') - (int32_t)keyboard.get_special_state(GLUT_KEY_SHIFT_L);
-		m_movement_intent.float_intent = 0.5f * (flt)df;
+		m_movement_intent.float_intent = 0.3f * (flt)df;
 	}
 }
 
@@ -110,7 +110,7 @@ void AIController::tick(flt delta_time)
 		m_movement_intent.yaw_intent = yaw;
 	} else {
 		if (abs_delta_angle(yaw, rigid_body.m_yaw) < 1e-2f) {
-			m_movement_intent.walk_intent[0] = 0.2f;
+			m_movement_intent.walk_intent[0] = 0.4f;
 		} else {
 			m_movement_intent.yaw_intent = yaw;
 		}

@@ -26,6 +26,8 @@ void scripts::SG001::tick(flt delta_time)
 	// do nothing
 }
 
+vector<shared_ptr<function<void()>>> k_key_callback;
+
 void scripts::SG001::setup_game()
 {
 	Game *game = CurrentGame();
@@ -48,13 +50,32 @@ void scripts::SG001::setup_game()
 	world->m_game_play_range.m_min = Vec3i{-29, 1, -29};
 	world->m_game_play_range.m_max = Vec3i{29, 1, 29};
 	world->setup(level_script);
+	//world->readFromFile("stage/last_save.txt");
 
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'w', STRING_ID("forward"));
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'s', STRING_ID("backward"));
+	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'p', STRING_ID("switch_display"));
+	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'[', STRING_ID("simple_cube"));
+
+	auto display_callback = make_shared<function<void(void)>>([](){
+		bDisplay ^= 1;
+	});
+	if (display_callback) {
+		k_key_callback.push_back(display_callback);
+		event_manager->registerEventCallback(STRING_ID("switch_display"), k_key_callback.back(), EnumEventType::ON_UP);
+	}
+
+	auto simple_render_callback = make_shared<function<void(void)>>([]() {
+		bCustomGLSL ^= 1;
+		bSimpleCube ^= 1;
+		CurrentGame()->getWorld()->changed = true;
+	});
+	if (simple_render_callback) {
+		k_key_callback.push_back(simple_render_callback);
+		event_manager->registerEventCallback(STRING_ID("simple_cube"), k_key_callback.back(), EnumEventType::ON_UP);
+	}
 
 	view_controller->setup(0.005f, -0.001f);
-
-	//world->readFromFile("stage/last_save.txt");
 
 	shared_ptr<Player> player = make_shared<Player>();
 	world->addPlayer(player);

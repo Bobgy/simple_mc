@@ -135,10 +135,13 @@
     <ClInclude Include="src\game\entity_controller.h" />
     <ClInclude Include="src\game\event_manager.h" />
     <ClInclude Include="src\game\game.h" />
+    <ClInclude Include="src\game\gridmap.h" />
     <ClInclude Include="src\game\item.h" />
     <ClInclude Include="src\game\player.h" />
     <ClInclude Include="src\game\rigid_body.h" />
     <ClInclude Include="src\game\world.h" />
+    <ClInclude Include="src\nav\a_star_solver.h" />
+    <ClInclude Include="src\nav\nav.h" />
     <ClInclude Include="src\render\auxiliary.h" />
     <ClInclude Include="src\render\render.h" />
     <ClInclude Include="src\render\shader.h" />
@@ -164,10 +167,13 @@
     <ClCompile Include="src\game\entity_controller.cpp" />
     <ClCompile Include="src\game\event_manager.cpp" />
     <ClCompile Include="src\game\game.cpp" />
+    <ClCompile Include="src\game\gridmap.cpp" />
     <ClCompile Include="src\game\player.cpp" />
     <ClCompile Include="src\game\rigid_body.cpp" />
     <ClCompile Include="src\game\world.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\nav\a_star_solver.cpp" />
+    <ClCompile Include="src\nav\nav.cpp" />
     <ClCompile Include="src\render\auxiliary.cpp" />
     <ClCompile Include="src\render\render.cpp" />
     <ClCompile Include="src\render\shader.cpp" />

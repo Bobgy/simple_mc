@@ -97,7 +97,7 @@ public:
 			Vec3f p_norm, v_p;
 			p_norm = _p.normalize();
 			v_p = (m_rigid_body.m_velocity * p_norm) * p_norm;
-			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 3.0f + _p * len) * 0.25f);
+			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 11.0f + _p * len) * (1.0f / 12.f));
 		}
 	}
 	void be_slowed(flt resistance) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity * resistance; }

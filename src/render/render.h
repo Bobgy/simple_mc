@@ -1,7 +1,7 @@
 #ifndef _RENDER_H
 #define _RENDER_H
 
-//#define _SIMPLE_CUBE_
+#define _SIMPLE_CUBE_
 
 #include <stdlib.h>
 #include <stdafx.h>

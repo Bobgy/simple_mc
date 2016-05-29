@@ -1,12 +1,14 @@
 #include "stdafx.h"
 
 #include <cassert>
+#include <random>
 
 #include "game/rigid_body.h"
 #include "game/entity.h"
 
 #include "game/game.h"
 #include "game/world.h"
+#include "game/gridmap.h"
 
 bool RigidBodyController::isValid() const
 {
@@ -58,6 +60,7 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 	RETURN_AND_WARN_IF(!isValid());
 	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
 	RigidBody &body1 = m_entity->m_rigid_body;
+#ifdef _USE_ENTITY_MAP
 	for (auto &ptr: entity_map) {
 		auto entity = ptr.second.lock();
 		if (!entity) continue;
@@ -67,12 +70,48 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 			Vec2f dir_vec =
 				horizontal_projection(body1.m_position) -
 				horizontal_projection(body2.m_position);
+			if (sgn(sqr(dir_vec)) == 0) {
+				uniform_real_distribution<> dis(-PI, PI);
+				flt ang = dis(k_pseudo_gen);
+				dir_vec = {cos(ang), sin(ang)};
+			}
 			Vec3f d = as_horizontal_projection(dir_vec.normalize());
-			flt F = min(5.0f, (len + 0.5f) * 3.0f) * delta_time;
+			flt F = min(3.0f, (len + 0.2f) * 3.0f) * delta_time;
 			body1.collision_force(d, F);
 			body2.collision_force(-1.0f * d, F);
 		}
 	}
+#else
+	World *world = CurrentGame()->getWorld();
+	RETURN_IF_NULL(world);
+	GridMap *gridmap = world->getGridMap();
+	RETURN_AND_WARN_IF(gridmap == nullptr);
+
+	Vec3i ip = body1.getCenterCoord();
+	Vec2i ip2 = horizontal_projection(ip);
+	gridmap->iterateGridsInRange(ip2 - 1, ip2 + 1, [&body1, delta_time](Vec2i p, Grid *grid) {
+		assert(grid);
+		for (auto &entity : grid->m_entities) {
+			if (!entity) continue;
+			RigidBody &body2 = entity->m_rigid_body;
+			flt len = body1.intersect(body2);
+			if (sgn(len)) {
+				Vec2f dir_vec =
+					horizontal_projection(body1.m_position) -
+					horizontal_projection(body2.m_position);
+				if (sgn(sqr(dir_vec)) == 0) {
+					uniform_real_distribution<> dis(-PI, PI);
+					flt ang = dis(k_pseudo_gen);
+					dir_vec = {cos(ang), sin(ang)};
+				}
+				Vec3f d = as_horizontal_projection(dir_vec.normalize());
+				flt F = min(3.0f, (len + 0.2f) * 3.0f) * delta_time;
+				body1.collision_force(d, F);
+				body2.collision_force(-1.0f * d, F);
+			}
+		}
+	});
+#endif
 }
 
 void RigidBodyController::tick_static_collision(flt delta_time)
@@ -91,7 +130,7 @@ void RigidBodyController::tick_static_collision(flt delta_time)
 		for (int dy = -2; dy <= 2; ++dy) {
 			for (int dz = -1; dz <= 1; ++dz) {
 				map<Vec3i, Block*>::const_iterator it;
-				if ((it = world->find(Vec3i{p[0] + dx, p[1] + dy, p[2] + dz})) != world->end()) {
+				if ((it = world->find(Vec3i{p[0] + dx, p[1] + dy, p[2] + dz})) != world->blocks_end()) {
 					m_entity->on_ground |= m_entity->collide_cube_vertically(it->first);
 					m_entity->collide_cube_horizontally(it->first);
 				}

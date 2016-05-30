@@ -10,6 +10,7 @@
 #include "game/player.h"
 
 #include "scripts/level/sl001.h"
+#include "scripts/level/sl002.h"
 
 scripts::SG001::~SG001()
 {
@@ -44,9 +45,9 @@ void scripts::SG001::setup_game()
 		return;
 	}
 
-	auto level_script = make_shared<SL001>();
+	auto level_script = make_shared<SL002>();
 	level_script->setup();
-	world->randomGenerate(0, 30);
+	world->randomGenerate(0, 30, 100.0f);
 	world->m_game_play_range.m_min = Vec3i{-29, 1, -29};
 	world->m_game_play_range.m_max = Vec3i{29, 1, 29};
 	world->setup(level_script);

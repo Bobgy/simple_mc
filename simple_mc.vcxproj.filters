@@ -155,6 +155,9 @@
     <ClInclude Include="src\game\components\steering.h">
       <Filter>src\game\components</Filter>
     </ClInclude>
+    <ClInclude Include="src\scripts\level\sl002.h">
+      <Filter>src\scripts\level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -237,6 +240,9 @@
     </ClCompile>
     <ClCompile Include="src\game\components\steering.cpp">
       <Filter>src\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scripts\level\sl002.cpp">
+      <Filter>src\scripts\level</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

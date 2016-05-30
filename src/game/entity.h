@@ -30,12 +30,12 @@ public:
 		uint32_t m_context;
 
 		uint32_t get() const {
-			return (uint32_t)m_context << 32 | (uint32_t)m_tie_breaker << 16 | m_propagated_steps;
+			return ((uint32_t)m_context << 32) | ((uint32_t)m_tie_breaker << 16) | m_propagated_steps;
 		}
-		bool operator< (Priority r) const {
+		bool operator < (Priority r) const {
 			return get() < r.get();
 		}
-		bool operator<= (Priority r) const {
+		bool operator <= (Priority r) const {
 			return get() <= r.get();
 		}
 	};
@@ -46,6 +46,8 @@ public:
 
 // protected members
 protected:
+	size_t m_id;
+
 	// the controller, can be either an AI controller or a Player controller
 	shared_ptr<EntityController> m_entity_controller;
 
@@ -112,6 +114,8 @@ public:
 	void setPriority(Priority priority);
 	void setTemporaryPriority(TemporaryPriority priority);
 	const Priority &getPriority() const;
+	void setID(size_t id) { m_id = id; }
+	size_t getID() const { return m_id; }
 
 	/*******************************************\
 	|*============ physics methods ============*|

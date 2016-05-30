@@ -69,7 +69,7 @@ public:
 	// read the world data from stage_file_path
 	void readFromFile(string stage_file_path);
 	// generate a world randomly by seed: seed and range: range
-	void randomGenerate(int seed, int range);
+	void randomGenerate(int seed, int range, flt p);
 
 	/*======== interface methods ========*/
 
@@ -79,7 +79,7 @@ public:
 	bool addPlayer(shared_ptr<Player> player);
 
 	// returns its ID, fails when ID is negative
-	int spawnEntity(shared_ptr<Entity> entity);
+	size_t spawnEntity(shared_ptr<Entity> entity);
 	
 	/*========= getter and setter methods =======*/
 

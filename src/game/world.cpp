@@ -78,9 +78,11 @@ bool World::addPlayer(shared_ptr<Player> player)
 	return true;
 }
 
-int World::spawnEntity(shared_ptr<Entity> entity) {
+size_t World::spawnEntity(shared_ptr<Entity> entity) {
 	entity_list.push_back(entity);
-	return entity_list.size() - 1;
+	size_t id = entity_list.size() - 1;
+	entity->setID(id);
+	return id;
 }
 
 void World::clear()
@@ -240,14 +242,14 @@ void World::readFromFile(string stage_file_path) {
 	changed = true;
 }
 
-void World::randomGenerate(int seed, int range) {
+void World::randomGenerate(int seed, int range, flt p) {
 	init_ability();
 	srand(seed);
 	for (int i = 0; i < 10; i++) block_list.push_back(Block(block_type(i)));
 	for (int i = -range; i <= range; ++i)
 		for (int j = -range; j <= range; ++j)
 			for (int k = 0; k <= 3; ++k) {
-				if (abs(i) == range || abs(j) == range || k == 0 || (rand() % 100 > 95)) {
+				if (abs(i) == range || abs(j) == range || k == 0 || (rand() % 100 >= p)) {
 					blocks[Vec3i{i, k, j}] = &block_list[ENDSTONE];
 				} else break;
 			}

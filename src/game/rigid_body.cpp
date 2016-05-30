@@ -106,7 +106,7 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 					dir_vec = {cos(ang), sin(ang)};
 				}
 				Vec3f d = as_horizontal_projection(dir_vec.normalize());
-				flt F = min(100.0f, (len + 0.2f) * 100.0f) * delta_time;
+				flt F = min(k_collision_force, (len + 0.3f) * k_collision_force) * delta_time;
 				body1.collision_force(d, F);
 			}
 		}

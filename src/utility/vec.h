@@ -35,6 +35,9 @@ struct Vec3{
 		if (x[0] != r[0]) return x[0] < r[0];
 		return x[2] < r[2];
 	}
+	bool operator == (Vec3 r) const {
+		return (x[0] == r[0]) && (x[1] == r[1]) && (x[2] == r[2]);
+	}
 	Vec3<T> operator + (Vec3 r) const {
 		return Vec3{x[0] + r[0], x[1] + r[1], x[2] + r[2]};
 	}
@@ -185,6 +188,9 @@ struct Vec2 {
 	bool operator < (Vec2 r) const {
 		if (x[0] != r[0]) return x[0] < r[0];
 		return x[1] < r[1];
+	}
+	bool operator == (Vec2 r) const {
+		return (x[0] == r[0]) && (x[1] == r[1]);
 	}
 	Vec2<T> operator + (Vec2 r) const {
 		return Vec2{x[0] + r[0], x[1] + r[1]};

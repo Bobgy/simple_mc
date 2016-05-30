@@ -65,3 +65,6 @@ mt19937 k_pseudo_gen(k_random_device());
 
 bool bDisplay = true;
 bool bSimpleCube = false;
+
+flt k_ai_speed = 10.0f;
+flt k_float_speed = 10.0f;

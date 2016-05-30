@@ -29,6 +29,9 @@
     <Filter Include="src\nav">
       <UniqueIdentifier>{ca83446d-cfe5-4940-aa06-f50fe9a0d60d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\game\components">
+      <UniqueIdentifier>{72c8ff5b-6a93-4ae1-9e9b-051936af00f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\mine_vertex.glsl">
@@ -149,6 +152,9 @@
     <ClInclude Include="src\nav\nav.h">
       <Filter>src\nav</Filter>
     </ClInclude>
+    <ClInclude Include="src\game\components\steering.h">
+      <Filter>src\game\components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -228,6 +234,9 @@
     </ClCompile>
     <ClCompile Include="src\nav\nav.cpp">
       <Filter>src\nav</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\components\steering.cpp">
+      <Filter>src\game\components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

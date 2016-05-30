@@ -42,7 +42,7 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 		}
 		
 		if (movement_intent.jump_intent) {
-			m_entity->force(Vec3f{0.f, movement_intent.jump_intent, 0.f});
+			m_entity->force(Vec3f{0.f, movement_intent.jump_intent, 0.f}, delta_time);
 		}
 		if (movement_intent.float_intent) {
 			m_entity->give_velocity(Vec3f::Y_AXIS(), movement_intent.float_intent);
@@ -50,7 +50,7 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 	}
 
 	if (m_entity->m_rigid_body.m_enabled_movement) {
-		m_entity->m_rigid_body.m_position += m_entity->m_rigid_body.m_velocity;
+		m_entity->m_rigid_body.m_position += m_entity->m_rigid_body.m_velocity * delta_time;
 		m_entity->m_rigid_body.m_velocity *= RESISTANCE;
 	}
 }
@@ -58,9 +58,9 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 void RigidBodyController::tick_dynamic_collision(flt delta_time)
 {
 	RETURN_AND_WARN_IF(!isValid());
-	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
 	RigidBody &body1 = m_entity->m_rigid_body;
 #ifdef _USE_ENTITY_MAP
+	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
 	for (auto &ptr: entity_map) {
 		auto entity = ptr.second.lock();
 		if (!entity) continue;
@@ -89,10 +89,11 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 
 	Vec3i ip = body1.getCenterCoord();
 	Vec2i ip2 = horizontal_projection(ip);
-	gridmap->iterateGridsInRange(ip2 - 1, ip2 + 1, [&body1, delta_time](Vec2i p, Grid *grid) {
+	gridmap->iterateGridsInRange(ip2 - 1, ip2 + 1, [&body1, delta_time, this](Vec2i p, Grid *grid) {
 		assert(grid);
 		for (auto &entity : grid->m_entities) {
 			if (!entity) continue;
+			if (entity == m_entity) continue;
 			RigidBody &body2 = entity->m_rigid_body;
 			flt len = body1.intersect(body2);
 			if (sgn(len)) {
@@ -105,9 +106,8 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 					dir_vec = {cos(ang), sin(ang)};
 				}
 				Vec3f d = as_horizontal_projection(dir_vec.normalize());
-				flt F = min(3.0f, (len + 0.2f) * 3.0f) * delta_time;
+				flt F = min(100.0f, (len + 0.2f) * 100.0f) * delta_time;
 				body1.collision_force(d, F);
-				body2.collision_force(-1.0f * d, F);
 			}
 		}
 	});

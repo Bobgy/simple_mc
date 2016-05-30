@@ -131,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\block.h" />
+    <ClInclude Include="src\game\components\steering.h" />
     <ClInclude Include="src\game\entity.h" />
     <ClInclude Include="src\game\entity_controller.h" />
     <ClInclude Include="src\game\event_manager.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="src\utility\view.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\components\steering.cpp" />
     <ClCompile Include="src\game\entity.cpp" />
     <ClCompile Include="src\game\entity_controller.cpp" />
     <ClCompile Include="src\game\event_manager.cpp" />

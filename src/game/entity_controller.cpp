@@ -38,7 +38,6 @@ PlayerController::~PlayerController()
 {
 }
 
-flt step = 0.3f, eps = 1e-8f;
 void PlayerController::tick(flt delta_time)
 {
 	ViewController *view_controller = CurrentGame()->getViewController();
@@ -55,11 +54,11 @@ void PlayerController::tick(flt delta_time)
 	
 	// forward movement intent
 	df = (int32_t)event_manager->isEventActive(STRING_ID("forward")) - (int32_t)event_manager->isEventActive(STRING_ID("backward"));
-	m_movement_intent.walk_intent[0] = step * (flt)df;
+	m_movement_intent.walk_intent[0] = k_ai_speed * (flt)df;
 	
 	// left movement intent;
 	df = (int32_t)keyboard.get_state('a') - (int32_t)keyboard.get_state('d');
-	m_movement_intent.walk_intent[1] = step * 0.5f * (flt)df;
+	m_movement_intent.walk_intent[1] = k_ai_speed * 0.5f * (flt)df;
 	
 	if (bGravity) {
 		if (keyboard.get_state(' ') && m_entity->on_ground) {
@@ -71,7 +70,7 @@ void PlayerController::tick(flt delta_time)
 	} else {
 		m_movement_intent.jump_intent = 0.0f;
 		df = (int32_t)keyboard.get_state(' ') - (int32_t)keyboard.get_special_state(GLUT_KEY_SHIFT_L);
-		m_movement_intent.float_intent = 0.3f * (flt)df;
+		m_movement_intent.float_intent = k_float_speed * (flt)df;
 	}
 }
 
@@ -110,9 +109,10 @@ void AIController::tick(flt delta_time)
 		m_movement_intent.yaw_intent = yaw;
 	} else {
 		if (abs_delta_angle(yaw, rigid_body.m_yaw) < 1e-2f) {
-			m_movement_intent.walk_intent[0] = 0.4f;
+			m_movement_intent.walk_intent[0] = k_ai_speed;
 		} else {
 			m_movement_intent.yaw_intent = yaw;
+			m_movement_intent.walk_intent[0] = k_ai_speed;
 		}
 	}
 }

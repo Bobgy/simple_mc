@@ -34,7 +34,7 @@ void World::tick(flt delta_time)
 
 	if (bGravity) {
 		for (auto &entity : entity_list) {
-			entity->fall();
+			entity->fall(delta_time);
 		}
 	}
 

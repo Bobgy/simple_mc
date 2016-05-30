@@ -21,6 +21,7 @@ Game *CurrentGame();
 
 class Game {
 protected:
+	uint32_t m_tick_count = 0;
 	shared_ptr<World> p_world;
 	shared_ptr<ViewController> p_view_controller;
 	shared_ptr<Keyboard> p_keyboard;
@@ -37,6 +38,7 @@ public:
 	ViewController *getViewController();
 	Keyboard *getKeyboard();
 	EventManager *getEventManager();
+	uint32_t getTickCount() { return m_tick_count; }
 
 	void setup(shared_ptr<scripts::ScriptGame> script_game);
 	void clear();

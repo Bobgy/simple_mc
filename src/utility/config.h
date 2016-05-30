@@ -66,4 +66,7 @@ extern mt19937 k_pseudo_gen;
 extern bool bDisplay;
 extern bool bSimpleCube;
 
+extern flt k_ai_speed;
+extern flt k_float_speed;
+
 #endif

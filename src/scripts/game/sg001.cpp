@@ -11,6 +11,8 @@
 
 #include "scripts/level/sl001.h"
 #include "scripts/level/sl002.h"
+#include "scripts/level/sl003.h"
+#include "scripts/level/sl004.h"
 
 scripts::SG001::~SG001()
 {
@@ -47,11 +49,16 @@ void scripts::SG001::setup_game()
 
 	auto level_script = make_shared<SL002>();
 	level_script->setup();
+#ifdef MAP_TUNNEL
+	world->readFromFile("stage/tunnel.txt");
+#else
+	//world->readFromFile("stage/last_save.txt");
 	world->randomGenerate(0, 30, 100.0f);
+#endif
 	world->m_game_play_range.m_min = Vec3i{-29, 1, -29};
 	world->m_game_play_range.m_max = Vec3i{29, 1, 29};
 	world->setup(level_script);
-	//world->readFromFile("stage/last_save.txt");
+	
 
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'w', STRING_ID("forward"));
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'s', STRING_ID("backward"));

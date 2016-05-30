@@ -150,6 +150,8 @@
     <ClInclude Include="src\scripts\game\sg001.h" />
     <ClInclude Include="src\scripts\level\sl001.h" />
     <ClInclude Include="src\scripts\level\sl002.h" />
+    <ClInclude Include="src\scripts\level\sl003.h" />
+    <ClInclude Include="src\scripts\level\sl004.h" />
     <ClInclude Include="src\scripts\script.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\utility\config.h" />
@@ -184,6 +186,8 @@
     <ClCompile Include="src\scripts\game\sg001.cpp" />
     <ClCompile Include="src\scripts\level\sl001.cpp" />
     <ClCompile Include="src\scripts\level\sl002.cpp" />
+    <ClCompile Include="src\scripts\level\sl003.cpp" />
+    <ClCompile Include="src\scripts\level\sl004.cpp" />
     <ClCompile Include="src\scripts\script.cpp" />
     <ClCompile Include="src\utility\config.cpp" />
     <ClCompile Include="src\utility\event_board.cpp" />

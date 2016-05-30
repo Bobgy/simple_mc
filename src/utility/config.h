@@ -8,6 +8,8 @@
 
 #include "utility/vec.h"
 
+//#define MAP_TUNNEL
+
 extern int view_mode;
 
 extern flt range_touch;

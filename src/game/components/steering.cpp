@@ -53,8 +53,8 @@ void PriorityBasedAvoider::tick(flt delta_time)
 	Entity::Priority priority = m_entity->getPriority();
 	++priority.m_propagated_steps;
 	gridmap->iterateGridsInRange(
-		ip2 - 2,
-		ip2 + 2,
+		ip2 - 1,
+		ip2 + 1,
 		[&body, &pending_entities, priority, current_tick, this](Vec2i p, Grid *grid) {
 			assert(grid);
 			for (auto &entity : grid->m_entities) {
@@ -62,6 +62,7 @@ void PriorityBasedAvoider::tick(flt delta_time)
 				if (entity == m_entity) continue;
 				if (entity->getPriority() < m_entity->getPriority()) continue;
 				RigidBody &body2 = entity->m_rigid_body;
+				if (body2.m_velocity.normalize() * body.m_velocity.normalize() < cos(30.f)) continue;
 				flt len = body.intersect(body2);
 				if (sgn(len)) {
 					Vec2f dir_vec =
@@ -76,7 +77,6 @@ void PriorityBasedAvoider::tick(flt delta_time)
 					flt F = min(k_steering_force, (len + 0.5f) * k_steering_force);
 					entity->m_nav_force -= F * dir_vec;
 					pending_entities.push_back(entity);
-				
 					entity->setTemporaryPriority({priority, current_tick});
 				}
 			}

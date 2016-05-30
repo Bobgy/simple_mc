@@ -58,4 +58,7 @@ void scripts::SL001::setup_level()
 		world->spawnEntity(mob);
 		controller->setDestination(world->getRandomPosition());
 	}
+
+	shared_ptr<Player> player = make_shared<Player>();
+	world->addPlayer(player);
 }

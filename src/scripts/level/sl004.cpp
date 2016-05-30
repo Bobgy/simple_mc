@@ -57,4 +57,7 @@ void scripts::SL004::setup_level()
 		world->spawnEntity(mob);
 		controller->setDestination(p[0]);
 	}
+
+	shared_ptr<Player> player = make_shared<Player>();
+	world->addPlayer(player);
 }

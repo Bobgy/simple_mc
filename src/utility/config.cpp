@@ -68,7 +68,11 @@ bool bSimpleCube = false;
 
 flt k_ai_speed = 10.0f;
 flt k_float_speed = 10.0f;
+
 flt k_collision_force = 160000.f;
 flt k_steering_force = 40000.f;
 flt k_avoidance_radius_ratio = 1.5f;
 flt k_nav_force_deteriorate_rate = 0.4f;
+size_t k_temporary_priority_last_ticks = 0;
+
+bool bPriorityEnabled = true;

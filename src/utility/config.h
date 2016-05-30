@@ -74,5 +74,7 @@ extern flt k_collision_force;
 extern flt k_steering_force;
 extern flt k_avoidance_radius_ratio;
 extern flt k_nav_force_deteriorate_rate;
+extern size_t k_temporary_priority_last_ticks;
 
+extern bool bPriorityEnabled;
 #endif

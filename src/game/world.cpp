@@ -20,6 +20,8 @@
 
 using namespace std;
 
+static vector<pair<Entity::Priority, Entity *>> g_priority_entity;
+
 void World::tick(flt delta_time)
 {
 	// tick level script
@@ -28,8 +30,19 @@ void World::tick(flt delta_time)
 	m_grid_map->refreshEntities(this);
 
 	// tick EntityController logic
-	for (auto &entity : entity_list) {
-		entity->tick(delta_time);
+	if (bPriorityEnabled) {
+		g_priority_entity.clear();
+		for (auto &entity : entity_list) {
+			g_priority_entity.push_back(make_pair(entity->getPriority(), entity.get()));
+		}
+		stable_sort(g_priority_entity.begin(), g_priority_entity.end());
+		for (auto &pr : g_priority_entity) {
+			pr.second->tick(delta_time);
+		}
+	} else {
+		for (auto &entity : entity_list) {
+			entity->tick(delta_time);
+		}
 	}
 
 	if (bGravity) {

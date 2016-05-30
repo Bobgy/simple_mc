@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "sl002.h"
+#include "sl005.h"
 
 #include "game/game.h"
 #include "game/world.h"
@@ -8,11 +8,11 @@
 #include "game/entity_controller.h"
 #include "game/components/steering.h"
 
-scripts::SL002::~SL002()
+scripts::SL005::~SL005()
 {
 }
 
-void scripts::SL002::setup()
+void scripts::SL005::setup()
 {
 }
 
@@ -20,33 +20,21 @@ typedef PriorityBasedAvoider EntityCtrl;
 //typedef AIController EntityCtrl;
 
 static flt len = 20.f;
-static Vec3f pa = {len, 1, 0};
-static Vec3f pb = {-len, 1, 0};
-static int NUM = 21;
+static const int NUM = 23;
 static bool bTurnAround = false;
 
-void scripts::SL002::tick(flt delta_time)
+void scripts::SL005::tick(flt delta_time)
 {
 	Game *game = CurrentGame();
 	RETURN_IF_NULL(game);
 
 	World *world = game->getWorld();
 	RETURN_IF_NULL(world);
-	if (bTurnAround) {
-		world->iterateEntityList([world](Entity *entity) {
-			EntityController *controller = entity->getController();
-			if (controller && controller->isAI()) {
-				AIController *ai = ASSERT_CAST<EntityCtrl*>(controller);
-				RigidBody &body = entity->m_rigid_body;
-				if (AIController::hasArrivedDestination(body, ai->getDestination())) {
-					ai->setDestination((pa == ai->getDestination()) ? pb : pa);
-				}
-			}
-		});
-	}
 }
 
-void scripts::SL002::setup_level()
+static size_t f[NUM];
+
+void scripts::SL005::setup_level()
 {
 	Game *game = CurrentGame();
 	if (game == nullptr) return;
@@ -57,11 +45,12 @@ void scripts::SL002::setup_level()
 	bSimpleCube = true;
 	CurrentGame()->getWorld()->changed = true;
 
+	for (size_t i = 0; i < NUM; ++i) f[i] = i;
+	random_shuffle(f, f + NUM);
 	for (size_t num = 0; num < NUM; ++num) {
-		bool bLeft = num & 1;
-		//bool bLeft = num < NUM / 2;
+		flt ang = num / (flt)NUM * 2.0f * PI;
 		auto mob = make_shared<Entity>(
-			bLeft ? pa : pb,
+			Vec3f{len * cos(ang), 1.0f, len * sin(ang)},
 			Vec3f::ZERO(),
 			0.45f,
 			1.6f,
@@ -70,10 +59,10 @@ void scripts::SL002::setup_level()
 			true);
 		shared_ptr<AIController> controller = make_shared<EntityCtrl>();
 		mob->setup(controller);
-		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)num, (uint32_t)num});
+		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)f[num], (uint32_t)f[num]});
 		//mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)bLeft, (uint32_t)bLeft * 100});
 		world->spawnEntity(mob);
-		controller->setDestination(bLeft ? pb : pa);
+		controller->setDestination(Vec3f{len * cos(ang + PI), 1.0f, len * sin(ang + PI)});
 	}
 
 	shared_ptr<Player> player = make_shared<Player>();

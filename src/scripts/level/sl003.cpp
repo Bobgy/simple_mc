@@ -74,4 +74,9 @@ void scripts::SL003::setup_level()
 		controller->setDestination(bSide ? p[1] : p[2]);
 		pp[num] = bSide ? 1 : 2;
 	}
+
+	shared_ptr<Player> player = make_shared<Player>();
+	world->addPlayer(player);
+
+	player->getEntity()->m_rigid_body.m_position = Vec3f{10, 10, 10};
 }

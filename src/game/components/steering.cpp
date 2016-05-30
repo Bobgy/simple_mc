@@ -45,7 +45,8 @@ void PriorityBasedAvoider::tick(flt delta_time)
 	RETURN_AND_WARN_IF(gridmap == nullptr);
 
 	RigidBody body = body1;
-	body.m_position += m_movement_intent.walk_intent[0] * delta_time;
+	body.m_position += body.m_velocity * delta_time;
+	//body.m_position += m_movement_intent.walk_intent[0] * delta_time;
 	body.m_shape.getCylinder()->r *= k_avoidance_radius_ratio;
 	Vec3i ip = round(body.m_position);
 	Vec2i ip2 = horizontal_projection(ip);
@@ -77,7 +78,7 @@ void PriorityBasedAvoider::tick(flt delta_time)
 					flt F = min(k_steering_force, (len + 0.5f) * k_steering_force);
 					entity->m_nav_force -= F * dir_vec;
 					pending_entities.push_back(entity);
-					entity->setTemporaryPriority({priority, current_tick});
+					entity->setTemporaryPriority({priority, current_tick + k_temporary_priority_last_ticks});
 				}
 			}
 		}

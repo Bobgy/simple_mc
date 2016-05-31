@@ -48,13 +48,13 @@ void scripts::SG001::setup_game()
 		return;
 	}
 
-	auto level_script = make_shared<SL005>();
+	auto level_script = make_shared<SL002>();
 	level_script->setup();
 #ifdef MAP_TUNNEL
 	world->readFromFile("stage/tunnel.txt");
 #else
 	//world->readFromFile("stage/last_save.txt");
-	world->randomGenerate(0, 100, 100.0f);
+	world->randomGenerate(0, 30, 100.0f);
 #endif
 	world->m_game_play_range.m_min = Vec3i{-30, 1, -30};
 	world->m_game_play_range.m_max = Vec3i{30, 1, 30};

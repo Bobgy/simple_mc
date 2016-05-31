@@ -264,6 +264,8 @@ struct Vec2 {
 		return (x[0] < r[0]) | ((x[1] < r[1]) * 2);
 	}
 
+	Vec2<T> rotate(flt ang) const { return Vec2<T>{(T)(x[0] * cos(ang) - x[1] * sin(ang)), (T)(x[0] * sin(ang) + x[1] * cos(ang))}; }
+
 	static Vec2<T> ZERO() { return Vec2{(T)0, (T)0}; }
 	static Vec2<T> X_AXIS() { return Vec2{(T)1, (T)0}; }
 	static Vec2<T> Y_AXIS() { return Vec2{(T)0, (T)1}; }

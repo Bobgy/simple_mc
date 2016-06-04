@@ -43,7 +43,8 @@ void PriorityBasedAvoider::tick(flt delta_time)
 	GridMap *gridmap = world->getGridMap();
 	RETURN_AND_WARN_IF(gridmap == nullptr);
 
-	for (flt ahead_ratio : {1.0f, 20.0f}) {
+	for (flt ahead_ratio : {1.0f})//, 20.0f
+	{
 		RigidBody body_ahead = body1;
 		body_ahead.m_position += body_ahead.m_velocity * delta_time * ahead_ratio;
 		//body.m_position += m_movement_intent.walk_intent[0] * delta_time;
@@ -61,7 +62,9 @@ void PriorityBasedAvoider::tick(flt delta_time)
 			for (auto &entity : grid->m_entities) {
 				if (!entity) continue;
 				if (entity == m_entity) continue;
-				if (entity->getPriority() < m_entity->getPriority()) continue;
+				if (bPriorityEnabled) {
+					if (entity->getPriority() < m_entity->getPriority()) continue;
+				}
 				RigidBody &body2 = entity->m_rigid_body;
 
 				// TODO: may be zero
@@ -82,13 +85,16 @@ void PriorityBasedAvoider::tick(flt delta_time)
 						sin_val = min(sin_val, 1.0f);
 						flt ang = -asin(sin_val);
 						dir_vec = dir_vec.normalize();
-						if (body2.m_velocity ^ dir_vec > 0) dir_vec = dir_vec.rotate(ang);
-						else dir_vec = dir_vec.rotate(-ang);
+						//if (body2.m_velocity ^ dir_vec > 0) dir_vec = dir_vec.rotate(ang);
+						//else dir_vec = dir_vec.rotate(-ang);
 
 						flt F = k_steering_force * min(1.0f, (len + 0.1f) * 3.f) * 20.0f / (20.f + ahead_ratio);
 						entity->m_nav_force -= F * dir_vec;
-						pending_entities.push_back(entity);
-						entity->setTemporaryPriority({priority, current_tick + k_temporary_priority_last_ticks});
+
+						if (bPriorityEnabled) {
+							pending_entities.push_back(entity);
+							entity->setTemporaryPriority({priority, current_tick + k_temporary_priority_last_ticks});
+						}
 					}
 				}
 			}

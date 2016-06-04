@@ -15,6 +15,8 @@
 #include "scripts/level/sl004.h"
 #include "scripts/level/sl005.h"
 
+typedef scripts::SL005 UsedLevelScript;
+
 scripts::SG001::~SG001()
 {
 	// do nothing
@@ -48,7 +50,7 @@ void scripts::SG001::setup_game()
 		return;
 	}
 
-	auto level_script = make_shared<SL002>();
+	auto level_script = make_shared<UsedLevelScript>();
 	level_script->setup();
 #ifdef MAP_TUNNEL
 	world->readFromFile("stage/tunnel.txt");

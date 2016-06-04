@@ -19,11 +19,11 @@ void scripts::SL002::setup()
 typedef PriorityBasedAvoider EntityCtrl;
 //typedef AIController EntityCtrl;
 
-static flt len = 10.f;
+static flt len = 25.f;
 static Vec3f pa = {len, 1, 0};
 static Vec3f pb = {-len, 1, 0};
-static int NUM = 2;
-static bool bTurnAround = true;
+static int NUM = 100;
+static bool bTurnAround = false;
 
 void scripts::SL002::tick(flt delta_time)
 {

@@ -30,7 +30,7 @@ public:
 		uint32_t m_context;
 
 		uint32_t get() const {
-			return ((uint32_t)m_context << 32) | ((uint32_t)m_tie_breaker << 16) | m_propagated_steps;
+			return ((uint64_t)m_context << 32) | ((uint32_t)m_tie_breaker << 16) | m_propagated_steps;
 		}
 		bool operator < (Priority r) const {
 			return get() < r.get();

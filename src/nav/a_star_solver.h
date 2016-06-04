@@ -55,7 +55,9 @@ protected:
 				gridinfo->closed = false;
 				gridinfo->clearance = grid->m_clearance;
 				gridinfo->parent = {-1, -1};
+				return gridinfo;
 			}
+			return nullptr;
 		}
 		GridInfo *getGridInfo(Vec2ui p) {
 			return getGridInfo(p[0], p[1]);

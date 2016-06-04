@@ -9,15 +9,18 @@
 #include "game/game.h"
 #include "game/world.h"
 #include "game/gridmap.h"
+#include "game/entity_controller.h"
+#include "game/components/rigidbody_motion_controller.h"
 
 bool RigidBodyController::isValid() const
 {
 	return m_entity != nullptr;
 }
 
-void RigidBodyController::setup(Entity *parent)
+void RigidBodyController::setup(Entity *parent, RigidBodyMotionController *motion_controller)
 {
 	m_entity = parent;
+	m_motion_controller = motion_controller;
 }
 
 void RigidBodyController::tick_movement_intent(flt delta_time)
@@ -26,28 +29,22 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 
 	EntityController *controller = m_entity->getController();
 	if (controller) {
-		const EntityController::MovementIntent &movement_intent =
+		const MovementIntent &movement_intent =
 			controller->getMovementIntent();
-
-		m_entity->m_rigid_body.m_yaw = movement_intent.yaw_intent;
+		if (m_motion_controller) {
+			m_motion_controller->setMovementIntent(movement_intent);
+			m_motion_controller->tick(delta_time);
+		}
 		m_entity->m_rigid_body.m_pitch = movement_intent.pitch_intent;
-		
-		Vec3f face_xz = m_entity->m_rigid_body.getHorizontalFacingVector();
-
-		if (movement_intent.walk_intent[0]) {
-			m_entity->give_velocity(face_xz, movement_intent.walk_intent[0]);
-		}
-		if (movement_intent.walk_intent[1]) {
-			m_entity->give_velocity(Vec3f{face_xz[2], 0, -face_xz[0]}, movement_intent.walk_intent[1]);
-		}
-		
-		if (movement_intent.jump_intent) {
-			m_entity->force(Vec3f{0.f, movement_intent.jump_intent, 0.f}, delta_time);
-		}
 		if (movement_intent.float_intent) {
 			m_entity->give_velocity(Vec3f::Y_AXIS(), movement_intent.float_intent);
 		}
 	}
+}
+
+void RigidBodyController::tick_physical_simulation(flt delta_time)
+{
+	RETURN_AND_WARN_IF(isValid() != true);
 
 	if (m_entity->m_rigid_body.m_enabled_movement) {
 		m_entity->m_rigid_body.m_position += m_entity->m_rigid_body.m_velocity * delta_time;

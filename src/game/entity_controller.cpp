@@ -25,7 +25,7 @@ bool EntityController::isAI() const
 	return false;
 }
 
-const EntityController::MovementIntent &EntityController::getMovementIntent() const
+const MovementIntent &EntityController::getMovementIntent() const
 {
 	return m_movement_intent;
 }

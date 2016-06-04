@@ -58,7 +58,7 @@ void scripts::SL005::setup_level()
 			true,
 			true);
 		shared_ptr<AIController> controller = make_shared<EntityCtrl>();
-		mob->setup(controller);
+		mob->setup(controller, nullptr);
 		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)f[num], (uint32_t)f[num]});
 		//mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)bLeft, (uint32_t)bLeft * 100});
 		world->spawnEntity(mob);

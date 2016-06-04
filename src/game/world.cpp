@@ -70,11 +70,13 @@ void World::tick(flt delta_time)
 	}
 #endif
 
-
 	// tick RigidBodyController movement_intent
 	for (auto &entity : entity_list) {
 		RigidBodyController *controller = entity->getRigidBodyController();
-		if (controller != nullptr) controller->tick_movement_intent(delta_time);
+		if (controller != nullptr) {
+			controller->tick_movement_intent(delta_time);
+			controller->tick_physical_simulation(delta_time);
+		}
 	}
 
 	for (auto &entity : entity_list) {

@@ -26,7 +26,8 @@ NavigationManager::PathHandle NavigationManager::queryPath(Vec2f start_point, Ve
 		LOG_WARNING(__FUNCTION__, "path query failed due to invalid gridmap.\n");
 		return k_invalid_handle;
 	}
-	
+	// TODO: unfinished
+	return k_invalid_handle;
 }
 
 void NavigationManager::releaseHandle(PathHandle handle)

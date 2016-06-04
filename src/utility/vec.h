@@ -303,6 +303,10 @@ inline Vec3f horizontal_facing_vector(flt yaw) {
 	return Vec3f{cos(yaw), 0.0f, sin(yaw)};
 }
 
+inline Vec2f horizontal_facing_vector_2d(flt yaw) {
+	return Vec2f{cos(yaw), sin(yaw)};
+}
+
 inline Vec3f facing_vector(flt yaw, flt pitch) {
 	const flt h = yaw, v = pitch;
 	return Vec3f{cos(h) * cos(v), sin(v), sin(h) * cos(v)};

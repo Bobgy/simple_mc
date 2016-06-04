@@ -52,7 +52,7 @@ void scripts::SL004::setup_level()
 			true,
 			true);
 		shared_ptr<AIController> controller = make_shared<PriorityBasedAvoider>();
-		mob->setup(controller);
+		mob->setup(controller, nullptr);
 		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)num, num});
 		world->spawnEntity(mob);
 		controller->setDestination(p[0]);

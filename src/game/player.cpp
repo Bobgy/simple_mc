@@ -29,7 +29,7 @@ void Player::setup()
 	shared_ptr<Entity> observer = make_shared<Entity>(pp, vv, 0.45f, 1.6f, 1.0f);
 	auto pt = make_shared<PlayerController>();
 	if (pt) {
-		observer->setup(pt);
+		observer->setup(pt, nullptr);
 		observer->render_config.is_visible = false;
 	}
 	size_t index = CurrentGame()->getWorld()->spawnEntity(observer);

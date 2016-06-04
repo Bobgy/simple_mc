@@ -50,9 +50,8 @@ protected:
 
 	// the controller, can be either an AI controller or a Player controller
 	shared_ptr<EntityController> m_entity_controller;
-
-	// the rigid body controller
 	shared_ptr<RigidBodyController> m_rigid_body_controller;
+	shared_ptr<RigidBodyMotionController> m_rigid_body_motion_controller;
 
 	// the actor, may be null
 	shared_ptr<Actor> m_actor;
@@ -92,7 +91,6 @@ public:
 		m_rigid_body.m_shape.setCylinder(r, h);
 		m_rigid_body.m_mass = 1.0f / mass_inv;
 		
-
 		m_rigid_body.m_affected_by_gravity = G;
 		m_rigid_body.m_enabled_movement = M;
 	}
@@ -153,7 +151,9 @@ public:
 	|*============= interface methods =============*|
 	\***********************************************/
 	// setup components
-	void setup(shared_ptr<EntityController> entity_controller);
+	void setup(
+		shared_ptr<EntityController> entity_controller,
+		shared_ptr<RigidBodyMotionController> rigidbody_motion_controller = nullptr);
 
 	// tick to simulate the movement in time seconds
 	void tick(flt delta_time);

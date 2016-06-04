@@ -7,16 +7,25 @@
 
 #include "utility/vec.h"
 #include "game/entity.h"
+#include "game/components/rigidbody_motion_controller.h"
 
 using namespace std;
 
-void Entity::setup(shared_ptr<EntityController> entity_controller)
+void Entity::setup(
+	shared_ptr<EntityController> entity_controller,
+	shared_ptr<RigidBodyMotionController> rigidbody_motion_controller)
 {
 	m_entity_controller = entity_controller;
 	if (m_entity_controller) m_entity_controller->setup(this);
+	m_rigid_body_motion_controller = rigidbody_motion_controller;
+	if (!m_rigid_body_motion_controller) {
+		m_rigid_body_motion_controller = make_shared<RigidBodyMotionController>();
+		assert(m_rigid_body_motion_controller);
+	}
+	m_rigid_body_motion_controller->setup(&m_rigid_body);
 
 	shared_ptr<RigidBodyController> rigid_body_controller = make_shared<RigidBodyController>();
-	rigid_body_controller->setup(this);
+	rigid_body_controller->setup(this, m_rigid_body_motion_controller.get());
 	m_rigid_body_controller = rigid_body_controller;
 
 	shared_ptr<ActorHuman> actor_human = make_shared<ActorHuman>();
@@ -120,7 +129,7 @@ void ActorHuman::tick(flt delta_time)
 	EntityController *controller = m_parent->getController();
 	if (controller == nullptr) return;
 
-	const EntityController::MovementIntent &movement_intent = controller->getMovementIntent();
+	const MovementIntent &movement_intent = controller->getMovementIntent();
 	if (movement_intent.isWalking(m_parent->m_rigid_body.m_yaw)) {
 		arm_ang += arm_swing_speed;
 		if (arm_ang > 45.f) {

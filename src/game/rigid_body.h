@@ -60,9 +60,11 @@ class RigidBody
 public:
 	Vec3f  m_position;      // Three dimensional coordinates (x, y, z)
 	Vec3f  m_velocity;      // The velocity vector (vx, vy, vz)
+	Vec3f  m_acceleration;  // The acceleration vector (ax, ay, az)
 	flt    m_yaw;           // horizontal rotation
 	flt    m_pitch;         // vertical rotation
 	flt    m_mass;
+	flt    m_mass_inv;
 	Shape  m_shape;
 
 	bool    m_affected_by_gravity;
@@ -88,13 +90,23 @@ public:
 			}
 		}
 	}
+	void give_velocity(Vec3f _p, flt len) {
+		if (m_enabled_movement) {
+			Vec3f p_norm, v_p;
+			p_norm = _p.normalize();
+			v_p = (m_velocity * p_norm) * p_norm;
+			m_velocity = (m_velocity - v_p) + ((v_p * 4.0f + _p * len) * (1.0f / 5.f));
+		}
+	}
 };
 
+class RigidBodyMotionController;
 class RigidBodyController
 {
 // protected members
 protected:
 	Entity *m_entity;
+	RigidBodyMotionController *m_motion_controller;
 
 // protected methods
 protected:
@@ -104,9 +116,11 @@ protected:
 public:
 
 	// interface methods
-	void setup(Entity *parent);
+	void setup(Entity *parent, RigidBodyMotionController *motion_controller);
 
 	void tick_movement_intent(flt delta_time);
+
+	void tick_physical_simulation(flt delta_time);
 
 	void tick_dynamic_collision(flt delta_time);
 

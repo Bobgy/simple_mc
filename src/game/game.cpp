@@ -72,6 +72,8 @@ void Game::setup(shared_ptr<scripts::ScriptGame> script_game)
 	if (!script_game) return;
 	clear();
 
+	m_tick_count = 0;
+
 	m_script = script_game;
 
 	p_world = make_shared<World>();
@@ -90,6 +92,8 @@ void Game::setup(shared_ptr<scripts::ScriptGame> script_game)
 
 void Game::clear()
 {
+	m_tick_count = 0;
+
 	p_world.reset();
 	p_view_controller.reset();
 	p_keyboard.reset();
@@ -98,6 +102,7 @@ void Game::clear()
 
 void Game::tick(flt delta_time)
 {
+	++m_tick_count;
 	if (m_script) m_script->tick(delta_time);
 	if (p_view_controller) p_view_controller->tick(delta_time);
 	if (p_world) p_world->tick(delta_time);

@@ -236,6 +236,8 @@ void Render::scale(Vec3f p){
 	glScalef(p[0], p[1], p[2]);
 }
 
+const Entity *rendered_entity = nullptr;
+
 void Render::renderCube(int type,int state)
 {
 	if (bSimpleCube) {
@@ -262,7 +264,13 @@ void Render::renderCube(int type,int state)
 void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 {
 	if (bSimpleCube) {
-		glColor3f(1.f, 0.f, 1.f);
+		if (rendered_entity != nullptr) {
+			size_t sz = CurrentGame()->getWorld()->getEntityList().size();
+			uint32_t context_prio = rendered_entity->getPriority().m_context;
+			glColor3f(context_prio == 0 ? 1.0f : 0.2f, (flt)context_prio / (flt)sz, context_prio == 0 ? 1.0f : 0.3);
+		} else {
+			glColor3f(1.f, 0.f, 1.f);
+		}
 		glutSolidCube(1.0);
 		return;
 	}
@@ -294,6 +302,8 @@ void Render::renderPlayer(const Entity &observer) {
 		LOG_WARNING(__FUNCTION__, "The entity is not human.\n");
 		return;
 	}
+
+	rendered_entity = &observer;
 	
 	beginTransform();
 	translate(observer);
@@ -384,11 +394,14 @@ void Render::renderScene(){
 		}
 		if (bSimpleCube) {
 			if (msk) {
+				/*
 				if ((p[0] ^ p[1] ^ p[2]) & 1) {
 					glColor3f(1.f, 1.f, 1.f);
 				} else {
 					glColor3f(0.f, 0.f, 0.f);
 				}
+				*/
+				glColor3f(0.f, 0.f, 0.f);
 				render.renderCube(0, msk);
 			}
 		} else {
@@ -447,21 +460,24 @@ void renderInfo(Entity observer)
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase > 1000) {
-		sprintf_s<256>(buffer, "FPS:%4.2f %s IPS:%4.2f",
-			frame*1000.0 / (time - timebase), mode, idle_count*1000.0 / (time - timebase));
+		sprintf_s<256>(buffer,
+			"FPS:%4.2f %s tick: %u",
+			frame * 1000.0f / (time - timebase),
+			mode,
+			CurrentGame()->getTickCount());
 		timebase = time;
 		frame = 0;
 		idle_count = 0;
 	}
 
 	char *c;
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵*/
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 	glRasterPos2f(10, 10);
-	for (c = buffer; *c != '\0'; c++)
+	for (c = buffer; *c; ++c)
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-	glPopMatrix();// 重置为原保存矩阵
+	glPopMatrix();
 }
 
 void renderCross(){
@@ -475,16 +491,16 @@ void renderCross(){
 
 void renderGUI(Entity observer){
 	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵
-	glOrtho(0, wWidth, 0, wHeight, -1, 1);// 位置正投影
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, wWidth, 0, wHeight, -1, 1);
 
 	renderInfo(observer);
 	renderCross();
 
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPopMatrix();// 重置为原保存矩阵
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -647,7 +663,7 @@ void display(){
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
 
-	glColor3f(0.f, 0.f, 0.f);
+	glColor3f(0.2f, 0.2f, 0.2f);
 	renderGUI(*CurrentGame()->getPlayerEntity());
 	if (bDisplay) {
 		if (bBoxLine) render.renderBoxLine();

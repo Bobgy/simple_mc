@@ -22,12 +22,17 @@ void Entity::setup(shared_ptr<EntityController> entity_controller)
 	shared_ptr<ActorHuman> actor_human = make_shared<ActorHuman>();
 	actor_human->setup(this);
 	m_actor = actor_human;
+
+	m_priority = Priority{0, 0, 0};
+	m_temporary_priority = {{0, 0, 0}, 0};
+	m_nav_force = Vec2f::ZERO();
 }
 
 void Entity::tick(flt delta_time)
 {
 	if (m_entity_controller) m_entity_controller->tick(delta_time);
 	if (m_actor) m_actor->tick(delta_time);
+	m_nav_force *= k_nav_force_deteriorate_rate;
 }
 
 //calculate the collision with a cube with its lower coordinates at x
@@ -146,4 +151,27 @@ void ActorHuman::tick(flt delta_time)
 	default:
 		assert(false && "side_walk is unexpected");
 	}
+}
+
+void Entity::setPriority(Priority priority)
+{
+	m_priority = priority;
+}
+
+void Entity::setTemporaryPriority(TemporaryPriority temporary_priority)
+{
+	uint32_t current_tick = CurrentGame()->getTickCount();
+	RETURN_AND_WARN_IF(temporary_priority.m_expire_tick < current_tick);
+	if (m_temporary_priority.m_expire_tick < current_tick ||
+		temporary_priority.m_priority <= m_temporary_priority.m_priority) {
+		m_temporary_priority = temporary_priority;
+	}
+}
+
+const Entity::Priority & Entity::getPriority() const
+{
+	if (m_temporary_priority.m_expire_tick >= CurrentGame()->getTickCount()) {
+		return m_temporary_priority.m_priority;
+	}
+	return m_priority;
 }

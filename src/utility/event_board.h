@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+#include <unordered_map>
+
 typedef function<void(void)> CallBackFunction;
 
 enum class EnumEventType : size_t

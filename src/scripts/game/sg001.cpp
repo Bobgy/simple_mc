@@ -10,6 +10,12 @@
 #include "game/player.h"
 
 #include "scripts/level/sl001.h"
+#include "scripts/level/sl002.h"
+#include "scripts/level/sl003.h"
+#include "scripts/level/sl004.h"
+#include "scripts/level/sl005.h"
+
+typedef scripts::SL005 UsedLevelScript;
 
 scripts::SG001::~SG001()
 {
@@ -44,13 +50,18 @@ void scripts::SG001::setup_game()
 		return;
 	}
 
-	auto level_script = make_shared<SL001>();
+	auto level_script = make_shared<UsedLevelScript>();
 	level_script->setup();
-	world->randomGenerate(0, 30);
-	world->m_game_play_range.m_min = Vec3i{-29, 1, -29};
-	world->m_game_play_range.m_max = Vec3i{29, 1, 29};
-	world->setup(level_script);
+#ifdef MAP_TUNNEL
+	world->readFromFile("stage/tunnel.txt");
+#else
 	//world->readFromFile("stage/last_save.txt");
+	world->randomGenerate(0, 30, 100.0f);
+#endif
+	world->m_game_play_range.m_min = Vec3i{-30, 1, -30};
+	world->m_game_play_range.m_max = Vec3i{30, 1, 30};
+	world->setup(level_script);
+	
 
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'w', STRING_ID("forward"));
 	event_manager->registerEventTrigger(keyboard->m_key_event_board, (uint8_t)'s', STRING_ID("backward"));
@@ -76,7 +87,4 @@ void scripts::SG001::setup_game()
 	}
 
 	view_controller->setup(0.005f, -0.001f);
-
-	shared_ptr<Player> player = make_shared<Player>();
-	world->addPlayer(player);
 }

@@ -4,7 +4,7 @@
 
 const flt CLOCK_T = 1.0f / 60.0f;
 const flt RESISTANCE = 0.92f;
-const flt GRAVITY = 1.2f;
+const flt GRAVITY = 9.8f;
 const flt EPS_COLLIDE = 1e-2f;
 
 inline bool in_range(flt x, flt low, flt high, bool lowEq = 0, bool highEq = 0) {

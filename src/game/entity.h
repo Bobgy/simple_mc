@@ -23,9 +23,31 @@ public:
 		bool is_visible = true;
 		bool has_shadow = true;
 	};
+	struct Priority {
+		// lower value means higher priority
+		uint16_t m_propagated_steps;
+		uint16_t m_tie_breaker;
+		uint32_t m_context;
+
+		uint32_t get() const {
+			return ((uint64_t)m_context << 32) | ((uint32_t)m_tie_breaker << 16) | m_propagated_steps;
+		}
+		bool operator < (Priority r) const {
+			return get() < r.get();
+		}
+		bool operator <= (Priority r) const {
+			return get() <= r.get();
+		}
+	};
+	struct TemporaryPriority {
+		Priority m_priority;
+		uint32_t m_expire_tick;
+	};
 
 // protected members
 protected:
+	size_t m_id;
+
 	// the controller, can be either an AI controller or a Player controller
 	shared_ptr<EntityController> m_entity_controller;
 
@@ -35,11 +57,15 @@ protected:
 	// the actor, may be null
 	shared_ptr<Actor> m_actor;
 
+	Priority m_priority;
+	TemporaryPriority m_temporary_priority;
+
 // public members
 public:
 	RenderConfig render_config;
 	RigidBody m_rigid_body;
 	bool on_ground;
+	Vec2f m_nav_force;
 
 // protected methods
 protected:
@@ -85,6 +111,11 @@ public:
 	RigidBodyController *getRigidBodyController() { return m_rigid_body_controller.get(); };
 	const RigidBodyController *getRigidBodyController() const { return m_rigid_body_controller.get(); }
 	flt operator[](size_t id) const { return m_rigid_body.m_position[id]; }
+	void setPriority(Priority priority);
+	void setTemporaryPriority(TemporaryPriority priority);
+	const Priority &getPriority() const;
+	void setID(size_t id) { m_id = id; }
+	size_t getID() const { return m_id; }
 
 	/*******************************************\
 	|*============ physics methods ============*|
@@ -97,16 +128,16 @@ public:
 			Vec3f p_norm, v_p;
 			p_norm = _p.normalize();
 			v_p = (m_rigid_body.m_velocity * p_norm) * p_norm;
-			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 11.0f + _p * len) * (1.0f / 12.f));
+			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 4.0f + _p * len) * (1.0f / 5.f));
 		}
 	}
 	void be_slowed(flt resistance) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity * resistance; }
 
 	//be given an force of _F
-	void force(Vec3f _F) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity + _F * (m_rigid_body.m_mass * CLOCK_T); }
+	void force(Vec3f _F, flt delta_time) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity + _F * (m_rigid_body.m_mass * delta_time); }
 
 	//fall because of gravity
-	void fall() { if (m_rigid_body.m_enabled_movement && m_rigid_body.m_affected_by_gravity) m_rigid_body.m_velocity[1] -= GRAVITY * CLOCK_T; }
+	void fall(flt delta_time) { if (m_rigid_body.m_enabled_movement && m_rigid_body.m_affected_by_gravity) m_rigid_body.m_velocity[1] -= GRAVITY * delta_time; }
 	
 	/***********************************************\
 	|*============ geometry utilities =============*|

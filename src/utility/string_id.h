@@ -14,7 +14,7 @@
 #endif
 
 typedef unsigned StringID;
-const static uint32_t P1 = (uint64_t)(1e9 + 7), P2 = 9875321ULL;
+const static uint32_t P1 = (uint32_t)(1e9 + 7), P2 = 9875321U;
 
 #ifdef DEBUG_STRING_ID
 

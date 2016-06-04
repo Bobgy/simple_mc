@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "sl001.h"
+#include "sl004.h"
 
 #include "game/game.h"
 #include "game/world.h"
@@ -8,44 +8,43 @@
 #include "game/entity_controller.h"
 #include "game/components/steering.h"
 
-scripts::SL001::~SL001()
+scripts::SL004::~SL004()
 {
 }
 
-void scripts::SL001::setup()
+void scripts::SL004::setup()
 {
 }
 
-void scripts::SL001::tick(flt delta_time)
+static flt len = 8.f, len2 = 6.f;
+static Vec3f p[4] = {
+	{  len, 1, -0.5},
+	{ len2, 1, -0.5},
+	{-len2, 1, -0.5},
+	{ -len, 1, -0.5}
+};
+const static int NUM = 20;
+
+void scripts::SL004::tick(flt delta_time)
 {
 	Game *game = CurrentGame();
 	RETURN_IF_NULL(game);
-	
-	World *world = game->getWorld();
-	RETURN_IF_NULL(world);
 
-	world->iterateEntityList([world](Entity *entity) {
-		EntityController *controller = entity->getController();
-		if (controller && controller->isAI()) {
-			AIController *ai = ASSERT_CAST<PriorityBasedAvoider*>(controller);
-			RigidBody &body = entity->m_rigid_body;
-			if (AIController::hasArrivedDestination(body, ai->getDestination())) {
-				ai->setDestination(world->getRandomPosition());
-			}
-		}
-	});
+	if (game->getTickCount() == 120) {
+		EntityController* controller = game->getWorld()->getEntity(0)->getController();
+		ASSERT_CAST<PriorityBasedAvoider*>(controller)->setDestination(p[4]);
+	}
 }
 
-void scripts::SL001::setup_level()
+void scripts::SL004::setup_level()
 {
 	Game *game = CurrentGame();
 	if (game == nullptr) return;
 	World *world = game->getWorld();
 	if (world == nullptr) return;
-
-	for (size_t num = 0; num < 100; ++num) {
+	for (size_t num = 0; num < NUM; ++num) {
 		auto mob = make_shared<Entity>(
-			world->getRandomPosition(),
+			p[0],
 			Vec3f::ZERO(),
 			0.45f,
 			1.6f,
@@ -56,7 +55,7 @@ void scripts::SL001::setup_level()
 		mob->setup(controller);
 		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)num, num});
 		world->spawnEntity(mob);
-		controller->setDestination(world->getRandomPosition());
+		controller->setDestination(p[0]);
 	}
 
 	shared_ptr<Player> player = make_shared<Player>();

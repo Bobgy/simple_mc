@@ -176,7 +176,6 @@ void init(int argc, char *argv[]) {
 	tableList = genTableList();
 }
 
-
 int main(int argc, char *argv[])
 {
 	LOG_INFO(__FUNCTION__, "Initializing...\n");

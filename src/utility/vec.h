@@ -35,6 +35,9 @@ struct Vec3{
 		if (x[0] != r[0]) return x[0] < r[0];
 		return x[2] < r[2];
 	}
+	bool operator == (Vec3 r) const {
+		return (x[0] == r[0]) && (x[1] == r[1]) && (x[2] == r[2]);
+	}
 	Vec3<T> operator + (Vec3 r) const {
 		return Vec3{x[0] + r[0], x[1] + r[1], x[2] + r[2]};
 	}
@@ -186,6 +189,9 @@ struct Vec2 {
 		if (x[0] != r[0]) return x[0] < r[0];
 		return x[1] < r[1];
 	}
+	bool operator == (Vec2 r) const {
+		return (x[0] == r[0]) && (x[1] == r[1]);
+	}
 	Vec2<T> operator + (Vec2 r) const {
 		return Vec2{x[0] + r[0], x[1] + r[1]};
 	}
@@ -257,6 +263,8 @@ struct Vec2 {
 	uint8_t operator<<(Vec2<T> r) const {
 		return (x[0] < r[0]) | ((x[1] < r[1]) * 2);
 	}
+
+	Vec2<T> rotate(flt ang) const { return Vec2<T>{(T)(x[0] * cos(ang) - x[1] * sin(ang)), (T)(x[0] * sin(ang) + x[1] * cos(ang))}; }
 
 	static Vec2<T> ZERO() { return Vec2{(T)0, (T)0}; }
 	static Vec2<T> X_AXIS() { return Vec2{(T)1, (T)0}; }

@@ -8,6 +8,8 @@
 
 #include "utility/vec.h"
 
+//#define MAP_TUNNEL
+
 extern int view_mode;
 
 extern flt range_touch;
@@ -66,4 +68,13 @@ extern mt19937 k_pseudo_gen;
 extern bool bDisplay;
 extern bool bSimpleCube;
 
+extern flt k_ai_speed;
+extern flt k_float_speed;
+extern flt k_collision_force;
+extern flt k_steering_force;
+extern flt k_avoidance_radius_ratio;
+extern flt k_nav_force_deteriorate_rate;
+extern size_t k_temporary_priority_last_ticks;
+
+extern bool bPriorityEnabled;
 #endif

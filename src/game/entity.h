@@ -102,7 +102,7 @@ public:
 	Vec3f get_pos() const { return m_rigid_body.m_position; }
 	flt getRadius() const { return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->r; }
 	flt getHeight() const {	return ASSERT_PTR(m_rigid_body.m_shape.getCylinder())->h; }
-	Vec3f get_velocity() const { return m_rigid_body.m_velocity; }
+	Vec3f getVelocity() const { return m_rigid_body.m_velocity; }
 	EntityController *getController() {	return m_entity_controller.get(); }
 	Actor *getActor() { return m_actor.get(); }
 	const Actor *getActor() const { return m_actor.get(); }
@@ -120,22 +120,6 @@ public:
 	\*******************************************/
 	//move to (p[0],p[1],p[2]) directly
 	void move(Vec3f _p) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_position = _p; }
-
-	void give_velocity(Vec3f _p, flt len) {
-		if (m_rigid_body.m_enabled_movement) {
-			Vec3f p_norm, v_p;
-			p_norm = _p.normalize();
-			v_p = (m_rigid_body.m_velocity * p_norm) * p_norm;
-			m_rigid_body.m_velocity = (m_rigid_body.m_velocity - v_p) + ((v_p * 4.0f + _p * len) * (1.0f / 5.f));
-		}
-	}
-	void be_slowed(flt resistance) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity * resistance; }
-
-	//be given an force of _F
-	void force(Vec3f _F, flt delta_time) { if (m_rigid_body.m_enabled_movement) m_rigid_body.m_velocity = m_rigid_body.m_velocity + _F * (m_rigid_body.m_mass * delta_time); }
-
-	//fall because of gravity
-	void fall(flt delta_time) { if (m_rigid_body.m_enabled_movement && m_rigid_body.m_affected_by_gravity) m_rigid_body.m_velocity[1] -= GRAVITY * delta_time; }
 	
 	/***********************************************\
 	|*============ geometry utilities =============*|

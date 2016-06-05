@@ -37,7 +37,7 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 		}
 		m_entity->m_rigid_body.m_pitch = movement_intent.pitch_intent;
 		if (movement_intent.float_intent) {
-			m_entity->give_velocity(Vec3f::Y_AXIS(), movement_intent.float_intent);
+			m_entity->m_rigid_body.giveVelocity(Vec3f::Y_AXIS(), movement_intent.float_intent);
 		}
 	}
 }
@@ -46,9 +46,13 @@ void RigidBodyController::tick_physical_simulation(flt delta_time)
 {
 	RETURN_AND_WARN_IF(isValid() != true);
 
-	if (m_entity->m_rigid_body.m_enabled_movement) {
-		m_entity->m_rigid_body.m_position += m_entity->m_rigid_body.m_velocity * delta_time;
-		m_entity->m_rigid_body.m_velocity *= RESISTANCE;
+	RigidBody &rigidbody = m_entity->m_rigid_body;
+	if (rigidbody.m_enabled_movement) {
+		rigidbody.m_position += m_entity->m_rigid_body.m_velocity * delta_time;
+		rigidbody.m_velocity *= RESISTANCE;
+		if (bGravity && rigidbody.m_affected_by_gravity) {
+			rigidbody.m_velocity[1] -= GRAVITY * delta_time;
+		}
 	}
 }
 
@@ -134,7 +138,7 @@ void RigidBodyController::tick_static_collision(flt delta_time)
 			}
 		}
 	}
-	if (m_entity->on_ground) m_entity->be_slowed(smoothness_ground);
+	if (m_entity->on_ground) m_entity->m_rigid_body.beSlowed(smoothness_ground);
 }
 
 flt RigidBody::intersect(const RigidBody & r) const

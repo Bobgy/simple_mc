@@ -61,8 +61,8 @@ public:
 	Vec3f  m_position;      // Three dimensional coordinates (x, y, z)
 	Vec3f  m_velocity;      // The velocity vector (vx, vy, vz)
 	Vec3f  m_acceleration;  // The acceleration vector (ax, ay, az)
-	flt    m_yaw;           // horizontal rotation
-	flt    m_pitch;         // vertical rotation
+	Radian m_yaw;           // horizontal rotation
+	Radian m_pitch;         // vertical rotation
 	flt    m_mass;
 	flt    m_mass_inv;
 	Shape  m_shape;
@@ -90,7 +90,8 @@ public:
 			}
 		}
 	}
-	void give_velocity(Vec3f _p, flt len) {
+	void beSlowed(flt resistance) { if (m_enabled_movement) m_velocity = m_velocity * resistance; }
+	void giveVelocity(Vec3f _p, flt len) {
 		if (m_enabled_movement) {
 			Vec3f p_norm, v_p;
 			p_norm = _p.normalize();

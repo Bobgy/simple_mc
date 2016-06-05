@@ -43,8 +43,12 @@ void PlayerController::tick(flt delta_time)
 	ViewController *view_controller = CurrentGame()->getViewController();
 	if (view_controller->need_update()) {
 		const Vec2f &rotation_speeds = view_controller->getViewRotationSpeed();
-		m_movement_intent.yaw_intent = normalize_angle(m_entity->m_rigid_body.m_yaw + rotation_speeds[0]);
-		m_movement_intent.pitch_intent = normalize_angle(m_entity->m_rigid_body.m_pitch + rotation_speeds[1]);
+		Radian &yaw_intent = m_movement_intent.yaw_intent;
+		yaw_intent += rotation_speeds[0];
+		yaw_intent = yaw_intent.normalize();
+		Radian &pitch_intent = m_movement_intent.pitch_intent;
+		pitch_intent += rotation_speeds[1];
+		pitch_intent = pitch_intent.normalize();
 	}
 
 	// tick keyboard

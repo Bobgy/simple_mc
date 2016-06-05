@@ -45,12 +45,6 @@ void World::tick(flt delta_time)
 		}
 	}
 
-	if (bGravity) {
-		for (auto &entity : entity_list) {
-			entity->fall(delta_time);
-		}
-	}
-
 #ifdef _USE_ENTITY_MAP
 	refreshEntityMap();
 

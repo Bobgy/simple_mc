@@ -359,4 +359,32 @@ inline flt get_yaw_from_direction(Vec2f v) {
 	return atan2(v[1], v[0]);
 }
 
+struct Radian {
+	// members
+	flt m_angle;
+	// constructors
+	Radian() = default;
+	Radian(flt x): m_angle(x) {}
+
+	// operators
+	friend Radian operator- (Radian x, Radian y) { return x.m_angle - y.m_angle; }
+	friend Radian operator+ (Radian x, Radian y) { return x.m_angle + y.m_angle; }
+	Radian &operator+= (Radian v) { m_angle += v.m_angle; return *this; }
+	Radian &operator-= (Radian v) { m_angle -= v.m_angle; return *this; }
+	Radian operator- () const { return -m_angle; }
+	Radian absDelta(Radian v) const { return abs_delta_angle(m_angle, v.m_angle); }
+	// methods
+	Radian clamp(flt low = -PI, flt high = PI) const {
+		return m_angle < low ? low : (m_angle > high ? high : m_angle);
+	}
+	Radian &normalize() { m_angle = normalize_angle(m_angle); return *this; }
+	bool isNormalized() const { return m_angle >= -PI && m_angle <= PI;	}
+	Vec2f getHorizontalVector() const { return Vec2f{cos(m_angle), sin(m_angle)}; }
+	// conversions
+	operator flt() const { return m_angle; }
+
+	// static functions
+	static Radian GetYawFromDirection(Vec2f v) { return atan2(v[1], v[0]); }
+};
+
 #endif

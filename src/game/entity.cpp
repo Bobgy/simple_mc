@@ -19,7 +19,8 @@ void Entity::setup(
 	if (m_entity_controller) m_entity_controller->setup(this);
 	m_rigid_body_motion_controller = rigidbody_motion_controller;
 	if (!m_rigid_body_motion_controller) {
-		m_rigid_body_motion_controller = make_shared<RigidBodyMotionController>();
+		//m_rigid_body_motion_controller = make_shared<RigidBodyMotionController>();
+		m_rigid_body_motion_controller = make_shared<HumanMotionController>();
 		assert(m_rigid_body_motion_controller);
 	}
 	m_rigid_body_motion_controller->setup(&m_rigid_body);

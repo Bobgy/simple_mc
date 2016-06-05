@@ -5,6 +5,7 @@
 #include "game/world.h"
 #include "game/entity.h"
 #include "game/entity_controller.h"
+#include "game/components/rigidbody_motion_controller.h"
 
 Player::Player()
 {
@@ -29,7 +30,9 @@ void Player::setup()
 	shared_ptr<Entity> observer = make_shared<Entity>(pp, vv, 0.45f, 1.6f, 1.0f);
 	auto pt = make_shared<PlayerController>();
 	if (pt) {
-		observer->setup(pt, nullptr);
+		auto motion_controller = make_shared<RigidBodyMotionController>();
+		assert(motion_controller);
+		observer->setup(pt, motion_controller);
 		observer->render_config.is_visible = false;
 	}
 	size_t index = CurrentGame()->getWorld()->spawnEntity(observer);

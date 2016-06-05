@@ -43,12 +43,14 @@ void PriorityBasedAvoider::tick(flt delta_time)
 	GridMap *gridmap = world->getGridMap();
 	RETURN_AND_WARN_IF(gridmap == nullptr);
 
-	for (flt ahead_ratio : {1.0f})//, 20.0f
+	for (flt ahead_ratio : {1.0f, 15.0f})
 	{
 		RigidBody body_ahead = body1;
 		body_ahead.m_position += body_ahead.m_velocity * delta_time * ahead_ratio;
 		//body.m_position += m_movement_intent.walk_intent[0] * delta_time;
-		body_ahead.m_shape.getCylinder()->r *= k_avoidance_radius_ratio;
+		if (ahead_ratio != 1.0f) {
+			body_ahead.m_shape.getCylinder()->r *= k_avoidance_radius_ratio;
+		}
 		Vec3i ip = round(body_ahead.m_position);
 		Vec2i ip2 = horizontal_projection(ip);
 		vector<Entity *> pending_entities;
@@ -67,14 +69,25 @@ void PriorityBasedAvoider::tick(flt delta_time)
 				}
 				RigidBody &body2 = entity->m_rigid_body;
 
-				// TODO: may be zero
-				flt cos_val = body2.m_velocity.normalize() * body_ahead.m_velocity.normalize();
-				if ( cos_val > cos(PI / 6.0) ) continue;
+				// do not collide with entities moving towards the same direction
+				if (sgn(sqr(body2.m_velocity)) > 0 && sgn(sqr(body_ahead.m_velocity)) > 0) {
+					flt cos_val = body2.m_velocity.normalize() * body_ahead.m_velocity.normalize();
+					if (cos_val > cos(PI / 6.0)) continue;
+				}
 
-				RigidBody body_ahead2 = body2;
+				{
+					Vec3f v_relative = body_ahead.m_velocity - body2.m_velocity;
+					Vec3f p_relative = body2.m_position - body_ahead.m_position;
+					if (sgn(sqr(v_relative)) && sgn(sqr(p_relative))) {
+						if (v_relative.normalize() * p_relative.normalize() < cos(PI / 3.0f)) continue;
+					}
+				}
+
+				RigidBody &body_ahead2 = body2;
 				//body_ahead2.m_position += body_ahead2.m_velocity * delta_time * ahead_ratio;
 				flt len = body_ahead.intersect(body_ahead2);
 				if (sgn(len)) {
+					assert(sgn(len) > 0);
 					if (find(pending_entities.begin(), pending_entities.end(), entity) == pending_entities.end()) {
 						Vec2f dir_vec =
 							horizontal_projection(body_ahead.m_position) -
@@ -82,11 +95,11 @@ void PriorityBasedAvoider::tick(flt delta_time)
 						if (sgn(sqr(dir_vec)) == 0) continue;
 
 						flt sin_val = (body_ahead.m_shape.getCylinder()->r + body_ahead2.m_shape.getCylinder()->r) / !dir_vec;
-						sin_val = min(sin_val, 1.0f);
-						flt ang = -asin(sin_val);
+						sin_val = min(sin_val * 1.2f, 1.0f);
+						flt ang = asin(sin_val);
 						dir_vec = dir_vec.normalize();
-						//if (body2.m_velocity ^ dir_vec > 0) dir_vec = dir_vec.rotate(ang);
-						//else dir_vec = dir_vec.rotate(-ang);
+						if (body2.m_velocity ^ dir_vec > 0) dir_vec = dir_vec.rotate(ang);
+						else dir_vec = dir_vec.rotate(-ang);
 
 						flt F = k_steering_force * min(1.0f, (len + 0.1f) * 3.f) * 20.0f / (20.f + ahead_ratio);
 						entity->m_nav_force -= F * dir_vec;
@@ -99,7 +112,7 @@ void PriorityBasedAvoider::tick(flt delta_time)
 				}
 			}
 			for (auto entity_ptr : pending_entities) {
-				entity_ptr->tick(delta_time);
+				entity_ptr->tick_controller(delta_time);
 			}
 		});
 	}

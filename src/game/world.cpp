@@ -37,11 +37,11 @@ void World::tick(flt delta_time)
 		}
 		stable_sort(g_priority_entity.begin(), g_priority_entity.end());
 		for (auto &pr : g_priority_entity) {
-			pr.second->tick(delta_time);
+			pr.second->tick_controller(delta_time);
 		}
 	} else {
 		for (auto &entity : entity_list) {
-			entity->tick(delta_time);
+			entity->tick_controller(delta_time);
 		}
 	}
 
@@ -49,6 +49,7 @@ void World::tick(flt delta_time)
 	refreshEntityMap();
 
 	for (auto &entity : entity_list) {
+		entity->tick(delta_time);
 		RigidBodyController *controller = entity->getRigidBodyController();
 		if (controller != nullptr) {
 			controller->tick_dynamic_collision(delta_time);
@@ -57,6 +58,7 @@ void World::tick(flt delta_time)
 	}
 #else
 	for (auto &entity : entity_list) {
+		entity->tick(delta_time);
 		RigidBodyController *controller = entity->getRigidBodyController();
 		if (controller != nullptr) {
 			controller->tick_dynamic_collision(delta_time);

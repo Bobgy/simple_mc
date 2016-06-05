@@ -78,7 +78,7 @@ void tick_main(flt delta_time)
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
 	ViewController *view_controller = CurrentGame()->getViewController();
 	static flt saved_time = 0.0f;
-	saved_time += delta_time;
+	saved_time += delta_time * GAME_SPEED;
 	flt frame_interval = 1.0f / FRAME_RATE;
 	if (saved_time >= frame_interval) {
 		saved_time -= frame_interval;

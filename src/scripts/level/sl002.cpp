@@ -22,7 +22,7 @@ typedef PriorityBasedAvoider EntityCtrl;
 static flt len = 25.f;
 static Vec3f pa = {len, 1, 0};
 static Vec3f pb = {-len, 1, 0};
-static int NUM = 100;
+static int NUM = 50;
 static bool bTurnAround = false;
 
 void scripts::SL002::tick(flt delta_time)
@@ -58,6 +58,7 @@ void scripts::SL002::setup_level()
 	CurrentGame()->getWorld()->changed = true;
 
 	for (size_t num = 0; num < NUM; ++num) {
+		//bool bLeft = num == 0;
 		bool bLeft = num & 1;
 		//bool bLeft = num < NUM / 2;
 		auto mob = make_shared<Entity>(

@@ -22,7 +22,7 @@ class HumanMotionController: public RigidBodyMotionController
 {
 protected:
 	Radian m_turn_speed = 3.f * PI; //1000.f;
-	Radian m_allowed_advance_angle = PI / 2.0f;
+	Radian m_allowed_advance_angle = PI / 2.0f; //1000.f
 public:    // public members
 	virtual ~HumanMotionController();
 	// common interfaces

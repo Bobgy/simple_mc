@@ -56,6 +56,7 @@ GLint tableList;
 
 //desired frame rate
 flt FRAME_RATE = 60.0f;
+flt GAME_SPEED = 1.0f;
 
 bool bDebugDepthMap = false;
 bool bWire = false;

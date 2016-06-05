@@ -40,9 +40,15 @@ void Entity::setup(
 
 void Entity::tick(flt delta_time)
 {
-	if (m_entity_controller) m_entity_controller->tick(delta_time);
 	if (m_actor) m_actor->tick(delta_time);
 	m_nav_force *= k_nav_force_deteriorate_rate;
+}
+
+void Entity::tick_controller(flt delta_time)
+{
+	if (m_entity_controller) {
+		m_entity_controller->tick(delta_time);
+	}
 }
 
 //calculate the collision with a cube with its lower coordinates at x

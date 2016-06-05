@@ -58,6 +58,7 @@ extern GLint tableList;
 
 //desired frame rate
 extern flt FRAME_RATE;
+extern flt GAME_SPEED;
 
 extern bool bDebugDepthMap;
 extern bool bWire;

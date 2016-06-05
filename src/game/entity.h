@@ -141,6 +141,7 @@ public:
 
 	// tick to simulate the movement in time seconds
 	void tick(flt delta_time);
+	void tick_controller(flt delta_time);
 };
 
 // actor is irrelevant to game logic making it purely relevant to the game's display

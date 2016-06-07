@@ -32,6 +32,7 @@ void scripts::SL002::tick(flt delta_time)
 
 	World *world = game->getWorld();
 	RETURN_IF_NULL(world);
+	
 	if (bTurnAround) {
 		world->iterateEntityList([world](Entity *entity) {
 			EntityController *controller = entity->getController();
@@ -44,6 +45,22 @@ void scripts::SL002::tick(flt delta_time)
 			}
 		});
 	}
+
+	bool finished = true;
+	world->iterateEntityList([&finished](Entity *entity) {
+		EntityController *controller = entity->getController();
+		if (entity->isTicking() && controller && controller->isAI()) {
+			AIController *ai = ASSERT_CAST<AIController*>(controller);
+			bool success = ai->hasArrivedDestination(entity->m_rigid_body, ai->getDestination());
+			if (success) {
+				entity->disable();
+			} else {
+				finished = false;
+			}
+		}
+	});
+
+	if (finished) game->pause();
 }
 
 void scripts::SL002::setup_level()
@@ -53,7 +70,7 @@ void scripts::SL002::setup_level()
 	World *world = game->getWorld();
 	if (world == nullptr) return;
 
-	k_temporary_priority_last_ticks = 0;
+	//k_temporary_priority_last_ticks = 0;
 
 	bCustomGLSL = false;
 	bSimpleCube = true;

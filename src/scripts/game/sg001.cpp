@@ -15,7 +15,7 @@
 #include "scripts/level/sl004.h"
 #include "scripts/level/sl005.h"
 
-typedef scripts::SL005 UsedLevelScript;
+typedef scripts::SL002 UsedLevelScript;
 
 scripts::SG001::~SG001()
 {

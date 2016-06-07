@@ -38,10 +38,7 @@ void scripts::SL005::tick(flt delta_time)
 			AIController *ai = ASSERT_CAST<AIController*>(controller);
 			bool success = ai->hasArrivedDestination(entity->m_rigid_body, ai->getDestination());
 			if (success) {
-				entity->setCollision(false);
-				entity->render_config.is_visible = false;
-				entity->render_config.has_shadow = false;
-				entity->setTickState(false);
+				entity->disable();
 			} else {
 				finished = false;
 			}

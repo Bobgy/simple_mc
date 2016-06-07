@@ -215,7 +215,7 @@ shared_ptr<vector<Entity*>> PriorityBasedAvoider::tick_bfs(flt delta_time)
 						/*
 						if (body2.m_velocity ^ dir_vec > 0) dir_vec = dir_vec.rotate(ang);
 						else dir_vec = dir_vec.rotate(-ang);
-						*/
+						//*/
 
 						flt F = k_steering_force * min(1.0f, (len + 0.1f) * 3.f) * 20.0f / (20.f + ahead_ratio);
 						entity->m_nav_force -= F * dir_vec;

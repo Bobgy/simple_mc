@@ -121,6 +121,12 @@ public:
 	bool isCollisionOn() const { return has_collision; }
 	void setTickState(bool state) { should_tick = state; }
 	bool isTicking() const { return should_tick; }
+	void disable() {
+		setCollision(false);
+		render_config.is_visible = false;
+		render_config.has_shadow = false;
+		setTickState(false);
+	}
 
 	/*******************************************\
 	|*============ physics methods ============*|
@@ -187,7 +193,7 @@ public:
 	ActorHuman() = default;
 	virtual ~ActorHuman() = default;
 
-	/*=============== getter methods ==============*/
+	/*========= getter and setter methods =========*/
 	flt getArmAng() const { return arm_ang; }
 	flt getArmSwingSpeed() const { return arm_swing_speed; }
 	flt getBodyAng() const { return body_ang; }

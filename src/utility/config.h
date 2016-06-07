@@ -80,4 +80,10 @@ extern size_t k_temporary_priority_last_ticks;
 extern bool bPriorityEnabled;
 
 extern int32_t k_map_size;
+
+extern int32_t g_selected_game_script;
+extern int32_t g_selected_level_script;
+extern bool g_require_reset;
+
+extern int windowHandle;
 #endif

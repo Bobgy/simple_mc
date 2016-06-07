@@ -19,10 +19,10 @@ void scripts::SL002::setup()
 typedef PriorityBasedAvoider EntityCtrl;
 //typedef AIController EntityCtrl;
 
-static flt len = 25.f;
+static flt len = 35.f;
 static Vec3f pa = {len, 1, 0};
 static Vec3f pb = {-len, 1, 0};
-static int NUM = 400;
+static int NUM = 200;
 static bool bTurnAround = false;
 
 void scripts::SL002::tick(flt delta_time)
@@ -60,7 +60,10 @@ void scripts::SL002::tick(flt delta_time)
 		}
 	});
 
-	if (finished) game->pause();
+	if (!m_finished && finished) {
+		game->pause();
+		m_finished = true;
+	}
 }
 
 void scripts::SL002::setup_level()

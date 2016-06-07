@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "sg001.h"
+#include "sg002.h"
 
 #include "utility/event_board.h"
 #include "utility/keyboard.h"
@@ -13,22 +13,24 @@
 #include "scripts/level/levels.h"
 #include "scripts/script_utility.h"
 
-scripts::SG001::~SG001()
+scripts::SG002::~SG002()
 {
 	// do nothing
 }
 
-void scripts::SG001::setup()
+void scripts::SG002::setup()
 {
 	// do nothing
 }
 
-void scripts::SG001::tick(flt delta_time)
+void scripts::SG002::tick(flt delta_time)
 {
 	// do nothing
 }
 
-void scripts::SG001::setup_game()
+static vector<shared_ptr<function<void()>>> k_key_callback;
+
+void scripts::SG002::setup_game()
 {
 	Game *game = CurrentGame();
 	if (game == nullptr) return;
@@ -52,9 +54,9 @@ void scripts::SG001::setup_game()
 	world->m_game_play_range.m_max = Vec3i{30, 1, 30};
 #else
 	//world->readFromFile("stage/last_save.txt");
-	world->randomGenerate(0, k_map_size, k_map_size, 100.0f);
-	world->m_game_play_range.m_min = Vec3i{-k_map_size, 1, -k_map_size};
-	world->m_game_play_range.m_max = Vec3i{k_map_size, 1, k_map_size};
+	world->randomGenerate(0, k_map_size, k_map_size/6, 100.0f);
+	world->m_game_play_range.m_min = Vec3i{-k_map_size, 1, -k_map_size/6};
+	world->m_game_play_range.m_max = Vec3i{k_map_size, 1, k_map_size/6};
 #endif
 	world->setup(level_script);
 

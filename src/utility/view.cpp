@@ -9,20 +9,21 @@
 
 
 extern BlockAndFace seen_block;
-extern int windowHandle;
 extern block_type type;
 
 void process_move(int x, int y)
 {
 	static int cX, cY, dx, dy;
-	cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
-	cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
-	dx = x - cX;
-	dy = y - cY;
-	if ((dx || dy) && glutGetWindow() == windowHandle) {
-		glutWarpPointer(cX, cY);
-		ViewController *view_controller = CurrentGame()->getViewController();
-		view_controller->handle_cursor_move(dx, dy);
+	if (GAME_SPEED) {
+		cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
+		cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
+		dx = x - cX;
+		dy = y - cY;
+		if ((dx || dy) && glutGetWindow() == windowHandle) {
+			glutWarpPointer(cX, cY);
+			ViewController *view_controller = CurrentGame()->getViewController();
+			view_controller->handle_cursor_move(dx, dy);
+		}
 	}
 }
 

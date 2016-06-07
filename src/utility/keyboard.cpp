@@ -135,3 +135,19 @@ void Keyboard::setup(){
 	glutSpecialFunc(SpecialKeyDown);
 	glutSpecialUpFunc(SpecialKeyUp);
 }
+
+void Keyboard::registerKeyCallback(uint16_t key, CallBackFunction func, EnumEventType event)
+{
+	shared_ptr<CallBackFunction> callback = make_shared<CallBackFunction>(func);
+	assert(callback);
+	m_key_event_board.registerEventCallback(key, callback, event);
+	m_holded_callbacks.push_back(callback);
+}
+
+void Keyboard::registerSpecialKeyCallback(int key, CallBackFunction func, EnumEventType event)
+{
+	shared_ptr<CallBackFunction> callback = make_shared<CallBackFunction>(func);
+	assert(callback);
+	m_special_key_event_board.registerEventCallback(key, callback, event);
+	m_holded_callbacks.push_back(callback);
+}

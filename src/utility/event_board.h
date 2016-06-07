@@ -29,6 +29,7 @@ public:
 	EventBoard();
 	~EventBoard();
 
+	void clear() { m_event_to_call_back_map.clear(); }
 	void EventBoard::onEvent(T event, EnumEventType event_type);
 
 	// register a call back function to an event

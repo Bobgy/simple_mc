@@ -16,6 +16,7 @@ protected:
 
 public:
 	// common methods
+	void clear() { m_event_board.clear(); m_holded_registrations.clear(); }
 
 	// setup should be done after keyboard
 	void setup();
@@ -23,7 +24,8 @@ public:
 	void registerEventCallback(
 		StringID event_name,
 		weak_ptr<CallBackFunction> call_back,
-		EnumEventType event_type = EnumEventType::ON_UP);
+		EnumEventType event_type = EnumEventType::ON_UP,
+		bool should_hold = false);
 	
 	template<typename T>
 	void registerEventTrigger(EventBoard<T> &event_board, T key, StringID event);

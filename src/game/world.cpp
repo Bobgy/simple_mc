@@ -259,14 +259,14 @@ void World::readFromFile(string stage_file_path) {
 	changed = true;
 }
 
-void World::randomGenerate(int seed, int range, flt p) {
+void World::randomGenerate(int seed, int range, int range2, flt p) {
 	init_ability();
 	srand(seed);
 	for (int i = 0; i < 10; i++) block_list.push_back(Block(block_type(i)));
 	for (int i = -range; i <= range; ++i)
-		for (int j = -range; j <= range; ++j)
+		for (int j = -range2; j <= range2; ++j)
 			for (int k = 0; k <= 3; ++k) {
-				if (abs(i) == range || abs(j) == range || k == 0 || (rand() % 100 >= p)) {
+				if (abs(i) == range || abs(j) == range2 || k == 0 || (rand() % 100 >= p)) {
 					blocks[Vec3i{i, k, j}] = &block_list[ENDSTONE];
 				} else break;
 			}

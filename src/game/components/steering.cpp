@@ -155,7 +155,7 @@ shared_ptr<vector<Entity*>> PriorityBasedAvoider::tick_bfs(flt delta_time)
 	pending_entities = make_shared<vector<Entity *>>();
 	assert(pending_entities);
 
-	for (flt ahead_ratio : {1.0f, 15.0f}) {
+	for (flt ahead_ratio : {15.0f, 1.0f}) {
 		RigidBody body_ahead = body1;
 		body_ahead.m_position += body_ahead.m_velocity * delta_time * ahead_ratio;
 		//body.m_position += m_movement_intent.walk_intent[0] * delta_time;

@@ -76,6 +76,12 @@ flt k_avoidance_radius_ratio = 1.0f;
 flt k_nav_force_deteriorate_rate = 0.4f;
 size_t k_temporary_priority_last_ticks = 2;
 
-bool bPriorityEnabled = true;
+bool bPriorityEnabled = false;
 
-int32_t k_map_size = 50;
+int32_t k_map_size = 40;
+
+int32_t g_selected_game_script = 2;
+int32_t g_selected_level_script = 2;
+bool g_require_reset = false;
+
+int windowHandle;

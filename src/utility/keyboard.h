@@ -11,9 +11,10 @@ extern bool bDebugDepthMap;
 
 class Keyboard{
 // private members
-private:
+protected:
 	bool key_state[256];
 	bool special_key_state[512];
+	vector<shared_ptr<CallBackFunction>> m_holded_callbacks;
 
 // public members
 public:
@@ -41,6 +42,8 @@ public:
 	bool get_state(unsigned char key) const {
 		return key_state[key];
 	}
+	void registerKeyCallback(uint16_t key, CallBackFunction func, EnumEventType event);
+	void registerSpecialKeyCallback(int key, CallBackFunction func, EnumEventType event);
 };
  
 #endif

@@ -6,19 +6,17 @@
 
 namespace scripts
 {
-	class SL002 : public ScriptLevel
+	class SG002 : public ScriptGame
 	{
-	protected:
-		bool m_finished = false;
 	public:
-		virtual ~SL002();
+		/* constructor and destructor */
+		virtual ~SG002();
 
 		/* common interface */
-		// inherits
 		void setup();
 		virtual void tick(flt delta_time);
 
-		// initializes the level
-		virtual void setup_level();
+		// initializes the game
+		virtual void setup_game();
 	};
 };

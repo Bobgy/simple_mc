@@ -25,9 +25,9 @@ extern std::unordered_map<StringID, string> g_string_id_to_string_map;
 // unnamed namespace used to hide functions only to the current file
 namespace
 {
-	inline StringID STRING_ID(const char str[])
+	inline StringID STRING_ID(const char str[], uint32_t ret0 = 0)
 	{
-		uint64_t ret = 0;
+		uint64_t ret = ret0;
 		for (const char *p = str; *p; ++p) {
 			ret = (ret * P2 + *p) % P1;
 		}
@@ -48,6 +48,10 @@ namespace
 
 #endif
 		return (StringID)ret;
+	}
+
+	inline StringID CONCAT_STRING_ID(StringID id0, const char str[]) {
+		return STRING_ID(str, id0);
 	}
 
 

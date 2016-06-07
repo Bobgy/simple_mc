@@ -69,7 +69,7 @@ public:
 	// read the world data from stage_file_path
 	void readFromFile(string stage_file_path);
 	// generate a world randomly by seed: seed and range: range
-	void randomGenerate(int seed, int range, flt p);
+	void randomGenerate(int seed, int range, int range2, flt p);
 
 	/*======== interface methods ========*/
 

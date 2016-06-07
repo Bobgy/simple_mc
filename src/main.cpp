@@ -25,7 +25,7 @@
 #include <utility/lodepng.h>
 #include <utility/obj.h>
 
-#include "scripts/game/sg001.h"
+#include "scripts/game/games.h"
 
 
 using namespace std;
@@ -45,7 +45,6 @@ BlockAndFace seen_block = make_pair(Vec3i(), -1);
 extern Render render;
 
 flt pp[3] = { 5.0f, 3.0f, 0.0f }, vv[3] = { 0.0f, 0.0f, 0.0f };
-int windowHandle;
 
 extern bool bObserver;
 list<Item> items;
@@ -74,6 +73,12 @@ int idle_count = 0;
 
 void tick_main(flt delta_time)
 {
+	if (g_require_reset) {
+		g_require_reset = false;
+		CurrentGame()->reset();
+		CurrentGame()->pause();
+	}
+
 	World *world = CurrentGame()->getWorld();
 	const Keyboard &keyboard = *CurrentGame()->getKeyboard();
 	ViewController *view_controller = CurrentGame()->getViewController();
@@ -142,7 +147,8 @@ void init(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(wWidth, wHeight);
-	windowHandle = glutCreateWindow("Simple MC");
+	glutInitWindowPosition(300, 10);
+	windowHandle = glutCreateWindow("Local Avoidance Presentation");
 
 	glewInit();
 	printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
@@ -155,9 +161,9 @@ void init(int argc, char *argv[]) {
 	generateShadowFBO();
 	
 	// setup the game using sg001 script
-	auto sg001 = make_shared<scripts::SG001>();
-	sg001->setup();
-	CurrentGame()->setup(sg001);
+	auto sg = MakeGameScript();
+	sg->setup();
+	CurrentGame()->setup(sg);
 	
 	render.init();
 	tableList = genTableList();

@@ -11,7 +11,8 @@
 #include "utility/view.h"
 
 #include "scripts/script.h"
-#include "scripts/game/sg001.h"
+#include "scripts/game/games.h";
+#include "scripts/level/levels.h";
 
 Game *g_game = nullptr;
 
@@ -65,6 +66,30 @@ Keyboard *Game::getKeyboard()
 EventManager *Game::getEventManager()
 {
 	return event_manager.get();
+}
+
+void Game::pause()
+{
+	glutSetCursor(GLUT_CURSOR_INHERIT);
+	GAME_SPEED = 0.f;
+}
+
+void Game::resume()
+{
+	glutSetCursor(GLUT_CURSOR_NONE);
+	int cX = glutGet(GLUT_WINDOW_WIDTH) >> 1;
+	int cY = glutGet(GLUT_WINDOW_HEIGHT) >> 1;
+	if (glutGetWindow() == windowHandle) glutWarpPointer(cX, cY);
+	GAME_SPEED = 1.f;
+}
+
+void Game::reset()
+{
+	auto game_script = MakeGameScript();
+	if (game_script) {
+		game_script->setup();
+		setup(game_script);
+	}
 }
 
 void Game::setup(shared_ptr<scripts::ScriptGame> script_game)

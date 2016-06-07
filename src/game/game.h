@@ -39,9 +39,10 @@ public:
 	Keyboard *getKeyboard();
 	EventManager *getEventManager();
 	uint32_t getTickCount() { return m_tick_count; }
-	void pause() { GAME_SPEED = 0.f; }
-	void resume() { GAME_SPEED = 1.f; }
+	void pause();
+	void resume();
 	void slowMotion() { GAME_SPEED = 0.5f; }
+	void reset();
 
 	void setup(shared_ptr<scripts::ScriptGame> script_game);
 	void clear();

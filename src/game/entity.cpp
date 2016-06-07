@@ -40,12 +40,14 @@ void Entity::setup(
 
 void Entity::tick(flt delta_time)
 {
+	if (!should_tick) return;
 	if (m_actor) m_actor->tick(delta_time);
 	m_nav_force *= k_nav_force_deteriorate_rate;
 }
 
 void Entity::tick_controller(flt delta_time)
 {
+	if (!should_tick) return;
 	if (m_entity_controller) {
 		m_entity_controller->tick(delta_time);
 	}
@@ -132,6 +134,7 @@ void ActorHuman::setup(Entity *parent, flt arm_swing_ang_speed, flt side_walk_bo
 void ActorHuman::tick(flt delta_time)
 {
 	if (m_parent == nullptr) return;
+	if (!m_parent->isTicking()) return;
 	
 	EntityController *controller = m_parent->getController();
 	if (controller == nullptr) return;
@@ -179,7 +182,7 @@ void Entity::setTemporaryPriority(TemporaryPriority temporary_priority)
 	uint32_t current_tick = CurrentGame()->getTickCount();
 	RETURN_AND_WARN_IF(temporary_priority.m_expire_tick < current_tick);
 	if (m_temporary_priority.m_expire_tick < current_tick ||
-		temporary_priority.m_priority <= m_temporary_priority.m_priority) {
+		temporary_priority.m_priority < m_temporary_priority.m_priority) {
 		m_temporary_priority = temporary_priority;
 	}
 }
@@ -190,4 +193,9 @@ const Entity::Priority & Entity::getPriority() const
 		return m_temporary_priority.m_priority;
 	}
 	return m_priority;
+}
+
+uint32_t Entity::getTemporaryExpireTick() const
+{
+	return m_temporary_priority.m_expire_tick;
 }

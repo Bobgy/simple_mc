@@ -19,6 +19,7 @@ public:
 	virtual ~EntityController();
 	virtual void setup(Entity *controlled_entity);
 	virtual void tick(flt delta_time) = 0;
+	virtual shared_ptr<vector<Entity*>> tick_bfs(flt delta_time);
 	virtual bool isAI() const;
 	const MovementIntent &getMovementIntent() const;
 };
@@ -50,6 +51,8 @@ public:
 	/* common interface */
 	void setup(Vec3f destination);
 	virtual void tick(flt delta_time);
+	//inherits
+	//virtual shared_ptr<vector<Entity*>> tick_bfs(flt delta_time);
 	virtual bool isAI() const;
 
 	/* static helper */

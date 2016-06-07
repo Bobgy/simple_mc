@@ -15,12 +15,15 @@
 #include "game/rigid_body.h"
 #include "game/entity.h"
 #include "game/gridmap.h"
+#include "game/components/ticker.h"
 
 #include "scripts/script.h"
 
 using namespace std;
 
 static vector<pair<Entity::Priority, Entity *>> g_priority_entity;
+static vector<Entity*> g_priority_entity_list;
+static TickerBFS<Entity> g_bfs_ticker;
 
 void World::tick(flt delta_time)
 {
@@ -35,10 +38,13 @@ void World::tick(flt delta_time)
 		for (auto &entity : entity_list) {
 			g_priority_entity.push_back(make_pair(entity->getPriority(), entity.get()));
 		}
-		stable_sort(g_priority_entity.begin(), g_priority_entity.end());
+		sort(g_priority_entity.begin(), g_priority_entity.end());
+		g_priority_entity_list.clear();
 		for (auto &pr : g_priority_entity) {
-			pr.second->tick_controller(delta_time);
+			g_priority_entity_list.push_back(pr.second);
 		}
+		g_bfs_ticker.setup(&g_priority_entity_list);
+		g_bfs_ticker.tick(delta_time);
 	} else {
 		for (auto &entity : entity_list) {
 			entity->tick_controller(delta_time);

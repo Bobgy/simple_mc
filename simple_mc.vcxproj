@@ -136,6 +136,7 @@
     <ClInclude Include="src\game\common_structures.h" />
     <ClInclude Include="src\game\components\rigidbody_motion_controller.h" />
     <ClInclude Include="src\game\components\steering.h" />
+    <ClInclude Include="src\game\components\ticker.h" />
     <ClInclude Include="src\game\entity.h" />
     <ClInclude Include="src\game\entity_controller.h" />
     <ClInclude Include="src\game\event_manager.h" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\components\rigidbody_motion_controller.cpp" />
     <ClCompile Include="src\game\components\steering.cpp" />
+    <ClCompile Include="src\game\components\ticker.cpp" />
     <ClCompile Include="src\game\entity.cpp" />
     <ClCompile Include="src\game\entity_controller.cpp" />
     <ClCompile Include="src\game\event_manager.cpp" />

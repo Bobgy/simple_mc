@@ -14,7 +14,7 @@
 
 bool RigidBodyController::isValid() const
 {
-	return m_entity != nullptr;
+	return m_entity != nullptr && m_entity->isTicking();
 }
 
 void RigidBodyController::setup(Entity *parent, RigidBodyMotionController *motion_controller)
@@ -25,7 +25,7 @@ void RigidBodyController::setup(Entity *parent, RigidBodyMotionController *motio
 
 void RigidBodyController::tick_movement_intent(flt delta_time)
 {
-	RETURN_AND_WARN_IF(isValid() != true);
+	RETURN_IF(isValid() != true);
 
 	EntityController *controller = m_entity->getController();
 	if (controller) {
@@ -44,7 +44,7 @@ void RigidBodyController::tick_movement_intent(flt delta_time)
 
 void RigidBodyController::tick_physical_simulation(flt delta_time)
 {
-	RETURN_AND_WARN_IF(isValid() != true);
+	RETURN_IF(isValid() != true);
 
 	RigidBody &rigidbody = m_entity->m_rigid_body;
 	if (rigidbody.m_enabled_movement) {
@@ -58,7 +58,7 @@ void RigidBodyController::tick_physical_simulation(flt delta_time)
 
 void RigidBodyController::tick_dynamic_collision(flt delta_time)
 {
-	RETURN_AND_WARN_IF(!isValid());
+	RETURN_IF(!isValid());
 	RigidBody &body1 = m_entity->m_rigid_body;
 #ifdef _USE_ENTITY_MAP
 	auto &entity_map = CurrentGame()->getWorld()->getEntityMap();
@@ -117,7 +117,7 @@ void RigidBodyController::tick_dynamic_collision(flt delta_time)
 
 void RigidBodyController::tick_static_collision(flt delta_time)
 {
-	RETURN_AND_WARN_IF(!isValid());
+	RETURN_IF(!isValid());
 	World *world = CurrentGame()->getWorld();
 	RETURN_AND_WARN_IF(world == nullptr);
 

@@ -20,6 +20,13 @@ void EntityController::setup(Entity *controlled_entity)
 	m_entity = controlled_entity;
 }
 
+std::shared_ptr<std::vector<Entity*>> EntityController::tick_bfs(flt delta_time)
+{
+	if (!m_entity->isTicking()) return nullptr;
+	tick(delta_time);
+	return nullptr;
+}
+
 bool EntityController::isAI() const
 {
 	return false;
@@ -40,6 +47,8 @@ PlayerController::~PlayerController()
 
 void PlayerController::tick(flt delta_time)
 {
+	if (!m_entity->isTicking()) return;
+
 	ViewController *view_controller = CurrentGame()->getViewController();
 	if (view_controller->need_update()) {
 		const Vec2f &rotation_speeds = view_controller->getViewRotationSpeed();
@@ -105,6 +114,8 @@ void AIController::tick(flt delta_time)
 	*/
 
 	RETURN_IF_NULL(m_entity);
+	if (!m_entity->isTicking()) return;
+
 	RigidBody &rigid_body = m_entity->m_rigid_body;
 	Vec2f goal_vector = horizontal_projection(m_destination - rigid_body.m_position);
 	flt yaw = get_yaw_from_direction(goal_vector);

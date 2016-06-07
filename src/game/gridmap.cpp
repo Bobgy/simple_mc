@@ -50,7 +50,7 @@ void GridMap::refreshEntities(World *world)
 	refresh();
 	auto entity_list = world->getEntityList();
 	for (auto &entity_ptr: entity_list) {
-		if (entity_ptr) {
+		if (entity_ptr && entity_ptr->isCollisionOn()) {
 			Vec2i p2 = horizontal_projection(entity_ptr->m_rigid_body.getCenterCoord());
 			Grid *grid = getGridByWorldCoord(p2);
 			if (grid == nullptr) {

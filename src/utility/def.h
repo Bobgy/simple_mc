@@ -18,7 +18,18 @@
 		}\
 	} while(0)
 
+#define RETURN_STH_AND_WARN_IF(pred, ret) \
+	do {\
+		if (pred) {\
+			LOG_WARNING(__FUNCTION__, "( "#pred" ) is true!\n");\
+			return (ret);\
+		}\
+	} while(0)
+
+#define RETURN_IF(pred) if (pred) return
+
 #define RETURN_IF_NULL(obj) if ((obj) == nullptr) return
+#define RETURN_STH_IF_NULL(obj, ret) if ((obj) == nullptr) return (ret)
 
 #ifndef _DEBUG
 	#define ASSERT_CAST static_cast

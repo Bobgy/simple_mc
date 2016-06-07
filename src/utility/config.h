@@ -78,4 +78,6 @@ extern flt k_nav_force_deteriorate_rate;
 extern size_t k_temporary_priority_last_ticks;
 
 extern bool bPriorityEnabled;
+
+extern int32_t k_map_size;
 #endif

@@ -173,6 +173,9 @@
     <ClInclude Include="src\game\common_structures.h">
       <Filter>src\game</Filter>
     </ClInclude>
+    <ClInclude Include="src\game\components\ticker.h">
+      <Filter>src\game\components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\utility\config.cpp">
@@ -269,6 +272,9 @@
       <Filter>src\scripts\level</Filter>
     </ClCompile>
     <ClCompile Include="src\game\components\rigidbody_motion_controller.cpp">
+      <Filter>src\game\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game\components\ticker.cpp">
       <Filter>src\game\components</Filter>
     </ClCompile>
   </ItemGroup>

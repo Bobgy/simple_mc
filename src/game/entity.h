@@ -25,12 +25,12 @@ public:
 	};
 	struct Priority {
 		// lower value means higher priority
-		uint16_t m_propagated_steps;
 		uint16_t m_tie_breaker;
+		uint16_t m_propagated_steps;
 		uint32_t m_context;
 
 		uint32_t get() const {
-			return ((uint64_t)m_context << 32) | ((uint32_t)m_tie_breaker << 16) | m_propagated_steps;
+			return ((uint64_t)m_context << 32) | ((uint32_t)m_propagated_steps << 16) | m_tie_breaker;
 		}
 		bool operator < (Priority r) const {
 			return get() < r.get();
@@ -47,6 +47,8 @@ public:
 // protected members
 protected:
 	size_t m_id;
+	bool has_collision = true;
+	bool should_tick = true;
 
 	// the controller, can be either an AI controller or a Player controller
 	shared_ptr<EntityController> m_entity_controller;
@@ -112,8 +114,13 @@ public:
 	void setPriority(Priority priority);
 	void setTemporaryPriority(TemporaryPriority priority);
 	const Priority &getPriority() const;
+	uint32_t getTemporaryExpireTick() const;
 	void setID(size_t id) { m_id = id; }
 	size_t getID() const { return m_id; }
+	void setCollision(bool state) { has_collision = state; }
+	bool isCollisionOn() const { return has_collision; }
+	void setTickState(bool state) { should_tick = state; }
+	bool isTicking() const { return should_tick; }
 
 	/*******************************************\
 	|*============ physics methods ============*|

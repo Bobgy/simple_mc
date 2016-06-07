@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+#include <vector>
+
 #include "game/entity_controller.h"
 
 #include "utility/vec.h"
@@ -23,7 +25,7 @@ public:
 	/* common interface */
 	void setup(Vec3f destination);
 	virtual void tick(flt delta_time);
-
+	virtual shared_ptr<vector<Entity*>> tick_bfs(flt delta_time);
 	// inherited from AIController
 	// virtual bool isAI() const;
 

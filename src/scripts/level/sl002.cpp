@@ -22,7 +22,7 @@ typedef PriorityBasedAvoider EntityCtrl;
 static flt len = 25.f;
 static Vec3f pa = {len, 1, 0};
 static Vec3f pb = {-len, 1, 0};
-static int NUM = 50;
+static int NUM = 400;
 static bool bTurnAround = false;
 
 void scripts::SL002::tick(flt delta_time)
@@ -53,6 +53,8 @@ void scripts::SL002::setup_level()
 	World *world = game->getWorld();
 	if (world == nullptr) return;
 
+	k_temporary_priority_last_ticks = 0;
+
 	bCustomGLSL = false;
 	bSimpleCube = true;
 	CurrentGame()->getWorld()->changed = true;
@@ -72,6 +74,7 @@ void scripts::SL002::setup_level()
 		shared_ptr<AIController> controller = make_shared<EntityCtrl>();
 		mob->setup(controller, nullptr);
 		mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)num, (uint32_t)num});
+		mob->m_rigid_body.m_yaw = bLeft ?  PI/2.0f : -PI / 2.0f;
 		//mob->setPriority(Entity::Priority{(uint16_t)0, (uint16_t)bLeft, (uint32_t)bLeft * 100});
 		world->spawnEntity(mob);
 		controller->setDestination(bLeft ? pb : pa);

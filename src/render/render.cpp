@@ -267,7 +267,10 @@ void Render::renderCubeTex(int type, const CubeTexCoord &tex)
 		if (rendered_entity != nullptr) {
 			size_t sz = CurrentGame()->getWorld()->getEntityList().size();
 			uint32_t context_prio = rendered_entity->getPriority().m_context;
-			glColor3f(context_prio == 0 ? 1.0f : 0.2f, (flt)context_prio / (flt)sz, context_prio == 0 ? 1.0f : 0.3);
+			uint16_t propagated_prio = rendered_entity->getPriority().m_propagated_steps;
+			//if ((int32_t)propagated_prio > 40) LOG_WARNING(__FUNCTION__, "propagated prriority %u is out of range\n", propagated_prio);
+			flt red = context_prio == 0 ? (propagated_prio == 0 ? 1.0f : propagated_prio / 20.f) : 0.1f;
+			glColor3f(red, (flt)context_prio / (flt)sz, context_prio == 0 ? 1.0f : 0.3);
 		} else {
 			glColor3f(1.f, 0.f, 1.f);
 		}

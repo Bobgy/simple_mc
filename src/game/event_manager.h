@@ -25,7 +25,7 @@ public:
 		StringID event_name,
 		weak_ptr<CallBackFunction> call_back,
 		EnumEventType event_type = EnumEventType::ON_UP,
-		bool should_hold = false);
+		bool should_hold = true);
 	
 	template<typename T>
 	void registerEventTrigger(EventBoard<T> &event_board, T key, StringID event);

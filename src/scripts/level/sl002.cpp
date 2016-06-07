@@ -22,7 +22,6 @@ typedef PriorityBasedAvoider EntityCtrl;
 static flt len = 35.f;
 static Vec3f pa = {len, 1, 0};
 static Vec3f pb = {-len, 1, 0};
-static int NUM = 200;
 static bool bTurnAround = false;
 
 void scripts::SL002::tick(flt delta_time)

@@ -458,16 +458,18 @@ void renderInfo(Entity observer)
 	static char buffer[256];
 
 	char mode[64];
-	sprintf_s<64>(mode, " (%.4f,%.4f,%.4f)", observer[0], observer[1], observer[2]);
+	sprintf_s<64>(mode, " (%2.4f,%2.4f,%2.4f)", observer[0], observer[1], observer[2]);
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase > 1000) {
 		sprintf_s<256>(buffer,
-			"FPS:%4.2f %s tick: %u",
+			"FPS:%4.2f, %s, tick: %5u, priority: %s, num: %d",
 			frame * 1000.0f / (time - timebase),
 			mode,
-			CurrentGame()->getTickCount());
+			CurrentGame()->getTickCount(),
+			bPriorityEnabled ? " enabled" : "disabled",
+			NUM);
 		timebase = time;
 		frame = 0;
 		idle_count = 0;

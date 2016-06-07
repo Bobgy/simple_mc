@@ -20,7 +20,6 @@ typedef PriorityBasedAvoider EntityCtrl;
 //typedef AIController EntityCtrl;
 
 static flt len = 35.f;
-static const int NUM = 500;
 static bool bTurnAround = false;
 
 void scripts::SL005::tick(flt delta_time)
@@ -48,7 +47,7 @@ void scripts::SL005::tick(flt delta_time)
 	if (finished) game->pause();
 }
 
-static size_t f[NUM], g[NUM];
+static size_t f[2123], g[2123];
 
 void scripts::SL005::setup_level()
 {

@@ -46,7 +46,7 @@ bool bMovingLight = false;
 double shadow_map_ratio = 2.0;
 int SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 int SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
-void update_shadow_map_size(){
+void update_shadow_map_size() {
 	SHADOW_MAP_WIDTH = 512 * shadow_map_ratio;
 	SHADOW_MAP_HEIGHT = 1024 * shadow_map_ratio;
 }
@@ -76,7 +76,7 @@ flt k_avoidance_radius_ratio = 1.0f;
 flt k_nav_force_deteriorate_rate = 0.4f;
 size_t k_temporary_priority_last_ticks = 2;
 
-bool bPriorityEnabled = false;
+bool bPriorityEnabled = true;
 
 int32_t k_map_size = 40;
 
@@ -85,3 +85,5 @@ int32_t g_selected_level_script = 2;
 bool g_require_reset = false;
 
 int windowHandle;
+
+int NUM = 200;

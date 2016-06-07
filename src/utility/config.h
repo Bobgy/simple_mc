@@ -86,4 +86,6 @@ extern int32_t g_selected_level_script;
 extern bool g_require_reset;
 
 extern int windowHandle;
+// the number of entities in test levels
+extern int NUM;
 #endif

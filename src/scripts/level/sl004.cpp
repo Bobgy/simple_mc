@@ -23,7 +23,6 @@ static Vec3f p[4] = {
 	{-len2, 1, -0.5},
 	{ -len, 1, -0.5}
 };
-const static int NUM = 20;
 
 void scripts::SL004::tick(flt delta_time)
 {

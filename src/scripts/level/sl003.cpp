@@ -23,9 +23,8 @@ static Vec3f p[4] = {
 	{-len2, 1, -0.5},
 	{ -len, 1, -0.5}
 };
-const static int NUM = 2;
-static int pp[NUM];
-static int dir[NUM];
+static int pp[100];
+static int dir[100];
 
 void scripts::SL003::tick(flt delta_time)
 {

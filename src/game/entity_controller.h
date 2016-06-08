@@ -28,12 +28,13 @@ class PlayerController: public EntityController
 {
 // protected members
 protected:
-
+	uint32_t m_last_tick;
 // public methods
 public:
 	PlayerController();
 	virtual ~PlayerController();
 	virtual void tick(flt delta_time);
+	virtual shared_ptr<vector<Entity*>> tick_bfs(flt delta_time);
 };
 
 class AIController: public EntityController

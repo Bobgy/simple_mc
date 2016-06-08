@@ -128,7 +128,7 @@ void RigidBodyController::tick_static_collision(flt delta_time)
 	p[1] = floor(entity[1] + 0.5*entity.getHeight());
 	entity.on_ground = false;
 	for (int dx = -1; dx <= 1; ++dx) {
-		for (int dy = -2; dy <= 2; ++dy) {
+		for (int dy = -1; dy <= 0; ++dy) {
 			for (int dz = -1; dz <= 1; ++dz) {
 				map<Vec3i, Block*>::const_iterator it;
 				if ((it = world->find(Vec3i{p[0] + dx, p[1] + dy, p[2] + dz})) != world->blocks_end()) {

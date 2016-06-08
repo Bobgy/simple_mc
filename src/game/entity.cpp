@@ -125,7 +125,7 @@ void ActorHuman::setup(Entity *parent, flt arm_swing_ang_speed, flt side_walk_bo
 	Actor::setup(parent);
 
 	arm_ang = 0.0f;
-	arm_swing_speed = arm_swing_ang_speed;
+	arm_swing_speed = arm_swing_ang_speed * (100.f + rand() % 30) / 100.f;
 
 	body_ang = 0.0f;
 	body_max_ang = side_walk_body_ang;
